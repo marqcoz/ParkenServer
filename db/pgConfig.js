@@ -25,6 +25,8 @@ db.pool = pool;
 const client = new Client(cn);
 client.connect();
 
+//Hola esta es una prueba porque esto esta muy raro
+
 /*
 pool.on('error', (err, client) => {
   console.error('Unexpected error on idle client', err)
