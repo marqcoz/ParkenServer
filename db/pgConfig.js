@@ -3,7 +3,7 @@ var db = {};
 var pgp = require("pg-promise")();
 var cn = {
   user: 'marcos',
-  host: 'localhost',
+  host: 'ec2-18-224-27-38.us-east-2.compute.amazonaws.com',
   database: 'Parken',
   password: 'ma1029',
   port: 5432,
