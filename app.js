@@ -39,11 +39,11 @@ io.on('connection', function(socket){
 
 
   socket.on('buscar espacio parken', function(msg){
-console.log('message of ' + socket.id + ': ' + msg );
+    //console.log('message of ' + socket.id + ': ' + msg );
 
     var latitud = msg.latitud;
     var longitud	 = msg.longitud;
-    console.log('message: ' + msg);
+    //console.log('message: ' + msg);
     //Ejecutar la funcion buscarEspacioParken
     Requests.buscarEspacioParken(latitud, longitud, function(status, data){
 
@@ -62,6 +62,7 @@ console.log('message of ' + socket.id + ': ' + msg );
               jeison = '{ "success":1, ' +
                 '"id":' + data.rows[0].idespacioparken + ', ' +
                 '"zona":' + data.rows[0].zonaparken + ', ' +
+                	'"direccion":"' + data.rows[0].direccion + '", ' +
                 '"coordenada": [ {' +
                 '"latitud":' + centroArray[0] + ', ' +
                 '"longitud":' + centroArray[1] + '} ] }';
@@ -69,7 +70,7 @@ console.log('message of ' + socket.id + ': ' + msg );
                 jsonResponse = jeison;
               //res.send(jsonResponse);
               socket.emit('buscar espacio parken', jsonResponse);
-              console.log(jsonResponse);
+              //console.log(jsonResponse);
 
 
 
@@ -78,7 +79,7 @@ console.log('message of ' + socket.id + ': ' + msg );
           jsonResponse = '{"success":2}';
           //res.send(jsonResponse);
           socket.emit('buscar espacio parken', jsonResponse);
-          console.log(jsonResponse);
+          //console.log(jsonResponse);
         }
 
     // Error con la conexion a la bd
@@ -86,7 +87,7 @@ console.log('message of ' + socket.id + ': ' + msg );
         jsonResponse = '{success:0}';
         //res.send(jsonResponse);
         socket.emit('buscar espacio parken', jsonResponse);
-        console.log(jsonResponse);
+        //console.log(jsonResponse);
       }
     });
     //io.emit('chat message', msg);

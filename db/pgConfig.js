@@ -19,11 +19,11 @@ var pg = require("pg-pool");
 db.pg = pg;
 db.pg_procedures = pg_procedures;
 
-const pool = new Pool(cn)
+const pool = new Pool(cn);
 db.pool = pool;
 
-const client = new Client(cn)
-client.connect()
+const client = new Client(cn);
+client.connect();
 
 /*
 pool.on('error', (err, client) => {

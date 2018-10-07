@@ -1,4 +1,14 @@
 var Requests = require('../models/functions');
+
+var schedule = require('node-schedule');
+
+//Variables Timers en minutos
+//Timer espacio RESERVADO
+var timerMinutosEspacioReservado;
+var timerSegundosEspacioReservado;
+
+var timerAux = 5;
+
 //var fire = require('./firebase');
 
 
@@ -16,6 +26,43 @@ esa funcion obtendra el valor del token
 despues esa misma funcion con la variable del token
 enviara un token
 */
+
+//Funcionparaobtenerlos valores iniciales tambien aqui
+Requests.obtenerValoresDelServer(function(status,data){
+
+	if(status==1) {
+
+		timerMinutosEspacioReservado = data.rows[0].duracionminutos;
+		timerSegundosEspacioReservado = data.rows[0].duracionsegundos;
+		console.log('Timer espacioParkenReservado: ' + timerMinutosEspacioReservado + ':' + timerSegundosEspacioReservado);
+
+		timerMinutosDialogParken = data.rows[1].duracionminutos;
+		timerSegundosDialogParken = data.rows[1].duracionsegundos ;
+		console.log('Timer DialogParken: ' + timerMinutosDialogParken + ':' + timerSegundosDialogParken);
+
+		timerMinutosPago = data.rows[2].duracionminutos;
+		timerSegundosPago = data.rows[2].duracionsegundos;
+		console.log('Timer SegundosPago: ' + timerMinutosPago+ ':' + timerSegundosPago);
+
+		timerMinutosCheckMove = data.rows[3].duracionminutos;
+		timerSegundosCheckMove = data.rows[3].duracionsegundos;
+		console.log('Timer CheckMove: ' + timerMinutosCheckMove + ':' + timerSegundosCheckMove);
+
+		timerMinutosMinSesionParken = data.rows[4].duracionminutos;
+		timerSegundosMinSesionParken = data.rows[4].duracionsegundos;
+		console.log('Timer SesionParken: ' + timerMinutosMinSesionParken + ':' + timerSegundosMinSesionParken);
+
+		timerMinutosTolerancia = data.rows[5].duracionminutos;
+		timerSegundosTolerancia = data.rows[5].duracionsegundos;
+		console.log('Timer Tolerancia: ' + timerMinutosTolerancia + ':' + timerSegundosTolerancia);
+
+// Ocurrió un error
+	} else {
+		console.log("Error al cargar los datos iniciales");
+	}
+});
+
+
 
 // Función que recibe un JSON para crear una cuenta de automovilista
 module.exports  = function(app) {
@@ -178,7 +225,6 @@ module.exports  = function(app) {
 
 							console.log("El usuario " +  user + " " + data.rows[0].id  + " inició sesión");
 
-							androidNotificationSingle(data.rows[0].id, user, 'Aviso', 'Inicio de sesión', 'Iniciaste sesión exitosamente', '');
 							res.send(jsonResponse);
 					//No existe el ususario
 					}
@@ -308,7 +354,7 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 
 		// Error con la conexion a la bd
 			} else {
-				jsonResponse = '{succes:0}';
+				jsonResponse = '{success:0}';
 				res.send(jsonResponse);
 			}
 		});
@@ -376,6 +422,8 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 		var longitud	 = req.body.longitud;
 		var distancia	 = req.body.distancia;
 
+		//console.log(req);
+
 		Requests.buscarZonaParken(latitud, longitud, distancia, function(status, data){
 
 			var jsonResponse = null;
@@ -401,6 +449,7 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 								'"nombre": "' + data.rows[i].nombre + '", ' +
 								'"distancia":' + data.rows[i].distancia + ', ' +
 								'"estatus":' + data.rows[i].estatus + ', ' +
+								'"precio":' + data.rows[i].precio + ', ' +
 								'"radio":"' + data.rows[i].radio +'",' +
 								'"centro": [ {' +
 								'"latitud":' + centroArray[0] + ', ' +
@@ -571,6 +620,7 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 							jeison = '{ "success":1, ' +
 								'"id":' + data.rows[0].idespacioparken + ', ' +
 								'"zona":' + data.rows[0].zonaparken + ', ' +
+								'"direccion": "' + data.rows[0].direccion + '", ' +
 								'"coordenada": [ {' +
 								'"latitud":' + centroArray[0] + ', ' +
 								'"longitud":' + centroArray[1] + '} ] }';
@@ -689,20 +739,43 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 		var value = req.body.value;
 		var user = 'automovilista';
 
-		Requests.actualizar(user, id, column, value, function(status, data){
 
-			var jsonResponse = null;
-			// Consuta generada con éxito
-			if(status==1) {
-				jsonResponse = '{success:1}';
-				androidNotificationSingle(id, 'automovilista', 'Aviso', 'Actualización del perfil', 'Se modificó la información de tu perfil exitosamente', '');
-				res.send(jsonResponse);
-		// Error con la conexion a la bd
-			} else {
-				jsonResponse = '{success:0}';
-				res.send(jsonResponse);
+			if(column === 'puntosparken'){
+
+				Requests.actualizarPuntosParken(id, value, function(status, data){
+
+					var jsonResponse = null;
+					// Consuta generada con éxito
+					if(status==1) {
+						jsonResponse = '{success:1, puntosparken: '+ data.rows[0].refresh_puntosparken +'}';
+						androidNotificationSingle(id, 'automovilista', 'Aviso', 'Actualización del perfil', 'Se actualizaron tus puntos Parken', '');
+						res.send(jsonResponse);
+				// Error con la conexion a la bd
+					} else {
+						jsonResponse = '{success:0}';
+						res.send(jsonResponse);
+					}
+
+				});
+
+			}else{
+					Requests.actualizar(user, id, column, value, function(status, data){
+
+						var jsonResponse = null;
+						// Consuta generada con éxito
+						if(status==1) {
+							jsonResponse = '{success:1}';
+							res.send(jsonResponse);
+							androidNotificationSingle(id, 'automovilista', 'Aviso', 'Actualización del perfil', 'Se modificó la información de tu perfil exitosamente', '');
+
+					// Error con la conexion a la bd
+						} else {
+							jsonResponse = '{success:0}';
+							res.send(jsonResponse);
+						}
+					});
 			}
-		});
+
 	});
 
 	// Función para eliminar un vehiculo
@@ -772,6 +845,61 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 
 							jeison = '{ "success":1, ' +
 							'"idSesionParken":"' + data.rows[0].book_parken_space + '" }';
+
+							//En esta parte del código creamos o lllamamos una funcion CRON
+							//que dentro de 5 minutos o de 15 minutos verificará que dicha sesión
+							//No permancezca en estatus = RESERVADO
+							//Si el estatus es RESERVADO
+							//Entonces eliminará la sesión y liberará el espacio
+							//Si el estatus es diferente a RESERVADO entonces no pasará nad
+							var idSesion = data.rows[0].book_parken_space;
+							var date = new Date();
+
+							//console.log('idSesion: ' + idEspacio);
+							date.setMinutes(date.getMinutes()+timerMinutosEspacioReservado);
+							date.setSeconds(date.getSeconds()+timerSegundosEspacioReservado + timerAux);
+							//date.setSeconds(date.getSeconds()+timerEspacioReservado);
+
+							schedule.scheduleJob(idSesion.toString(), date,
+								function(){
+									Requests.verificarEstatusSesionParken(idSesion, 'RESERVADO', function(status, data){
+
+										if(status == 1){ //Si es 1 entonces la sesión no ha cambiado, debemos eliminar la sesión
+											console.log('Se eliminara la sesión');
+
+											Requests.eliminarSesionParken(idSesion, function(status, data){
+
+												// Consuta generada con éxito
+												if(status==1) {
+
+													//Se enviará una notifiación informando que la sesiones
+													//o que la vista ya cambió porque el tiempo terminó
+													//o simplemente que llame al metodo
+													androidNotificationSingle(automovilista, 'automovilista', 'Aviso', 'Espacio Parken liberado', 'No llegaste a tiempo', '');
+													//androidNotificationSingle(data.rows[0].id, user, 'Aviso', 'Inicio de sesión', 'Iniciaste sesión exitosamente', '')
+													//androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, mensaje, accion)
+
+													//obtenerVistaDelServer()
+													//jsonResponse = '{ success:1 }';
+													//console.log(jsonResponse);
+													//res.send(jsonResponse);
+
+											// Error con la conexion a la bd
+												} else {
+													//jsonResponse = '{success:0}';
+													//console.log(jsonResponse);
+													//res.send(jsonResponse);
+												}
+											});
+
+
+										}else{
+											console.log('Automovilista pagó por el espacio Parken asignado');
+										}
+									});
+								}
+							);
+
 							jsonResponse = jeison;
 							res.send(jsonResponse);
 
@@ -795,6 +923,7 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 		});
 
 	});
+
 
 	// Función para obtener las sanciones de un automovilista
 	app.post("/automovilista/obtenerSanciones", function(req,res){
@@ -841,25 +970,34 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 								var centroArray = coordenadasCentro.split(" ");
 								jeison = jeison +
 								'{ "idSancion":' + data.rows[i].idsancion + ', ' +
+								'"FechaSancion":"' + data.rows[i].fechasancion + '", ' +
+								'"FechaPago":"' + data.rows[i].fechapago + '", ' +
 								'"Fecha":"' + data.rows[i].fecha + '", ' +
 								'"Hora":"' + data.rows[i].hora + '", ' +
-								'"Monto":"' + data.rows[i].monto + '", ' +
+								'"Monto":' + data.rows[i].monto + ', ' +
 								'"Observaciones":"' + data.rows[i].observacion + '", ' +
 								'"Estatus":"' + data.rows[i].estatus + '", ' +
 								'"FechaPago":"' + data.rows[i].fechapago + '", ' +
 								'"HoraPago":"' + data.rows[i].horapago + '", ' +
 								'"idAutomovilista":"' + data.rows[i].idautomovilista + '", ' +
+								'"NombreAutomovilista":"' + data.rows[i].nombreautomovilista + '", ' +
+								'"ApellidoAutomovilista":"' + data.rows[i].apellidoautomovilista + '", ' +
+								'"CorreoAutomovilista":"' + data.rows[i].correoautomovilista + '", ' +
+								'"CelularAutomovilista":"' + data.rows[i].celularautomovilista + '", ' +
+								'"TokenAutomovilista":"' + data.rows[i].tokenautomovilista + '", ' +
 								'"idVehiculo":"' + data.rows[i].idvehiculo + '", ' +
 								'"ModeloVehiculo":"' + data.rows[i].modelo + '", ' +
 								'"PlacaVehiculo":"' + data.rows[i].placa + '", ' +
 								'"MarcaVehiculo":"' + data.rows[i].marca + '", ' +
 								'"idSupervisor":"' + data.rows[i].idsupervisor + '", ' +
-								'"idEspacioParken":"' + data.rows[i].idespacioparken + '", ' +
+								'"idEspacioParken":' + data.rows[i].idespacioparken + ', ' +
+								'"DireccionEspacioParken":"' + data.rows[i].direccion + '", ' +
 								'"Coordenadas": [ {' +
-								'"latitud":' + centroArray[1] + ', ' +
-								'"longitud":' + centroArray[0] + '} ],' +
+								'"latitud":' + centroArray[0] + ', ' +
+								'"longitud":' + centroArray[1] + '} ],' +
 								'"idZonaParken":"' + data.rows[i].idzonaparken + '", ' +
 								'"NombreZonaParken":"' + data.rows[i].nombre + '"';
+
 
 								if(i == data.rowCount - 1){	jeison = jeison + ' }'; } else { jeison = jeison + ' },'; }
 							}
@@ -935,6 +1073,8 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 								'"MarcaVehiculo":"' + data.rows[i].marca + '", ' +
 								'"idSancion":' + data.rows[i].idsancion + ', ' +
 								'"MontoSancion":' + data.rows[i].montosancion + ', ' +
+								'"Fecha":"' + data.rows[i].fecha + '", ' +
+								'"Hora":"' + data.rows[i].hora + '", ' +
 								'"idEspacioParken":' + data.rows[i].idespacioparken + ', ' +
 								'"Coordenadas": [ {' +
 								'"latitud":' + centroArray[1] + ', ' +
@@ -977,7 +1117,23 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 
 			var jsonResponse = null;
 			// Consuta generada con éxito
-			if(status==1) {
+			if(status==1) { //Si se actualiza correctamente la sancion generamos un idReporte
+
+				var idAutomovilista = data.rows[0].idautomovilista;
+				var espacioparken = data.rows[0].ep;
+				var zonaparken = data.rows[0].zp;
+				var estatus = "PENDIENTE";
+				var tipo = "SANCION";
+				var observaciones = "";
+
+				Requests.crearReporte(estatus, tipo, observaciones, idAutomovilista, espacioparken, zonaparken, function(status, data){
+					if(status == 1){
+						console.log("Reporte generado con éxito, se notificará a un supervisor");
+					}else{
+						console.log("ERROR al generar el reporte, NO se notificará a un supervisor");
+					}
+				});
+
 				jsonResponse = '{success:1}';
 				res.send(jsonResponse);
 		// Error con la conexion a la bd
@@ -1009,7 +1165,18 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 			if(status==1) {
 				//Primero validamos si data nos devuelve un registros
 				if(data.rowCount != 0){
-					jsonResponse = '{success:1, idReporte:' + data.rows[0].idreporte +'}';
+
+
+					//Eliminamos el SCHEDULE, si existe
+					/*var mySchedule = schedule.scheduledJobs[]
+
+					if(mySchedule != null){
+						mySchedule.cancel();
+					}*/
+					jsonResponse = '{success:1, idReporte:' + data.rows[0].idreporte + ', ' +
+					'tipoReporte: "' + data.rows[0].tipo + '", ' +
+					'estatusReporte: "' + data.rows[0].estatus + '"' +
+					'}';
 							res.send(jsonResponse);
 
 				}else{
@@ -1027,22 +1194,116 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 	});
 
 	// Función para desactivar una sesionparken
-	app.post("/automovilista/desactivarSesionParken", function(req,res){
+	app.post("/automovilista/modificarSesionParken", function(req,res){
 
 
 
 		var idSesion = req.body.idSesionParken;
 		var estatus = req.body.Estatus;
+		var fecha = req.body.Fecha;
 
 		var jeison;
 
-		Requests.desactivarSesionParken(idSesion, estatus, function(status, data){
+		Requests.modificarSesionParken(idSesion, estatus, fecha, function(status, data){
 
 			var jsonResponse = null;
 			// Consuta generada con éxito
 			if(status==1) {
 				//Primero validamos si data nos devuelve un registros
 				if(data.rowCount != 0){
+
+					var date = new Date();
+
+					var tiempoMin = 0;
+					var tiempoSeg = 0;
+					var newEstatus = 'ERROR';
+					var newFecha = false;
+
+					if(estatus== 'REEMBOLSO'){
+						tiempoMin = timerMinutosCheckMove;
+						tiempoSeg = timerSegundosCheckMove;
+						newEstatus = 'REPORTADA';
+						newFecha = false;
+
+					}
+
+					if(estatus== 'PROCESANDO'){
+						tiempoMin = timerMinutosTolerancia;
+						tiempoSeg = timerSegundosTolerancia;
+						newEstatus = 'REPORTADA';
+						newFecha = false;
+
+					}
+
+					if(newEstatus != 'ERROR'){
+
+
+						date.setMinutes(date.getMinutes()+tiempoMin);
+						date.setSeconds(date.getSeconds()+tiempoSeg + timerAux);
+						//date.setSeconds(date.getSeconds()+timerEspacioReservado);
+
+						schedule.scheduleJob(date,
+							function(){
+								Requests.verificarEstatusSesionParken(idSesion, estatus, function(status, data){
+
+									if(status == 1){ //Si es 1 entonces la sesión no ha cambiado, debemos eliminar la sesión
+										console.log('Se modificará la sesión a ' + newEstatus);
+
+										var automovilista = data.rows[0].automovilista_idautomovilista;
+										var espacioparken = data.rows[0].espacioparken_idespacioparken;
+										var zonaparken = data.rows[0].espacioparken_zonaparken_idzonaparken;
+
+
+										Requests.modificarSesionParken(idSesion, newEstatus, fecha, function(status, data){
+
+											var jsonResponse = null;
+											// Consuta generada con éxito
+											if(status==1) {
+
+												Requests.crearReporte('PENDIENTE', 'ENDOFTIME', '', automovilista, espacioparken, zonaparken, function(status, data){
+													if(status==1) {
+														console.log('Enviando notificación...');
+														androidNotificationSingle(automovilista, 'automovilista', 'Aviso', 'Se generó un reporte', 'Automovilista no finalizó correctamente la sesión', '');
+														//androidNotificationSingle(data.rows[0].id, user, 'Aviso', 'Inicio de sesión', 'Iniciaste sesión exitosamente', '')
+														//androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, mensaje, accion)
+
+														//obtenerVistaDelServer()
+														//jsonResponse = '{ success:1 }';
+														//console.log(jsonResponse);
+														//res.send(jsonResponse);
+
+
+
+													}else{
+														console.log('Error al crear reporte ENDOFTIME');
+
+													}
+
+											});
+
+											} else {
+												//jsonResponse = '{success:0}';
+												//console.log(jsonResponse);
+												//res.send(jsonResponse);
+											}
+										});
+
+
+									}else{
+										console.log('Automovilista finalizó correctamente la sesión Parken, no se modificará nada');
+									}
+								});
+							}
+						);
+
+						}
+
+
+
+
+
+
+
 					jsonResponse = '{success:1}';
 							res.send(jsonResponse);
 
@@ -1073,6 +1334,15 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 			var jsonResponse = null;
 			// Consuta generada con éxito
 			if(status==1) {
+
+				//Cancelamos el SCHEDULE generado
+				var mySchedule = schedule.scheduledJobs[sesionparken];
+				//console.log(my_job);
+				if(mySchedule != null){
+					mySchedule.cancel();
+				}
+
+
 				jsonResponse = '{ success:1 }';
 							res.send(jsonResponse);
 		// Error con la conexion a la bd
@@ -1171,14 +1441,110 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 			var jsonResponse = null;
 			// Consuta generada con éxito
 			if(status==1) {
+				//Obtenemos
+				var idSesion = data.rows[0].idsesion;
+				var fechaFinal = data.rows[0].fechafin;
+
+				var automovilista = data.rows[0].idauto;
+				var espacioparken = data.rows[0].espaciop;
+				var zonaparken = data.rows[0].zonap;
+
+
+
+				//Creamos una tarea que se ejecute en fechafinal + timerTolerancia
+				var estatus = 'ACTIVA';
+				var newEstatus = 'REPORTADA';
+				var date = fechaFinal;
+				date.setMinutes(date.getMinutes()+timerMinutosTolerancia);
+				date.setSeconds(date.getSeconds()+timerSegundosTolerancia + timerAux);
+
+				console.log(idSesion);
+				console.log(date.toString());
+				/*
+				console.log('fecha: ' + date);
+				console.log('seg: ' + date.getSeconds());
+				console.log('min: ' + date.getMinutes());
+				*/
+
+				//if(opc === '2' || opc === '1'){ //Si es una renovación, eliminamos el SCHEDULE anterior para crear unno nuevo
+					var mySchedule = schedule.scheduledJobs[idSesion.toString()];
+					//console.log(my_job);
+					if(mySchedule != null){
+						mySchedule.cancel();
+					}
+
+				//}
+
+				schedule.scheduleJob(idSesion.toString(), date,
+					function(){
+						Requests.verificarEstatusSesionParken(idSesion, estatus, function(status, data){
+
+							if(status == 1){ //Si es 1 entonces la sesión no ha cambiado
+								console.log('Se modificará la sesión a ' + newEstatus);
+
+								var automovilista = data.rows[0].automovilista_idautomovilista;
+								var espacioparken = data.rows[0].espacioparken_idespacioparken;
+								var zonaparken = data.rows[0].espacioparken_zonaparken_idzonaparken;
+								Requests.modificarSesionParken(idSesion, newEstatus, false, function(status, data){
+									// Consuta generada con éxito
+									if(status==1) {
+
+										//Se enviará una notifiación informando que la sesiones
+										//o que la vista ya cambió porque el tiempo terminó
+										//o simplemente que llame al metodo
+										Requests.crearReporte('PENDIENTE', 'ENDOFTIME', '', automovilista, espacioparken, zonaparken, function(status, data){
+											if(status==1) {
+												console.log('Enviando notificación...');
+												androidNotificationSingle(automovilista, 'automovilista', 'Aviso', 'Se generó un reporte', 'Nuevo reporte por reembolso', '');
+												//androidNotificationSingle(data.rows[0].id, user, 'Aviso', 'Inicio de sesión', 'Iniciaste sesión exitosamente', '')
+												//androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, mensaje, accion)
+
+												//obtenerVistaDelServer()
+												//jsonResponse = '{ success:1 }';
+												//console.log(jsonResponse);
+												//res.send(jsonResponse);
+
+												//Al final cancelamos el SCHEDULE
+												var mySche = schedule.scheduledJobs[idSesion.toString()];
+												//console.log(my_job);
+												mySche.cancel();
+
+											}else{
+												console.log('Error al crear reporte ENDOFTIME');
+
+											}
+
+									});
+								// Error con la conexion a la bd
+									} else {
+										console.log('Error al modificar la sesión al estado ' + newEstatus);
+										//jsonResponse = '{success:0}';
+										//console.log(jsonResponse);
+										//res.send(jsonResponse);
+									}
+								});
+
+
+							}else{
+								console.log('El estado de la sesión es correcto, no se modificará nada');
+							}
+						});
+					}
+				);
+
+
+
+
+
 				jsonResponse = '{ "success": 1 }';
-					res.send(jsonResponse);
+				res.send(jsonResponse);
 		// Error con la conexion a la bd
 	} else {
 		jsonResponse = '{success:0}';
 				res.send(jsonResponse);
 			}
 		});
+
 
 	});
 
@@ -1219,6 +1585,347 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 
 });
 
+app.post("/automovilista/obtenerValoresDelServer", function(req,res){
+
+
+				var idAutomovilista = req.body.idAutomovilista;
+				var jeison;
+
+Requests.obtenerValoresDelServer(function(status,data){
+
+/* Respuesta JSON
+{
+success: 1,
+timers: {
+		espacioParkenReservado:[
+			minutos: 5,
+			segundos: 0
+		],
+
+		dialogParken:[
+			minutos: 5,
+			segundos: 0
+		],
+
+		pago:[
+			minutos: 5,
+			segundos: 0
+		],
+
+		timeMinSesionParken:[
+			minutos: 5,
+			segundos: 0
+		],
+
+		tolerancia:[
+			minutos: 5,
+			segundos: 0
+		],
+
+		checkMove:[
+			minutos: 5,
+			segundos: 0
+		]
+	}
+}
+*/
+
+// Se ha creado exitosamente la cuenta.
+ var jsonResponse = 'null' ;
+	if(status==1) {
+		jsonResponse = //'{success:1}';
+		'{ success: 1, ' +
+		'timers: {' +
+		'espacioParkenReservado: { ' +
+					'minutos:' + data.rows[0].duracionminutos +', ' +
+					'segundos:' + data.rows[0].duracionsegundos +' }, ' +
+				'dialogParken: { ' +
+					'minutos:' + data.rows[1].duracionminutos +', ' +
+					'segundos:' + data.rows[1].duracionsegundos +' }, ' +
+				'pago: { ' +
+					'minutos:' + data.rows[2].duracionminutos +', ' +
+					'segundos:' + data.rows[2].duracionsegundos +' }, ' +
+				'checkMove: { ' +
+					'minutos:' + data.rows[3].duracionminutos +', ' +
+					'segundos:' + data.rows[3].duracionsegundos +' },' +
+				'timeMinSesionParken: { ' +
+					'minutos:' + data.rows[4].duracionminutos +', ' +
+					'segundos:' + data.rows[4].duracionsegundos +' }, ' +
+				'tolerancia: { ' +
+					'minutos:' + data.rows[5].duracionminutos +', ' +
+					'segundos:' + data.rows[5].duracionsegundos +' } ' +
+
+			'}}';
+
+		res.send(jsonResponse);
+// Ocurrió un error
+	} else {
+		jsonResponse = '{success:0}';
+			res.send(jsonResponse);
+	}
+});
+
+});
+
+
+// Función para obtener las sanciones de un automovilista
+app.post("/automovilista/obtenerVistaDelServer", function(req,res){
+
+
+			var idAutomovilista = req.body.idAutomovilista;
+			var jeison;
+			Requests.obtenerAllSesionesParken(idAutomovilista, function(status, data){
+
+				var jsonResponse = null;
+				var tipoSesion = null;
+				// Consuta generada con éxito
+				if(status==1) {
+					//Primero validamos si data nos devuelve un registros
+					if(data.rowCount != 0){
+								//console.log(data.rowCount);
+								for(var i = 0; i < data.rowCount; i++){
+									//console.log("Estatus: " + data.rows[i].estatus);
+
+									if(data.rows[i].estatus === 'ACTIVA'){
+										tipoSesion = 'sesionParkenActiva';
+									}
+
+									if (data.rows[i].estatus === 'RESERVADO'){
+										tipoSesion = 'sesionParkenReservado';
+									}
+
+									if (data.rows[i].estatus === 'PAGANDO'){
+										tipoSesion = 'sesionParkenPagando';
+									}
+
+									if(tipoSesion != null){
+
+										var ini = "POINT(".length;
+										var f = data.rows[i].coordenadaep.length - 1;
+										var coordenadasCentro = data.rows[i].coordenadaep.substring(ini, f)
+										var centroArray = coordenadasCentro.split(" ");
+
+										jeison = '{ "success": 1, ' +
+										'"vista":"' + tipoSesion + '",'+
+										//'"data": [{' +
+										'"idSesion":' + data.rows[i].idsesionparken + ', ' +
+										'"FechaPago": "' + data.rows[i].fechainicio + '", ' +
+										'"FechaInicio":"' + data.rows[i].fechainicial + '", ' +
+										'"HoraInicio":"' + data.rows[i].horainicio + '", ' +
+										'"FechaFinal":"' + data.rows[i].fechafinal + '", ' +
+										'"HoraFinal":"' + data.rows[i].horafinal + '", ' +
+										'"TiempoTranscurridoMin":"' + data.rows[i].tiempotranscurridomin + '", ' +
+										'"TiempoTranscurridoSeg":"' + data.rows[i].tiempotranscurridoseg + '", ' +
+										'"TiempoRestanteMin":"' + data.rows[i].tiemporestantemin + '", ' +
+										'"TiempoRestanteSeg":"' + data.rows[i].tiemporestanteseg + '", ' +
+										'"Monto":"' + data.rows[i].montopago + '", ' +
+										'"Tiempo":"' + data.rows[i].tiempo + '", ' +
+										'"Estatus":"' + data.rows[i].estatus + '", ' +
+										'"idAutomovilista":"' + data.rows[i].idautomovilista + '", ' +
+										'"idVehiculo":' + data.rows[i].idvehiculo + ', ' +
+										'"ModeloVehiculo":"' + data.rows[i].modelo + '", ' +
+										'"PlacaVehiculo":"' + data.rows[i].placa + '", ' +
+										'"MarcaVehiculo":"' + data.rows[i].marca + '", ' +
+										'"idSancion":' + data.rows[i].idsancion + ', ' +
+										'"MontoSancion":' + data.rows[i].montosancion + ', ' +
+										'"id":' + data.rows[i].idespacioparken + ', ' +
+										'"coordenada": [ {' +
+										'"latitud":' + centroArray[0] + ', ' +
+										'"longitud":' + centroArray[1] + '} ],' +
+										'"direccion":"' + data.rows[i].direccionespacioparken + '", ' +
+										'"zona":' + data.rows[i].idzonaparken + ', ' +
+										'"NombreZonaParken":"' + data.rows[i].nombrezonaparken + '"' + '}';
+										//+ '} ] }';
+
+										break;
+									}
+								}
+							}
+								//console.log(tipoSesion);
+								if(tipoSesion != null){
+
+									jsonResponse = jeison;
+									res.send(jsonResponse);
+
+								}else {
+									//No hay sesiones pendientes entonces buscaremos en las sanciones
+									Requests.obtenerSancionesAutomovilista(idAutomovilista, function(status, data){
+
+										var jsonResponse = null;
+										var tipoSancion = null;
+										// Consuta generada con éxito
+										if(status==1) {
+											//Primero validamos si data nos devuelve un registros
+											if(data.rowCount != 0){
+
+														//if (data.rows[0].idautomovilista != null){
+
+														for(var i = 0; i < data.rowCount; i++){
+
+
+															if(data.rows[i].estatus === 'PENDIENTE'){
+																tipoSancion = 'sancionPendiente'
+															}
+
+															if(tipoSancion != null){
+
+																var ini = "POINT(".length;
+																var f = data.rows[i].coordenadaep.length - 1;
+																var coordenadasCentro = data.rows[i].coordenadaep.substring(ini, f)
+																var centroArray = coordenadasCentro.split(" ");
+
+																jeison = '{ "success": 1, ' +
+																'"vista":"' + tipoSancion + '",'+
+																//'"data":[';
+																	'"idSancion":' + data.rows[i].idsancion + ', ' +
+																	'"FechaSancion":"' + data.rows[i].fechasancion + '", ' +
+																	'"FechaPago":"' + data.rows[i].fechapago + '", ' +
+																	'"Fecha":"' + data.rows[i].fecha + '", ' +
+																	'"Hora":"' + data.rows[i].hora + '", ' +
+																	'"Monto":' + data.rows[i].monto + ', ' +
+																	'"Observaciones":"' + data.rows[i].observacion + '", ' +
+																	'"Estatus":"' + data.rows[i].estatus + '", ' +
+																	'"FechaPago":"' + data.rows[i].fechapago + '", ' +
+																	'"HoraPago":"' + data.rows[i].horapago + '", ' +
+																	'"idAutomovilista":"' + data.rows[i].idautomovilista + '", ' +
+																	'"NombreAutomovilista":"' + data.rows[i].nombreautomovilista + '", ' +
+																	'"ApellidoAutomovilista":"' + data.rows[i].apellidoautomovilista + '", ' +
+																	'"CorreoAutomovilista":"' + data.rows[i].correoautomovilista + '", ' +
+																	'"CelularAutomovilista":"' + data.rows[i].celularautomovilista + '", ' +
+																	'"TokenAutomovilista":"' + data.rows[i].tokenautomovilista + '", ' +
+																	'"idVehiculo":"' + data.rows[i].idvehiculo + '", ' +
+																	'"ModeloVehiculo":"' + data.rows[i].modelo + '", ' +
+																	'"PlacaVehiculo":"' + data.rows[i].placa + '", ' +
+																	'"MarcaVehiculo":"' + data.rows[i].marca + '", ' +
+																	'"idSupervisor":"' + data.rows[i].idsupervisor + '", ' +
+																	'"idEspacioParken":' + data.rows[i].idespacioparken + ', ' +
+																	'"DireccionEspacioParken":"' + data.rows[i].direccion + '", ' +
+																	'"Coordenadas": [ {' +
+																	'"latitud":' + centroArray[0] + ', ' +
+																	'"longitud":' + centroArray[1] + '} ],' +
+																	'"idZonaParken":"' + data.rows[i].idzonaparken + '", ' +
+																	'"NombreZonaParken":"' + data.rows[i].nombre + '"' + '}';
+
+																	break;
+
+															}
+
+													}
+											}
+
+											if (tipoSancion != null){
+
+												jsonResponse = jeison;
+												res.send(jsonResponse);
+
+											} else {
+
+												jeison = '{success: 2, vista: "parken"}'
+												jsonResponse = jeison;
+												res.send(jsonResponse);
+
+											}
+
+
+									// Error con la conexion a la bd
+										} else {
+											jsonResponse = '{success:0}';
+											res.send(jsonResponse);
+										}
+									});
+								}
+
+			// Error con la conexion a la bd
+				} else {
+					jsonResponse = '{success:0}';
+					res.send(jsonResponse);
+				}
+			});
+});
+
+
+// Función para activar una sesion parken
+app.post("/automovilista/establecerVistaPagando", function(req,res){
+
+	var idSesionParken = req.body.idSesion;
+	var idAutomovilista = req.body.idAutomovilista;
+
+
+	Requests.sesionParkenPagando(idSesionParken, timerMinutosPago, timerSegundosPago, function(status, data){
+
+		var jsonResponse = null;
+		// Consuta generada con éxito
+		if(status==1) {
+
+			var ep = data.rows[0].espacioparken_idespacioparken;
+			var zp = data.rows[0].espacioparken_zonaparken_idzonaparken;
+
+				var date = new Date();
+				date.setMinutes(date.getMinutes()+timerMinutosPago);
+				date.setSeconds(date.getSeconds()+timerSegundosPago + timerAux);
+
+				var mySchedule = schedule.scheduledJobs[idSesionParken];
+				//console.log(my_job);
+				if(mySchedule != null){
+					mySchedule.cancel();
+				}
+
+				schedule.scheduleJob(idSesionParken, date,
+					function(){
+
+						var newEstatus = 'REPORTADA';
+
+						Requests.verificarEstatusSesionParken(idSesionParken, 'PAGANDO', function(status, data){
+
+							if(status == 1){ //Si es 1 entonces la sesión no ha cambiado, debemos eliminar la sesión
+								console.log('Se modificará la sesión a ' + newEstatus);
+								var automovilista = data.rows[0].automovilista_idautomovilista;
+
+
+								Requests.modificarSesionParken(idSesionParken, newEstatus, true, function(status, data){
+
+									if(status==1) {
+
+										Requests.crearReporte('PENDIENTE', 'PAGO', 'Automovilista no finalizó el pago en el tiempo establecido', automovilista, ep, zp, function(status, data){
+
+											if(status==1) {
+													androidNotificationSingle(automovilista, 'automovilista', 'Aviso', 'Se generó un reporte', 'Nuevo reporte por no pagar', '');
+
+											} else {
+													console.log('ERROR');
+											}
+										});
+
+
+
+									} else {
+
+									}
+								});
+
+							}else{
+								console.log('Automovilista si realizó el pago, no se modificará nada');
+							}
+						});
+					}
+				);
+
+
+
+
+
+
+
+			jsonResponse = '{ "success": 1 }';
+				res.send(jsonResponse);
+	// Error con la conexion a la bd
+} else {
+	jsonResponse = '{ "success": 0 }';
+			res.send(jsonResponse);
+		}
+	});
+
+});
 
 /*
 	app.post("/coordenadas/consultar", function(req, res){
