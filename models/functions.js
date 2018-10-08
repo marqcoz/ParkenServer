@@ -66,6 +66,7 @@ functions.sendNotificationTopic = function(topic, tipo, titulo, mensaje, accion,
 
   // Send a message to the device corresponding to the provided
   // registration token.
+  /*
   admin.messaging().send(message)
     .then((response) => {
       // Response is a message ID string.
@@ -78,7 +79,7 @@ functions.sendNotificationTopic = function(topic, tipo, titulo, mensaje, accion,
     });
 
 };
-
+*/
 
 functions.sendNotificationDry = function(topic1, tipo, titulo, mensaje, accion, callback){
   // This registration token comes from the client FCM SDKs.
