@@ -38,6 +38,7 @@ var registrationToken = idToken;
 
   // Send a message to the device corresponding to the provided
   // registration token.
+  /*
   admin.messaging().send(message)
     .then((response) => {
       // Response is a message ID string.
@@ -50,6 +51,7 @@ var registrationToken = idToken;
     });
 
 };
+*/
 
 functions.sendNotificationTopic = function(topic, tipo, titulo, mensaje, accion, callback){
   // This registration token comes from the client FCM SDKs.
