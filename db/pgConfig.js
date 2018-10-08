@@ -3,14 +3,15 @@ var db = {};
 var pgp = require("pg-promise")();
 var cn = {
   user: 'marcos',
-  host: 'ec2-18-224-27-38.us-east-2.compute.amazonaws.com',
+  host: 'mypgdbinstance.cfoqvii0xgxc.us-east-2.rds.amazonaws.com',
+  //host: 'localhost',
   database: 'Parken',
-  password: 'ma1029',
+  password: 'ma1029ma1029',
   port: 5432,
   max: 20, // set pool max size to 20
   min: 4, // set min pool size to 4
   idleTimeoutMillis: 1000, // close idle clients after 1 second
-  connectionTimeoutMillis: 1000, // return an error after 1 second if connection could not be established
+  connectionTimeoutMillis: 1000 // return an error after 1 second if connection could not be established
 };
 
 
