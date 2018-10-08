@@ -764,7 +764,16 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 						var jsonResponse = null;
 						// Consuta generada con éxito
 						if(status==1) {
-							jsonResponse = '{success:1}';
+							jsonResponse = '{success:1, ' +
+								'idAutomovilista:' + data.rows[0].idautomovilista + ', ' +
+								'Nombre: "' + data.rows[0].nombre + '", ' +
+								'Apellido: "' + data.rows[0].apellido + '", ' +
+								'Email: "' + data.rows[0].email + '", ' +
+								'Contrasena: "' + data.rows[0].contrasena + '", ' +
+								'Celular: "' + data.rows[0].celular + '", ' +
+								'Puntosparken: ' + data.rows[0].puntosparken + ', ' +
+								'Estatus: "'+ data.rows[0].idautomovilista + '" ' +
+								'}';
 							res.send(jsonResponse);
 							androidNotificationSingle(id, 'automovilista', 'Aviso', 'Actualización del perfil', 'Se modificó la información de tu perfil exitosamente', '');
 

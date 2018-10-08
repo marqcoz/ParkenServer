@@ -548,7 +548,7 @@ functions.actualizar= function(user, id, column, value, callback){
 
 var query = 'UPDATE ' + user +
 ' SET ' + column + '=\'' + value +
-'\' WHERE ' + 'id' + user + '=' + id +';';
+'\' WHERE ' + 'id' + user + '=' + id +' RETURNING idautomovilista, nombre, apellido, email, contrasena, celular, puntosparken, estatus;';
 //console.log(query);
   // callback
   db.pool.query(query, (err, res) => {
