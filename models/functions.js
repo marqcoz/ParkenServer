@@ -96,6 +96,7 @@ functions.sendNotificationDry = function(topic1, tipo, titulo, mensaje, accion, 
 
   // Send a message to the device corresponding to the provided
   // registration token.
+  /*
   admin.messaging().send(message, dryRun)
     .then((response) => {
       // Response is a message ID string.
@@ -108,6 +109,7 @@ functions.sendNotificationDry = function(topic1, tipo, titulo, mensaje, accion, 
     });
 
 };
+*/
 
 
 // Función que crea una cuenta de Automovilista
