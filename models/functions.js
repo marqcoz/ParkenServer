@@ -49,9 +49,9 @@ var registrationToken = idToken;
       console.log('Error al enviar la notificación:', error);
       callback(0);
     });
-
-};
 */
+};
+
 
 functions.sendNotificationTopic = function(topic, tipo, titulo, mensaje, accion, callback){
   // This registration token comes from the client FCM SDKs.
@@ -77,9 +77,9 @@ functions.sendNotificationTopic = function(topic, tipo, titulo, mensaje, accion,
       console.log('Error al enviar la notificación:'+ error);
       callback(0);
     });
-
-};
 */
+};
+
 
 functions.sendNotificationDry = function(topic1, tipo, titulo, mensaje, accion, callback){
   // This registration token comes from the client FCM SDKs.
@@ -107,9 +107,9 @@ functions.sendNotificationDry = function(topic1, tipo, titulo, mensaje, accion, 
       console.log('Error al enviar la notificación:'+ error);
       callback(0);
     });
-
-};
 */
+};
+
 
 
 // Función que crea una cuenta de Automovilista
