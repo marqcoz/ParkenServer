@@ -764,6 +764,7 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 						var jsonResponse = null;
 						// Consuta generada con éxito
 						if(status==1) {
+							//espacioparken_zonaparken_idzonaparken
 							jsonResponse = '{success:1, ' +
 								'idAutomovilista:"' + data.rows[0].idautomovilista + '", ' +
 								'Nombre: "' + data.rows[0].nombre + '", ' +
