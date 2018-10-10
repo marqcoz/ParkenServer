@@ -335,6 +335,7 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 							}
 							jeison = jeison + '] }';
 							jsonResponse = jeison;
+							console.log(jsonResponse);
 							res.send(jsonResponse);
 							/*res.send('{success:1, id:'+data.rows[0].idautomovilista+', '+
 
