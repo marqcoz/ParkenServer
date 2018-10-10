@@ -1122,6 +1122,7 @@ functions.sesionParkenPagando= function(idSesion, minutos, segundos, callback){
         if(res.rows == ''){
             console.log(res.rows)
         }
+        console.log(res.rows)
         callback(1,res);
       }
 
