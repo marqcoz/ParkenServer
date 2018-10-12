@@ -4,8 +4,14 @@ var app = require("express")(),
 
 var http = require('http').Server(app);
 var Requests = require('./models/functions');
+var reque = require('./routes/Requests');
 
 var io = require('socket.io')(http);
+
+const Store = require('data-store');
+const store = new Store({ path: 'config.json' });
+
+
 
 app.set('port', process.env.PORT || 3000);
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -20,13 +26,17 @@ app.get('/', function(req, res) {
 
 });
 
+
 //require('./sockets/socket');
+//routes = require('./routes/Requests')(app);
 routes = require('./routes/Requests')(app);
 
 var test = {
     message: 'Hello World!',
     user: 'How are you?'
   };
+
+
 
 io.on('connection', function(socket){
   console.log('a user connected');
@@ -38,11 +48,14 @@ io.on('connection', function(socket){
 
 
 
+
+
   socket.on('buscar espacio parken', function(msg){
     //console.log('message of ' + socket.id + ': ' + msg );
 
     var latitud = msg.latitud;
     var longitud	 = msg.longitud;
+		var idAuto = msg.idAutomovilista.toString();
     //console.log('message: ' + msg);
     //Ejecutar la funcion buscarEspacioParken
     Requests.buscarEspacioParken(latitud, longitud, function(status, data){
@@ -66,6 +79,34 @@ io.on('connection', function(socket){
                 '"coordenada": [ {' +
                 '"latitud":' + centroArray[0] + ', ' +
                 '"longitud":' + centroArray[1] + '} ] }';
+
+                if(store.hasOwn(idAuto)){
+                  if(store.get(idAuto) != data.rows[0].idespacioparken.toString()){
+                    Requests.androidNotificationSingle(idAuto, 'automovilista', 'Nuevo espacio Parken', 'El espacio '+ data.rows[0].idespacioparken.toString() + ' ahora es el más cercano a tu destino.', '{ "datos" : "OK", "idNotification" : "200", "espacioParken" : "' + data.rows[0].idespacioparken.toString() + '" }');
+                  }
+                  store.set(idAuto, data.rows[0].idespacioparken.toString());
+
+
+                }else {
+                  store.set(idAuto, data.rows[0].idespacioparken.toString());
+                }
+
+
+
+/*
+                								if(localStorage.getItem(idAuto) === "undefined" || localStorage.getItem(idAuto) === null){
+                									console.log('Aviso: NO existe localstorage');
+                									localStorage.setItem(idAuto, data.rows[0].idespacioparken.toString());
+                								}else{
+                									console.log('Aviso: YA existe localstorage ' + localStorage.getItem(idAuto));
+                									if(localStorage.getItem(idAuto) != data.rows[0].idespacioparken.toString()){
+                										console.log('Aviso: HA cambiado el espacio ' + localStorage.getItem(idAuto));
+                										localStorage.setItem(idAuto, data.rows[0].idespacioparken.toString())
+                										routes.androidNotificationSingle(idAuto, 'automovilista', 'Nuevo espacio Parken', 'El espacio '+ data.rows[0].idespacioparken.toString() + ' ahora es el más cercano a tu destino.', '{ "datos" : "OK", "idNotification" : "200", "espacioParken" : "' + data.rows[0].idespacioparken.toString() + '" }');
+                									}
+
+                								}
+*/
 
                 jsonResponse = jeison;
               //res.send(jsonResponse);
@@ -93,7 +134,6 @@ io.on('connection', function(socket){
     //io.emit('chat message', msg);
   });
 });
-
 
 
 

@@ -4,7 +4,7 @@ var db = require('../db/pgConfig');
 var functions = {};
 var admin = require('firebase-admin');
 
-var serviceAccount = require('../parken-1520827408399-firebase-adminsdk-fpu48-e36c594626.json');
+var serviceAccount = require('../parken-217616-firebase-adminsdk-a4h2k-c6dc7ae7d0.json');
 
 
 
@@ -13,32 +13,46 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   //databaseURL: 'https://<DATABASE_NAME>.firebaseio.com'
   databaseURL: 'http://localhost:50546/'
+  
 });
 
 
-functions.sendNotificationSingle = function(idToken, tipo, titulo, mensaje, accion, callback){
-  // This registration token comes from the client FCM SDKs.
-  //var registrationToken = 'fulhK3so0j0:APA91bFT-80RJknl2YJVPacQP4u-SjgWmxjuum9Je084MSEHQO1sqqX4OJ9TBMhsywKb-8l8WWEQLcqgYc2ganME4r5DGcgKbvOW8sWUrbwbisPpvADHuii0WJq7lGCi-t0dgj_78DTl6mkmfnBvnaGMUN1_odmwhw';
+functions.sendNotificationSingle = function(idToken, titulo, mensaje, datos, callback){
+
 var registrationToken = idToken;
+if(datos == '{}'){
+  datos = '{ "datos" : "NONE" }';
+}
+var datosJSON = JSON.parse(datos);
 
   var message = {
-    android: {
-      ttl: 3600 * 1000, // 1 hour in milliseconds
-      priority: 'normal',
-      notification: {
-        //title: '$GOOG up 1.43% on the day',
-        title: titulo,
-        //body: '$GOOG gained 11.80 points to close at 835.67, up 1.43% on the day.',
-        body: mensaje,
-        color: '#f45342'
-      }
+                    "token": registrationToken,
+                    "notification":{
+                      "title": titulo,
+                      "body": mensaje
+                    },
+                  "data" : datosJSON
+
+                };
+/*
+  {
+  "message":{
+    "token":"bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1...",
+    "notification":{
+      "title":"Portugal vs. Denmark",
+      "body":"great match!"
     },
-  	token: registrationToken
-  };
+    "data" : {
+      "Nick" : "Mario",
+      "Room" : "PortugalVSDenmark"
+    }
+  }
+}
+*/
 
   // Send a message to the device corresponding to the provided
   // registration token.
-  /*
+
   admin.messaging().send(message)
     .then((response) => {
       // Response is a message ID string.
@@ -49,24 +63,32 @@ var registrationToken = idToken;
       console.log('Error al enviar la notificación:', error);
       callback(0);
     });
-*/
+
 };
 
 
-functions.sendNotificationTopic = function(topic, tipo, titulo, mensaje, accion, callback){
+functions.sendNotificationTopic = function(topic, titulo, mensaje, datos, callback){
   // This registration token comes from the client FCM SDKs.
 
-  var message = {
-    notification: {
-      title: titulo,
-      body: mensaje
-    },
-    topic: topic
-  };
+if(datos == '{}'){
+  datos = '{ "datos" : "NONE" }';
+}
+
+  var datosJSON = JSON.parse(datos);
+
+    var message = {
+                      "topic": topic,
+                      "notification":{
+                        "title": titulo,
+                        "body": mensaje
+                      },
+                    "data" : datosJSON
+
+                  };
 
   // Send a message to the device corresponding to the provided
   // registration token.
-  /*
+
   admin.messaging().send(message)
     .then((response) => {
       // Response is a message ID string.
@@ -77,7 +99,7 @@ functions.sendNotificationTopic = function(topic, tipo, titulo, mensaje, accion,
       console.log('Error al enviar la notificación:'+ error);
       callback(0);
     });
-*/
+
 };
 
 
@@ -96,7 +118,7 @@ functions.sendNotificationDry = function(topic1, tipo, titulo, mensaje, accion, 
 
   // Send a message to the device corresponding to the provided
   // registration token.
-  /*
+
   admin.messaging().send(message, dryRun)
     .then((response) => {
       // Response is a message ID string.
@@ -107,8 +129,56 @@ functions.sendNotificationDry = function(topic1, tipo, titulo, mensaje, accion, 
       console.log('Error al enviar la notificación:'+ error);
       callback(0);
     });
-*/
+
 };
+
+
+functions.androidNotificationSingle = function (idUser, tipoUser, titulo, mensaje, datos){
+	//Funcion que envia una notificación
+	//Necesitamos llamar a la funcion obtenerDatosAutomovilista
+
+	if(tipoUser === 'automovilista'){
+		functions.obtenerDatosAutomovilista(idUser, function(status, data){
+			//Aqui adentro obtenemos el id y despues lo reenviamos a la funcion sendNotificationSingle
+			if(status==1) {
+				if(data.rowCount != 0){
+					if (data.rows[0].token != null){
+						//enviamos el token a la  funcion para enviar notificiaciones
+						functions.sendNotificationSingle(data.rows[0].token, titulo, mensaje, datos, function(status, data){});
+					}
+				}else{
+					console.log('La consulta no generó ningun registro');
+				}
+		// Error con la conexion a la bd
+			} else {
+				console.log('No se estableció la conexión con la BD');
+			}
+
+		});
+	}
+
+
+	if(tipoUser === 'supervisor'){
+		functions.obtenerDatosSupervisor(idUser, function(status, data){
+			//Aqui adentro obtenemos el id y despues lo reenviamos a la funcion sendNotificationSingle
+			if(status==1) {
+				if(data.rowCount != 0){
+					if (data.rows[0].token != null){
+						//enviamos el token a la  funcion para enviar notificiaciones
+						functions.sendNotificationSingle(data.rows[0].token, titulo, mensaje, datos, function(status, data){});
+					}
+				}else{
+					console.log('La consulta no generó ningun registro');
+				}
+		// Error con la conexion a la bd
+			} else {
+				console.log('No se estableció la conexión con la BD');
+			}
+
+		});
+	}
+};
+
 
 
 
@@ -1164,5 +1234,28 @@ functions.verificarEstatusSesionParken = function(idSesion, estatus, callback){
   //db.pool.end()
 })
 })
+};
+
+// Función que crea una cuenta de Automovilista
+functions.liberarVehiculo= function(user, id, column, value, callback){
+  console.log("Se editará el perfil del automovilista...");
+
+var query = 'UPDATE ' + user +
+' SET ' + column + '=\'' + value +
+'\' WHERE ' + 'id' + user + '=' + id +' RETURNING idautomovilista, nombre, apellido, email, contrasena, celular, puntosparken, estatus;';
+//console.log(query);
+  // callback
+  db.pool.query(query, (err, res) => {
+    // Si el UPDATE regresa un error entonces
+    if (err) {
+      console.log(err.stack)
+      callback(0,err);
+    }else {
+      //console.log(res.rows[0])
+      //console.log(res.rows)
+      callback(1, res);
+    }
+    //db.pool.end()
+  })
 };
 module.exports = functions;

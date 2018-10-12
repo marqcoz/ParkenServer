@@ -1,6 +1,8 @@
 var Requests = require('../models/functions');
-
+var Reque = {};
 var schedule = require('node-schedule');
+
+
 
 //Variables Timers en minutos
 //Timer espacio RESERVADO
@@ -20,12 +22,17 @@ Hora - Fecha: Response to: remoteAddress: Function->Data Response:
 */
 //Requests.sendNotificationTopic('automovilista', 'Hola', 'como', 'estas', 'jajaj',function(status){});
 //Requests.obtenerDatosAutomovilista('10002', function(status, response){});
+//Requests.sendNotificationSingle()
 /*
 Declarar la funcion que enviara notificiaciones
 esa funcion obtendra el valor del token
 despues esa misma funcion con la variable del token
 enviara un token
 */
+
+Requests.androidNotificationSingle(10002, 'automovilista', 'Nueva zona Parken', 'Ya estamos operando en la colonia Roma.', '{ "datos" : "OK", "idNotification" : "1"}');
+
+
 
 //Funcionparaobtenerlos valores iniciales tambien aqui
 Requests.obtenerValoresDelServer(function(status,data){
@@ -66,6 +73,7 @@ Requests.obtenerValoresDelServer(function(status,data){
 
 // Función que recibe un JSON para crear una cuenta de automovilista
 module.exports  = function(app) {
+
 		app.post("/automovilista/sigIn", function(req,res){
 
 		var nombre = req.body.nombre;
@@ -242,50 +250,7 @@ module.exports  = function(app) {
 
 	});
 
-function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, mensaje, accion){
-	//Funcion que envia una notificación
-	//Necesitamos llamar a la funcion obtenerDatosAutomovilista
-	if(tipoUser === 'automovilista'){
-		Requests.obtenerDatosAutomovilista(idUser, function(status, data){
-			//Aqui adentro obtenemos el id y despues lo reenviamos a la funcion sendNotificationSingle
-			if(status==1) {
-				if(data.rowCount != 0){
-					if (data.rows[0].token != null){
-						//enviamos el token a la  funcion para enviar notificiaciones
-						Requests.sendNotificationSingle(data.rows[0].token, tipoNotificacion, titulo, mensaje, accion, function(status, data){});
-					}
-				}else{
-					console.log('La consulta no generó ningun registro');
-				}
-		// Error con la conexion a la bd
-			} else {
-				console.log('No se estableció la conexión con la BD');
-			}
 
-		});
-	}
-
-
-	if(tipoUser === 'supervisor'){
-		Requests.obtenerDatosSupervisor(idUser, function(status, data){
-			//Aqui adentro obtenemos el id y despues lo reenviamos a la funcion sendNotificationSingle
-			if(status==1) {
-				if(data.rowCount != 0){
-					if (data.rows[0].token != null){
-						//enviamos el token a la  funcion para enviar notificiaciones
-						Requests.sendNotificationSingle(data.rows[0].token, tipoNotificacion, titulo, mensaje, accion, function(status, data){});
-					}
-				}else{
-					console.log('La consulta no generó ningun registro');
-				}
-		// Error con la conexion a la bd
-			} else {
-				console.log('No se estableció la conexión con la BD');
-			}
-
-		});
-	}
-}
 
 
 
@@ -749,7 +714,7 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 					// Consuta generada con éxito
 					if(status==1) {
 						jsonResponse = '{success:1, puntosparken: '+ data.rows[0].refresh_puntosparken +'}';
-						androidNotificationSingle(id, 'automovilista', 'Aviso', 'Actualización del perfil', 'Se actualizaron tus puntos Parken', '');
+						Requests.androidNotificationSingle(id, 'automovilista', 'Actualización del perfil', 'Se actualizaron tus puntos Parken', '{}');
 						res.send(jsonResponse);
 				// Error con la conexion a la bd
 					} else {
@@ -777,7 +742,17 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 								'Estatus: "'+ data.rows[0].estatus + '" ' +
 								'}';
 							res.send(jsonResponse);
-							androidNotificationSingle(id, 'automovilista', 'Aviso', 'Actualización del perfil', 'Se modificó la información de tu perfil exitosamente', '');
+							var data = '{"idNotification" : "400", ' +
+								'"idAutomovilista":"' + data.rows[0].idautomovilista + '", ' +
+								'"Nombre": "' + data.rows[0].nombre + '", ' +
+								'"Apellido": "' + data.rows[0].apellido + '", ' +
+								'"Email": "' + data.rows[0].email + '", ' +
+								'"Contrasena": "' + data.rows[0].contrasena + '", ' +
+								'"Celular": "' + data.rows[0].celular + '", ' +
+								'"Puntosparken": "' + data.rows[0].puntosparken + '", ' +
+								'"Estatus": "'+ data.rows[0].estatus + '" ' +
+								'}';
+							Requests.androidNotificationSingle(id, 'automovilista', 'Actualización del perfil', 'Se modificó la información de tu perfil exitosamente', data);
 
 					// Error con la conexion a la bd
 						} else {
@@ -886,9 +861,9 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 													//Se enviará una notifiación informando que la sesiones
 													//o que la vista ya cambió porque el tiempo terminó
 													//o simplemente que llame al metodo
-													androidNotificationSingle(automovilista, 'automovilista', 'Aviso', 'Espacio Parken liberado', 'No llegaste a tiempo', '');
-													//androidNotificationSingle(data.rows[0].id, user, 'Aviso', 'Inicio de sesión', 'Iniciaste sesión exitosamente', '')
-													//androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, mensaje, accion)
+													Requests.androidNotificationSingle(automovilista, 'automovilista', 'Espacio Parken liberado', 'No llegaste a tiempo', '{}');
+													//Requests.androidNotificationSingle(data.rows[0].id, user, 'Aviso', 'Inicio de sesión', 'Iniciaste sesión exitosamente', '')
+													//Requests.androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, mensaje, accion)
 
 													//obtenerVistaDelServer()
 													//jsonResponse = '{ success:1 }';
@@ -1274,9 +1249,9 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 												Requests.crearReporte('PENDIENTE', 'ENDOFTIME', '', automovilista, espacioparken, zonaparken, function(status, data){
 													if(status==1) {
 														console.log('Enviando notificación...');
-														androidNotificationSingle(automovilista, 'automovilista', 'Aviso', 'Se generó un reporte', 'Automovilista no finalizó correctamente la sesión', '');
-														//androidNotificationSingle(data.rows[0].id, user, 'Aviso', 'Inicio de sesión', 'Iniciaste sesión exitosamente', '')
-														//androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, mensaje, accion)
+														Requests.androidNotificationSingle(automovilista, 'automovilista', 'Se generó un reporte', 'Automovilista no finalizó correctamente la sesión', '{}');
+														//Requests.androidNotificationSingle(data.rows[0].id, user, 'Aviso', 'Inicio de sesión', 'Iniciaste sesión exitosamente', '')
+														//Requests.androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, mensaje, accion)
 
 														//obtenerVistaDelServer()
 														//jsonResponse = '{ success:1 }';
@@ -1506,9 +1481,9 @@ function androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, m
 										Requests.crearReporte('PENDIENTE', 'ENDOFTIME', '', automovilista, espacioparken, zonaparken, function(status, data){
 											if(status==1) {
 												console.log('Enviando notificación...');
-												androidNotificationSingle(automovilista, 'automovilista', 'Aviso', 'Se generó un reporte', 'Nuevo reporte por reembolso', '');
-												//androidNotificationSingle(data.rows[0].id, user, 'Aviso', 'Inicio de sesión', 'Iniciaste sesión exitosamente', '')
-												//androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, mensaje, accion)
+												Requests.androidNotificationSingle(automovilista, 'automovilista', 'Se generó un reporte', 'Nuevo reporte por reembolso', '{}');
+												//Requests.androidNotificationSingle(data.rows[0].id, user, 'Aviso', 'Inicio de sesión', 'Iniciaste sesión exitosamente', '')
+												//Requests.androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, mensaje, accion)
 
 												//obtenerVistaDelServer()
 												//jsonResponse = '{ success:1 }';
@@ -1900,7 +1875,8 @@ app.post("/automovilista/establecerVistaPagando", function(req,res){
 										Requests.crearReporte('PENDIENTE', 'PAGO', 'Automovilista no finalizó el pago en el tiempo establecido', automovilista, ep, zp, function(status, data){
 
 											if(status==1) {
-													androidNotificationSingle(automovilista, 'automovilista', 'Aviso', 'Se generó un reporte', 'Nuevo reporte por no pagar', '');
+												var data = '{"idNotification" : 400 }';
+													Requests.androidNotificationSingle(automovilista, 'automovilista', 'Se generó un reporte', 'Nuevo reporte por no pagar', data);
 
 											} else {
 													console.log('ERROR');
@@ -2079,5 +2055,4 @@ app.post("/automovilista/establecerVistaPagando", function(req,res){
 			}
 		});
 	});*/
-
 }
