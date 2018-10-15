@@ -13,7 +13,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   //databaseURL: 'https://<DATABASE_NAME>.firebaseio.com'
   databaseURL: 'http://localhost:50546/'
-  
+
 });
 
 
@@ -137,7 +137,7 @@ functions.androidNotificationSingle = function (idUser, tipoUser, titulo, mensaj
 	//Funcion que envia una notificación
 	//Necesitamos llamar a la funcion obtenerDatosAutomovilista
 
-	if(tipoUser === 'automovilista'){
+	if(tipoUser === 'automovilista' && idUser != '0'){
 		functions.obtenerDatosAutomovilista(idUser, function(status, data){
 			//Aqui adentro obtenemos el id y despues lo reenviamos a la funcion sendNotificationSingle
 			if(status==1) {
@@ -400,6 +400,37 @@ functions.obtenerDatosSupervisor = function(id, callback){
       if(res.rows == ''){
           console.log(res.rows)
       }
+      callback(1,res);
+
+    }
+
+  //db.pool.end()
+})
+})
+};
+
+// Funcíon que regresa la infromación personal de un usuario
+functions.obtenerDatosSupervisor = function(id, callback){
+
+  const query = {
+    text: 'SELECT * FROM supervisor WHERE idsupervisor = $1;',
+    values: [id],
+    //rowMode: 'array',
+  }
+//console.log(query)
+  db.pool.connect((err, client, done) => {
+    if (err) throw err
+
+  db.pool.query(query, (err, res) =>{
+    if (err) {
+      // Error en la conexión con la BD
+      callback(0, err.stack);
+     console.log(err.stack)
+    } else{
+      //Verificamos si la consulta regresa un valor
+      if(res.rows == ''){
+          console.log(res.rows)
+      }
 
       callback(1,res);
 
@@ -439,7 +470,7 @@ functions.crearNuevoVehiculo = function(automovilista, marca, modelo, placa, cal
 
         //Si el INSERT se generó con éxito entonces
     } else {
-      //console.log(res.rows[0].add_new_car_relation)
+      console.log(res.rows[0].add_new_car_relation)
       if (res.rows[0].add_new_car_relation != 2 ){
           callback(1, res);
       }else{
@@ -509,6 +540,27 @@ functions.buscarZonaParken = function(latitud, longitud, distancia, callback){
 
   // callback
   db.pool.query(qry2, (err, res) => {
+    // Si el SELECT regresa un error entonces
+    if (err) {
+      console.log(err.stack);
+        callback(0, err.stack);
+        //Si el INSERT se generó con éxito entonces
+    } else {
+      //console.log(res.rows)
+      callback(1, res);
+    }
+    //db.pool.end()
+  })
+};
+
+// Consulta las zonas parken a tantos kilometros de un punto
+functions.obtenerZonasParken = function(idZona, callback){
+  console.log("Descargando información de la zona Parken " + idZona + "...");
+
+  var qry = 'SELECT idzonaparken, nombre, ST_AsText(ubicacion) AS poligono, estatus, ' +
+   'ST_AsText(ST_Centroid(ubicacion)) AS centro, precio from zonaparken WHERE idzonaparken = ' + idZona + ';';
+
+  db.pool.query(qry, (err, res) => {
     // Si el SELECT regresa un error entonces
     if (err) {
       console.log(err.stack);
@@ -612,14 +664,61 @@ if(tipo == 1){
   })
 };
 
+// Consulta las zonas parken a tantos kilometros de un punto
+functions.validarCredencialSupervisor = function(tipo, credencial, callback){
+  console.log("Verificando las credenciales del supervisor...");
+  var qry = '';
+
+if(tipo == 1){
+  qry = 'SELECT * FROM supervisor WHERE email ';
+}else {
+  qry = 'SELECT * FROM supervisor WHERE celular ';
+}
+
+  const query = {
+    text: qry +  '= $1;',
+    values: [credencial],
+  }
+  //console.log(query);
+
+  // callback
+  db.pool.query(query, (err, res) => {
+    // Si el SELECT regresa un error entonces
+    if (err) {
+      console.log(err.stack);
+        callback(0, err.stack);
+        //Si el SELECT se generó con éxito entonces
+    } else {
+      console.log(res.rows);
+      callback(1, res);
+    }
+    //db.pool.end()
+  })
+};
+
 // Función que crea una cuenta de Automovilista
 functions.actualizar= function(user, id, column, value, callback){
+
+console.log('usuario: ' + user);
+
+  var query;
+
+if(user === 'automovilista'){
   console.log("Se editará el perfil del automovilista...");
 
-var query = 'UPDATE ' + user +
-' SET ' + column + '=\'' + value +
-'\' WHERE ' + 'id' + user + '=' + id +' RETURNING idautomovilista, nombre, apellido, email, contrasena, celular, puntosparken, estatus;';
-//console.log(query);
+  query = 'UPDATE ' + user +
+  ' SET ' + column + '=\'' + value +
+  '\' WHERE ' + 'id' + user + '=' + id +' RETURNING idautomovilista, nombre, apellido, email, contrasena, celular, puntosparken, estatus;';
+
+} else {
+
+  console.log("Se editará el perfil del supervisor...");
+
+  query = 'UPDATE ' + user +
+  ' SET ' + column + '=\'' + value +
+  '\' WHERE ' + 'id' + user + '=' + id +' RETURNING idsupervisor, nombre, apellido, email, contrasena, celular, direccion, estatus, zonaparken_idzonaparken, token;';
+}
+console.log(query);
   // callback
   db.pool.query(query, (err, res) => {
     // Si el UPDATE regresa un error entonces
@@ -628,7 +727,7 @@ var query = 'UPDATE ' + user +
       callback(0,err);
     }else {
       //console.log(res.rows[0])
-      //console.log(res.rows)
+      console.log(res.rows)
       callback(1, res);
     }
     //db.pool.end()
@@ -724,6 +823,29 @@ var query = 'UPDATE vehiculo '+
     }else {
       console.log(res.rows[0])
       console.log(res.rows)
+      callback(1, res);
+    }
+    //db.pool.end()
+  })
+};
+
+// Función que crea una cuenta de Automovilista
+functions.actualizarEspacioParken= function(idEspacio, estatus, callback){
+  console.log("Se editará un espacio Parken...");
+
+var query = 'UPDATE espacioparken '+
+'SET estatus = \'' + estatus  + '\'' +
+' WHERE idespacioparken = ' + idEspacio + ';'
+//console.log(query);
+  // callback
+  db.pool.query(query, (err, res) => {
+    // Si el UPDATE regresa un error entonces
+    if (err) {
+      console.log(err)
+      callback(0,err);
+    }else {
+      //console.log(res.rows[0])
+      //nsole.log(res.rows)
       callback(1, res);
     }
     //db.pool.end()
@@ -950,6 +1072,129 @@ functions.obtenerAllSesionesParken = function(automovilista, callback){
   })
 };
 
+
+// Función que consulta todas las sesiones Parken del automovilista
+functions.obtenerEstatusEspacioParken = function(id, callback){
+  console.log("Consultando el estatus del espacio Parken " + id + "...");
+
+  var query =
+  'SELECT *, ST_AsText(ep.ubicacion) AS coordenada, ' +
+  'au.nombre AS nombreautomovilista, ' +
+  'zp.nombre AS nombrezonaparken, ' +
+  'sp.estatus AS estatussesionparken, ' +
+  'to_char(fechafinal, \'DD MM YYYY HH24:MI:SS\') AS fechafinalformatted,' +
+  'ep.estatus AS estatusespacioparken ' +
+  'FROM sesionparken sp ' +
+  'INNER JOIN automovilista au ON sp.automovilista_idautomovilista = au.idautomovilista ' +
+  'INNER JOIN espacioparken ep ON sp.espacioparken_idespacioparken= ep.idespacioparken  ' +
+  'INNER JOIN vehiculo v ON sp.vehiculo_idvehiculo = v.idvehiculo ' +
+  'INNER JOIN zonaparken zp ON zp.idzonaparken = ep.zonaparken_idzonaparken ' +
+  'WHERE sp.espacioparken_idespacioparken = ' + id + ' AND sp.estatus = ' +
+  '(SELECT (CASE WHEN estatus = \'DISPONIBLE\' THEN \'DISPONIBLE\' ' +
+  		'WHEN estatus = \'RESERVADO\' THEN \'RESERVADO\' ' +
+  		'WHEN estatus = \'OCUPADO\' THEN \'ACTIVA\' ' +
+  		'WHEN estatus = \'REPORTADO\' THEN \'REPORTADA\' ' +
+  		'WHEN estatus = \'SANCIONADO\' THEN \'SANCIONADA\' ' +
+  	   '	ELSE \'\' ' +
+  		'END) ' +
+  		'FROM espacioparken WHERE idespacioparken = ' + id + ') ORDER BY sp.fechainicio DESC ' +
+  		'LIMIT 1;';
+
+      //console.log(query);
+
+
+  // callback
+  db.pool.query(query, (err, res) => {
+    // Si el SELECT regresa un error entonces
+    if (err) {
+        console.log(err.stack);
+        callback(0, err.stack);
+    } else {
+      //console.log(res.rows)
+        callback(1,res);
+
+    }
+    //db.pool.end()
+  })
+};
+
+
+// Función que consulta todas las sesiones Parken del automovilista
+functions.obtenerEspaciosParkenParaSesion = function(id, callback){
+  console.log("Consultando los espacios Parken para sesión " + "...");
+
+  var query = 'SELECT *, ST_AsText(ubicacion) AS coordenada ' +
+  'FROM espacioparken ' +
+  'WHERE zonaparken_idzonaparken = ' + id + ' AND (estatus = \'DISPONIBLE\' OR estatus = \'OCUPADO\') ORDER BY idespacioparken;';
+  // callback
+  db.pool.query(query, (err, res) => {
+    // Si el SELECT regresa un error entonces
+    if (err) {
+        console.log(err.stack);
+        callback(0, err.stack);
+    } else {
+      //console.log(res.rows)
+        callback(1,res);
+
+    }
+    //db.pool.end()
+  })
+};
+
+// Función que consulta todas las sesiones Parken del automovilista
+functions.obtenerTodosEspaciosParken = function(id, callback){
+  console.log("Consultando todos los espacios Parken" + "...");
+
+  var query = 'SELECT *, ST_AsText(ubicacion) AS coordenada ' +
+  'FROM espacioparken ' +
+  'WHERE zonaparken_idzonaparken = ' + id + ' ORDER BY idespacioparken ASC;';
+  // callback
+  db.pool.query(query, (err, res) => {
+    // Si el SELECT regresa un error entonces
+    if (err) {
+        console.log(err.stack);
+        callback(0, err.stack);
+    } else {
+      //console.log(res.rows)
+        callback(1,res);
+
+    }
+    //db.pool.end()
+  })
+};
+
+// Función que consulta todas las sesiones Parken del automovilista
+functions.obtenerTodosReportes = function(id, callback){
+  console.log("Consultando todos los reportes del supervisor " + id + "...");
+
+  var query = 'SELECT *, ' +
+'to_char(tiempo, \'DD MONTH HH24:MI\') AS fechatiempo, ' +
+'ST_AsText(ep.ubicacion) AS coordenada, ' +
+'r.estatus AS estatusreporte, ' +
+'ep.estatus AS estatusespacioparken, ' +
+'au.nombre AS nombreautomovilista ' +
+'FROM reporte r ' +
+'INNER JOIN espacioparken ep ON r.espacioparken_idespacioparken= ep.idespacioparken ' +
+'INNER JOIN automovilista au ON r.automovilista_idautomovilista= au.idautomovilista ' +
+'WHERE r.supervisor_idsupervisor = ' + id + 'ORDER BY tiempo DESC;';
+
+  // callback
+  db.pool.query(query, (err, res) => {
+    // Si el SELECT regresa un error entonces
+    if (err) {
+        console.log(err.stack);
+        callback(0, err.stack);
+    } else {
+      //console.log(res.rows)
+        callback(1,res);
+
+    }
+    //db.pool.end()
+  })
+};
+
+
+
 // Función que consulta todas las sesiones Parken del automovilista
 functions.obtenerValoresDelServer = function(callback){
 
@@ -1017,6 +1262,52 @@ functions.crearReporte = function(estatus, tipo, observaciones, automovilista, e
   })
 };
 
+
+// Función que genera un reporte
+functions.crearSancion = function(idAutomovilista, idVehiculo, idSupervisor, idEspacio, idZona, idSesion, monto, callback){
+  console.log("Se generará un reporte en la BD");
+
+  var query = 'INSERT INTO sancion( ' +
+	'tiempo, ' +
+	'monto, ' +
+	'observacion, ' +
+	'estatus, ' +
+	'automovilista_idautomovilista, ' +
+	'vehiculo_idvehiculo, ' +
+	'supervisor_idsupervisor, ' +
+	'espacioparken_idespacioparken, ' +
+	'espacioparken_zonaparken_idzonaparken, ' +
+	'sesionparken_idsesionparken) ' +
+	'VALUES (NOW(), ' +
+  monto + ', ' +
+  '\'\', ' +
+  '\'PENDIENTE\', ' +
+  idAutomovilista + ', ' +
+  idVehiculo + ', ' +
+  idSupervisor + ', ' +
+  idEspacio + ', ' +
+  idZona +', ' +
+  idSesion + ') ' +
+  'RETURNING idsancion, tiempo, monto, observacion, estatus, ' +
+  'automovilista_idautomovilista, vehiculo_idvehiculo, supervisor_idsupervisor, ' +
+	'espacioparken_idespacioparken, espacioparken_zonaparken_idzonaparken, ' +
+	'sesionparken_idsesionparken;';
+console.log(query);
+
+  db.pool.query(query, (err, res) => {
+    // Si el INSERT regresa un error entonces
+    if (err) {
+      console.log(err.stack);
+        callback(0, err.stack);
+    } else {
+
+      callback(1, res);
+    }
+    //db.pool.end()
+  })
+};
+
+
 // Funcíon que regresa la infromación personal de un usuario
 functions.verificarEstatusVehiculo = function(idVehiculo, callback){
 
@@ -1049,11 +1340,11 @@ functions.verificarEstatusVehiculo = function(idVehiculo, callback){
 
 };
 
-functions.activarSesionParken = function(idSesionParken, idAutomovilista, fechaFinal, monto, tiempo, idVehiculo, puntosParken, opc, callback){
+functions.activarSesionParken = function(idSesionParken, idAutomovilista, fechaFinal, monto, tiempo, idVehiculo, puntosParken, ep, zp, opc, callback){
 
   const query = {
-    text: 'SELECT * FROM activate_session($1, $2, $3, $4, $5, $6, $7);',
-    values: [idSesionParken, idAutomovilista, monto, tiempo, idVehiculo, puntosParken, opc],
+    text: 'SELECT * FROM activate_session($1, $2, $3, $4, $5, $6, $7, $8, $9);',
+    values: [idSesionParken, idAutomovilista, monto, tiempo, idVehiculo, puntosParken, ep, zp, opc],
   }
 
   //console.log(query)
@@ -1068,6 +1359,33 @@ functions.activarSesionParken = function(idSesionParken, idAutomovilista, fechaF
       } else{
         callback(1,res);
         console.log(res.rows[0]);
+      }
+
+    //db.pool.end()
+    })
+  })
+};
+
+functions.obtenerEspacioParken = function(idEspacioParken, callback){
+
+  const query = {
+    text: 'SELECT *, ST_AsText(ep.ubicacion) AS coordenada, ep.estatus AS estatusespacioparken FROM espacioparken ep INNER JOIN zonaparken zp ON ep.zonaparken_idzonaparken = zp.idzonaparken WHERE idespacioparken = $1;',
+    values: [idEspacioParken],
+  }
+
+  //console.log(query)
+    db.pool.connect((err, client, done) => {
+      if (err) throw err
+
+    db.pool.query(query, (err, res) =>{
+      if (err) {
+          // Error en la conexión con la BD
+          callback(0, err.stack);
+          console.log(err.stack)
+      } else{
+
+          callback(1,res);
+        //console.log(res.rows[0]);
       }
 
     //db.pool.end()
@@ -1129,6 +1447,7 @@ functions.modificarSesionParken = function(idSesion, estatus, fecha, callback){
 
     var query;
 
+
     if(fecha){
       query = {
         text: 'UPDATE sesionparken SET estatus = $2, fechafinal = NOW()  WHERE idsesionparken = $1;',
@@ -1144,7 +1463,7 @@ functions.modificarSesionParken = function(idSesion, estatus, fecha, callback){
 
     }
 
-  //console.log(query)
+  console.log(query)
     db.pool.connect((err, client, done) => {
       if (err) throw err
 
