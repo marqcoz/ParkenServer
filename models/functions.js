@@ -509,6 +509,37 @@ functions.obtenerVehiculosAutomovilista = function(automovilista,callback){
 
 };
 
+
+// Función que consulta el id de un vehiculo
+functions.obtenerIdVehiculo = function(placa,callback){
+  console.log("Consultando el id del vehiculo con placa " + placa +"...");
+
+  const query = {
+    //text: 'add_new_car_relation($1, $2, $3, $4)',
+    text: 'SELECT * FROM vehiculo WHERE placa = $1;',
+    values: [placa],
+  }
+
+  // callback
+  db.pool.query(query, (err, res) => {
+    // Si el SELECT regresa un error entonces
+    if (err) {
+      //console.log(err.stack);
+        callback(0, err.stack);
+        //Si el INSERT se generó con éxito entonces
+    } else {
+      //console.log(res.rows[0])
+      callback(1, res);
+    }
+    //db.pool.end()
+    //db.pool.done();
+  })
+  //client
+
+};
+
+
+
 // Consulta las zonas parken a tantos kilometros de un punto
 functions.buscarZonaParken = function(latitud, longitud, distancia, callback){
   console.log("Buscando zonas Parken...");

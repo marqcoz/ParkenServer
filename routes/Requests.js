@@ -329,6 +329,47 @@ console.log(req);
 
 	});
 
+
+	// Función para obtener el id del vehiculo
+	app.post("/supervisor/obtenerIdVehiculo", function(req,res){
+		var placa = req.body.placa;
+		var jeison;
+		Requests.obtenerIdVehiculo(placa, function(status, data){
+
+			var jsonResponse = null;
+			// Consuta generada con éxito
+			if(status==1) {
+				//Primero validamos si data nos devuelve un registros
+				if(data.rowCount != 0){
+							//if (data.rows[0].idautomovilista != null){
+							jeison = '{ success: 1, ' +
+								'"id":' + data.rows[i].id + ', ' +
+								'"marca":"' + data.rows[i].marca + '", ' +
+								'"modelo":"' + data.rows[i].modelo + '", ' +
+								'"placa":"' + data.rows[i].placa + '"}';
+				}else {
+					jeison = jeison + '{success:3}';
+					jsonResponse = jeison;
+
+				}
+				res.send(jsonResponse);
+
+				}else{
+					jsonResponse = '{success:2}';
+					res.send(jsonResponse);
+				}
+
+		// Error con la conexion a la bd
+			} else {
+				jsonResponse = '{success:0}';
+				res.send(jsonResponse);
+			}
+		});
+
+	});
+
+
+
 	// Función para buscar si existen zonas parken cercanas a un punto geografico.
 	app.post("/automovilista/buscarZonaParken", function(req,res){
 	/*
