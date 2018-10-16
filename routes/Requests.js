@@ -343,7 +343,7 @@ console.log(req);
 				if(data.rowCount != 0){
 							//if (data.rows[0].idautomovilista != null){
 							jeison = '{ success: 1, ' +
-								'"id":' + data.rows[0].id + ', ' +
+								'"id":' + data.rows[0].idvehiculo + ', ' +
 								'"marca":"' + data.rows[0].marca + '", ' +
 								'"modelo":"' + data.rows[0].modelo + '", ' +
 								'"placa":"' + data.rows[0].placa + '"}';
