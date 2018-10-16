@@ -347,17 +347,13 @@ console.log(req);
 								'"marca":"' + data.rows[i].marca + '", ' +
 								'"modelo":"' + data.rows[i].modelo + '", ' +
 								'"placa":"' + data.rows[i].placa + '"}';
+
 				}else {
-					jeison = jeison + '{success:3}';
-					jsonResponse = jeison;
+					jeison = '{success:2}';
 
 				}
+				jsonResponse = jeison;
 				res.send(jsonResponse);
-
-				}else{
-					jsonResponse = '{success:2}';
-					res.send(jsonResponse);
-				}
 
 		// Error con la conexion a la bd
 			} else {
