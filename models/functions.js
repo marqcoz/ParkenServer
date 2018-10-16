@@ -1095,6 +1095,7 @@ functions.obtenerEstatusEspacioParken = function(id, callback){
   		'WHEN estatus = \'OCUPADO\' THEN \'ACTIVA\' ' +
   		'WHEN estatus = \'REPORTADO\' THEN \'REPORTADA\' ' +
   		'WHEN estatus = \'SANCIONADO\' THEN \'SANCIONADA\' ' +
+      'WHEN estatus = \'SANCION PAGADA\' THEN \'SANCION PAGADA\' ' +
   	   '	ELSE \'\' ' +
   		'END) ' +
   		'FROM espacioparken WHERE idespacioparken = ' + id + ') ORDER BY sp.fechainicio DESC ' +
@@ -1265,7 +1266,7 @@ functions.crearReporte = function(estatus, tipo, observaciones, automovilista, e
 
 // Función que genera un reporte
 functions.crearSancion = function(idAutomovilista, idVehiculo, idSupervisor, idEspacio, idZona, idSesion, monto, callback){
-  console.log("Se generará un reporte en la BD");
+  console.log("Se generará una sanción...");
 
   var query = 'INSERT INTO sancion( ' +
 	'tiempo, ' +
@@ -1292,7 +1293,7 @@ functions.crearSancion = function(idAutomovilista, idVehiculo, idSupervisor, idE
   'automovilista_idautomovilista, vehiculo_idvehiculo, supervisor_idsupervisor, ' +
 	'espacioparken_idespacioparken, espacioparken_zonaparken_idzonaparken, ' +
 	'sesionparken_idsesionparken;';
-console.log(query);
+//
 
   db.pool.query(query, (err, res) => {
     // Si el INSERT regresa un error entonces
