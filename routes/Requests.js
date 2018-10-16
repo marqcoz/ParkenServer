@@ -343,10 +343,10 @@ console.log(req);
 				if(data.rowCount != 0){
 							//if (data.rows[0].idautomovilista != null){
 							jeison = '{ success: 1, ' +
-								'"id":' + data.rows[i].id + ', ' +
-								'"marca":"' + data.rows[i].marca + '", ' +
-								'"modelo":"' + data.rows[i].modelo + '", ' +
-								'"placa":"' + data.rows[i].placa + '"}';
+								'"id":' + data.rows[0].id + ', ' +
+								'"marca":"' + data.rows[0].marca + '", ' +
+								'"modelo":"' + data.rows[0].modelo + '", ' +
+								'"placa":"' + data.rows[0].placa + '"}';
 
 				}else {
 					jeison = '{success:2}';
