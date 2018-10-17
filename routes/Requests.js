@@ -14,7 +14,6 @@ var timerAux = 5;
 
 //var fire = require('./firebase');
 
-
 /*
 Enviar cuando recibe una peticion
 Enviar cuando envia una respuesta
@@ -30,8 +29,30 @@ esa funcion obtendra el valor del token
 despues esa misma funcion con la variable del token
 enviara un token
 */
-
+/*
+jsonReporte = '{ ' +
+'idreporte: ' + data.rows[0].idreporte +', ' +
+'tipo: "' + data.rows[0].tipo +'", ' +
+'estatus: "' + data.rows[0].estatus +'", ' +
+'tiempo: "'  + data.rows[0].tiempo +'", ' +
+'observacion: '  + data.rows[0].observacion +', ' +
+'idautomovilista: '  + data.rows[0].automovilista_idautomovilista +', ' +
+'idsupervisor: '  + data.rows[0].supervisor_idsupervisor +', ' +
+'idespacioparken: '  + data.rows[0].espacioparken_idespacioparken +', ' +
+'idzonaparken: ' + data.rows[0].espacioparken_zonaparken_idzonaparken + ' } ';
+*/
+jsonReporte =
+'"idreporte": "' + 10428 +'", ' +
+'"tipo": "' + 'OCUPADO' +'", ' +
+'"estatus": "' + 'PENDIENTE' +'", ' +
+'"tiempo": "'  + '2018-10-15 15:58:23' +'", ' +
+'"observacion": " ", ' +
+'"idautomovilista": "' + 10184 +'", ' +
+'"idsupervisor": "' + 20000 +'", ' +
+'"idespacioparken": "'  + 34 +'", ' +
+'"idzonaparken": "' + 4 +'"';
 //Requests.androidNotificationSingle(10002, 'automovilista', 'Nueva zona Parken', 'Ya estamos operando en la colonia Roma.', '{ "datos" : "OK", "idNotification" : "1"}');
+Requests.androidNotificationSingle(20000, 'supervisor', 'Nueva reporte', 'Necesitamos de tu ayuda. Revisa que sucede en el espacio Parken.', '{ "datos" : "OK", "idNotification" : "100", ' + jsonReporte+' }');
 
 
 
@@ -161,7 +182,7 @@ module.exports  = function(app) {
 	// Función para validar el inicio de sesión
 	app.post("/login", function(req,res){
 
-console.log(req);
+//console.log(req);
 		var correo = req.body.correo;
 		var contrasena = req.body.contrasena;
 		var usuario = req.body.app;
@@ -1067,6 +1088,26 @@ console.log(req);
 		var marca = req.body.marca;
 
 		Requests.actualizarVehiculo(idvehiculo, marca, modelo, function(status, data){
+
+			var jsonResponse = null;
+			// Consuta generada con éxito
+			if(status==1) {
+				jsonResponse = '{success:1}';
+				res.send(jsonResponse);
+		// Error con la conexion a la bd
+			} else {
+				jsonResponse = '{success:0}';
+				res.send(jsonResponse);
+			}
+		});
+	});
+
+	// Función para verificar si ya existe registrado un correo o número celular
+	app.post("/supervisor/modificarReporte", function(req,res){
+
+		var idreporte = req.body.idreporte;
+
+		Requests.cerrarReporte(idreporte, function(status, data){
 
 			var jsonResponse = null;
 			// Consuta generada con éxito
@@ -2228,7 +2269,7 @@ app.post("/automovilista/establecerVistaPagando", function(req,res){
 										Requests.crearReporte('PENDIENTE', 'PAGO', 'Automovilista no finalizó el pago en el tiempo establecido', automovilista, ep, zp, function(status, data){
 
 											if(status==1) {
-												var data = '{"idNotification" : 400 }';
+												var data = '{"idNotification" : "400" }';
 													Requests.androidNotificationSingle(automovilista, 'automovilista', 'Se generó un reporte', 'Nuevo reporte por no pagar', data);
 
 											} else {

@@ -8,10 +8,10 @@ var cn = {
   database: 'Parken',
   password: 'ma1029ma1029',
   port: 5432,
-  max: 20, // set pool max size to 20
+  max: 50, // set pool max size to 20
   min: 4, // set min pool size to 4
-  idleTimeoutMillis: 1000, // close idle clients after 1 second
-  connectionTimeoutMillis: 1000 // return an error after 1 second if connection could not be established
+  idleTimeoutMillis: 2000, // close idle clients after 1 second
+  connectionTimeoutMillis: 2000 // return an error after 1 second if connection could not be established
 };
 
 

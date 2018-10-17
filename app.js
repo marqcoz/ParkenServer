@@ -40,7 +40,8 @@ var test = {
 
 io.on('connection', function(socket){
   console.log('a user connected');
-    //socket.emit('chat message', test);
+
+    socket.emit('chat message', test);
   socket.on('disconnect', function(){
     console.log('Usuario desconectado');
 

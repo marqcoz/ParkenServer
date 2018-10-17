@@ -27,10 +27,7 @@ var datosJSON = JSON.parse(datos);
 
   var message = {
                     "token": registrationToken,
-                    "notification":{
-                      "title": titulo,
-                      "body": mensaje
-                    },
+
                   "data" : datosJSON
 
                 };
@@ -460,7 +457,7 @@ functions.crearNuevoVehiculo = function(automovilista, marca, modelo, placa, cal
 
         //Si el error es 3: Placas registradas en la base de datos.
         if(err.stack[7] == 3){
-          callback(3, err.stack);
+          //callback(3, err.stack);
         }
 
         //Si no es ningún de esos errores, hay un error de conexion con la BD
@@ -987,6 +984,32 @@ functions.pagarSancion = function(idSancion, callback){
   })
 };
 
+functions.cerrarReporte = function(idreporte, callback){
+
+  const query = {
+    text: 'UPDATE reporte SET estatus = \'RESUELTO\' WHERE idreporte = $1 ' +
+    'RETURNING idreporte, tiempo, estatus, tipo, observacion, automovilista_idautomovilista AS idautomovilista, supervisor_idsupervisor AS idsupervisor, espacioparken_idespacioparken AS idespacioparken, espacioparken_zonaparken_idzonaparken AS idzonaparken;',
+    values: [idreporte],
+  }
+
+  //console.log(query)
+    db.pool.connect((err, client, done) => {
+      if (err) throw err
+
+    db.pool.query(query, (err, res) =>{
+      if (err) {
+          // Error en la conexión con la BD
+          callback(0, err.stack);
+       console.log(err.stack)
+      } else{
+        callback(1,res);
+      }
+
+    //db.pool.end()
+    })
+  })
+};
+
 // Función que consulta todas las sesiones Parken del automovilista (excepto las que estan reservadas)
 functions.obtenerSesionesParken = function(automovilista, callback){
   console.log("Consultando las sesiones del automovilista...");
@@ -1276,7 +1299,13 @@ functions.crearReporte = function(estatus, tipo, observaciones, automovilista, e
     //supervisor + ', ' +
     espacioparken + ', ' +
     zonaparken + ') ' +
-    'RETURNING idreporte, tipo, estatus';
+    'RETURNING idreporte, tipo, estatus ' +
+    'tiempo, '  +
+    'observacion, '  +
+    'automovilista_idautomovilista, '  +
+    //'supervisor_idsupervisor, '  +
+    'espacioparken_idespacioparken, '  +
+    'espacioparken_zonaparken_idzonaparken;';
 
     //console.log(query);
   // callback
@@ -1287,7 +1316,7 @@ functions.crearReporte = function(estatus, tipo, observaciones, automovilista, e
         callback(0, err.stack);
     } else {
       console.log(res.rows[0])
-      console.log(res.rows)
+      //console.log(res.rows)
       callback(1, res);
     }
     //db.pool.end()
