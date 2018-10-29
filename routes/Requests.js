@@ -181,7 +181,7 @@ module.exports  = function(app) {
 		});
 
 	// Función para validar el inicio de sesión
-	app.post("/login", function(req,res){
+	app.post("/login", function(req,res, next){
 
 //console.log(req);
 		var correo = req.body.correo;
