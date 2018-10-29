@@ -408,7 +408,7 @@ module.exports  = function(app) {
 
 					for(var i = 0; i < data.rowCount; i++){
 
-						jeison = jeison + '{ ' + 
+						jeison = jeison + '{ ' +
 								'"id":' + data.rows[i].idadministrador + ', ' +
 								'"nombre":"' + data.rows[i].nombre + '", ' +
 								'"apellido":"' + data.rows[i].apellido + '", ' +
@@ -421,7 +421,7 @@ module.exports  = function(app) {
 									jeison = jeison + ', ';
 								}
 					}
-						
+
 				}else {
 					jeison = '{"success":2}';
 
@@ -455,12 +455,12 @@ app.post("/administrador/agregarAdministrador", function(req,res){
 			//Primero validamos si data nos devuelve un registros
 			if(data.rowCount != 0){
 
-					jeison = '{ "success": 1, ' + 
+					jeison = '{ "success": 1, ' +
 							'"id":' + data.rows[0].idadministrador + ', ' +
 							'"nombre":"' + data.rows[0].nombre + '", ' +
 							'"apellido":"' + data.rows[0].apellido + '", ' +
 							'"correo":"' + data.rows[0].email + '", ' +
-							'"contrasena":"' + data.rows[0].contrasena + '"}';							
+							'"contrasena":"' + data.rows[0].contrasena + '"}';
 			}else {
 				jeison = '{"success":2}';
 
@@ -471,7 +471,7 @@ app.post("/administrador/agregarAdministrador", function(req,res){
 	// Error con la conexion a la bd
 		} else {
 				jsonResponse = '{"success":0, ' +
-				'"error": ' + data + 
+				'"error": ' + data +
 				' }';
 				console.log(jsonResponse);
 			res.send(jsonResponse);
@@ -502,7 +502,7 @@ app.post("/administrador/agregarSupervisor", function(req,res){
 			//Primero validamos si data nos devuelve un registros
 			if(data.rowCount != 0){
 
-					jeison = '{ "success": 1, ' + 
+					jeison = '{ "success": 1, ' +
 							'"id":' + data.rows[0].idsupervisor + ', ' +
 							'"nombre": "' + data.rows[0].nombre + '", ' +
 							'"apellido":"' + data.rows[0].apellido + '", ' +
@@ -512,7 +512,7 @@ app.post("/administrador/agregarSupervisor", function(req,res){
 							'"direccion":"' + data.rows[0].direccion + '", ' +
 							'"estatus":"' + data.rows[0].estatus + '", ' +
 							'"zonaparken":' + data.rows[0].zonaparken_idzonaparken + ' }';
-			
+
 			}else {
 				jeison = '{"success":2}';
 
@@ -532,7 +532,7 @@ app.post("/administrador/agregarSupervisor", function(req,res){
 });
 
 
-// Función para agregar zonas Parken 
+// Función para agregar zonas Parken
 app.post("/administrador/agregarZonaParken", function(req,res){
 
 	//console.log(req.body);
@@ -547,7 +547,7 @@ app.post("/administrador/agregarZonaParken", function(req,res){
 	var coordenadaZ = '';
 	for(var i = 0; i < coordenadasZona.length; i++){
 		coordenadaZ = coordenadaZ + coordenadasZona[i].lng + ' ' + coordenadasZona[i].lat;
-		
+
 		//Vamos a armar el string de la siguinte forma
 		//'lat0 lng0, lat1 lng1, lat2 lng2,'
 		if(i != coordenadasZona.length - 1) {
@@ -558,17 +558,17 @@ app.post("/administrador/agregarZonaParken", function(req,res){
 	var coordenadaE = '';
 	for(var i = 0; i < coordenadasEspacios.length; i++){
 		coordenadaE = coordenadaE + coordenadasEspacios[i].coordinates.lng + ' ' + coordenadasEspacios[i].coordinates.lat;
-		
+
 		//Vamos a armar el string de la siguinte forma
 		//'lat0 lng0, lat1 lng1, lat2 lng2,'
 		if(i != coordenadasEspacios.length - 1) {
 			coordenadaE = coordenadaE + ',';
 		}
 	}
-	
+
 	//console.log(coordenadaZ);
 	//console.log(coordenadaE);
-      
+
 
 	Requests.agregarZonaParken(nombreZona, coordenadaZ, coordenadaE, estatusZona, precioZona, function(status, data){
 
@@ -578,8 +578,8 @@ app.post("/administrador/agregarZonaParken", function(req,res){
 			//Primero validamos si data nos devuelve un registros
 			if(data.rowCount != 0){
 
-					jeison = '{ "success": 1, "idzonaparken": '+ data.rows[0].idzonaparken +'}';	
-					
+					jeison = '{ "success": 1, "idzonaparken": '+ data.rows[0].idzonaparken +'}';
+
 					Requests.agregarEspacioAZonaParken(coordenadaE, data.rows[0].idzonaparken, function(status, data){
 						if(status == 1){
 
@@ -594,7 +594,7 @@ app.post("/administrador/agregarZonaParken", function(req,res){
 				jeison = '{"success":2}';
 
 			}
-			
+
 
 	// Error con la conexion a la bd
 		} else {
@@ -608,18 +608,18 @@ app.post("/administrador/agregarZonaParken", function(req,res){
 					'"error": "zone_intersects" }';
 				}else{
 					jsonResponse = '{"success":0, ' +
-					'"error": ' + data + 
+					'"error": ' + data +
 					' }';
 				}
 			}
-				
+
 			//console.log(jsonResponse);
 			res.send(jsonResponse);
 		}
 	});
 
 });
-	
+
 	// Función para obtener la informacion de una zona Parken incluidas los espacios Parken
 	app.post("/administrador/obtenerInfoZonaParken", function(req,res){
 		/*
@@ -674,35 +674,35 @@ app.post("/administrador/agregarZonaParken", function(req,res){
 			}
 		]
 		}
-	
+
 		*/
 			var jeison;
 			var latitud = req.body.latitud;
 			var longitud	 = req.body.longitud;
 			var distancia	 = req.body.distancia;
-	
+
 			//console.log(req);
-	
+
 			Requests.buscarZonaParken(latitud, longitud, distancia, function(status, data){
-	
+
 				var jsonResponse = null;
 				// Consuta generada con éxito
 				if(status==1) {
 					//Primero validamos si data nos devuelve un registros
 					if(data.rowCount != 0){
 								//if (data.rows[0].idautomovilista != null){
-	
+
 								jeison = '{ "success":1, ' +
 								'"Zonas":' + data.rowCount + ', ' +
 								'"ZonasParken":[';
-	
+
 								for(var i = 0; i < data.rowCount; i++){
-	
+
 									var ini = "POINT(".length;
 									var f = data.rows[i].centro.length - 1;
 									var coordenadasCentro = data.rows[i].centro.substring(ini, f)
 									var centroArray = coordenadasCentro.split(" ");
-	
+
 									jeison = jeison +
 									'{ "id":' + data.rows[i].idzonaparken + ', ' +
 									'"nombre": "' + data.rows[i].nombre + '", ' +
@@ -714,9 +714,9 @@ app.post("/administrador/agregarZonaParken", function(req,res){
 									'"latitud":' + centroArray[0] + ', ' +
 									'"longitud":' + centroArray[1] + ' } ]' + ', ' +
 									'"coordenadas":[';
-	
-	
-	
+
+
+
 									//Obtenemos solo las coordenadas
 									//var inicio = length("POLYGON((");
 									var inicio = "POLYGON((".length;
@@ -734,33 +734,33 @@ app.post("/administrador/agregarZonaParken", function(req,res){
 										jeison = jeison + '{ ' +
 										'"latitud":' + coorArray[0] + ', ' +
 										'"longitud":' + coorArray[1];
-	
+
 										if(j == coordenadasArray.length - 1){	jeison = jeison + ' } ]'; } else { jeison = jeison + ' },'; }
 									}
-	
+
 									if(i == data.rowCount - 1){	jeison = jeison + ' }'; } else { jeison = jeison + ' },'; }
 								}
 								jeison = jeison + '] }';
 								jsonResponse = jeison;
 								console.log(jsonResponse);
 								res.send(jsonResponse);
-	
+
 						//No existe el ususario
-	
+
 					}else{
 						jsonResponse = '{"success":2, "Zonas": 0}';
 						res.send(jsonResponse);
 					}
-	
+
 			// Error con la conexion a la bd
 				} else {
 					jsonResponse = '{"success":0}';
 					res.send(jsonResponse);
 				}
 			});
-	
+
 		});
-	
+
 
 
 	// Función para buscar si existen zonas parken cercanas a un punto geografico.
@@ -908,7 +908,7 @@ app.post("/administrador/agregarZonaParken", function(req,res){
 app.get("/administrador/obtenerZonasParkenID", function(req,res){
 
 	Requests.buscarTodasZonasParkenID(function(status, data){
-	
+
 		var jsonResponse = null;
 		var jeison;
 		// Consuta generada con éxito
@@ -916,37 +916,37 @@ app.get("/administrador/obtenerZonasParkenID", function(req,res){
 			//Primero validamos si data nos devuelve un registros
 			if(data.rowCount != 0){
 						//if (data.rows[0].idautomovilista != null){
-	
+
 						jeison = '{ "success":1, ' +
 						'"numerozonas":' + data.rowCount + ', ' +
 						'"zonasParken":[';
-	
+
 						for(var i = 0; i < data.rowCount; i++){
-	
+
 							jeison = jeison +
 							'{ "id":' + data.rows[i].idzonaparken + ', ' +
 							'"nombre": "' + data.rows[i].nombre + '"} ';
-							
+
 							if(i != data.rowCount - 1){	jeison = jeison + ', '; }
 
 						}
 						jeison = jeison + '] }';
 						jsonResponse = jeison;
 						res.send(jsonResponse);
-	
+
 			}else{
 				jsonResponse = '{"success":2, "numerozonas": 0}';
 				res.send(jsonResponse);
 			}
-	
+
 	// Error con la conexion a la bd
 		} else {
 			jsonResponse = '{"success":0}';
 			res.send(jsonResponse);
 		}
-	});	
+	});
 });
-	
+
 
 
 // Función para buscar si existen zonas parken cercanas a un punto geografico.
@@ -997,7 +997,7 @@ Requests.buscarTodasZonasParken(function(status, data){
 						var fin = data.rows[i].poligono.length - 2;
 						var coordenadas = data.rows[i].poligono.substring(inicio, fin)
 						var coordenadasArray = coordenadas.split(",")
-						
+
 						for(var j = 0; j < coordenadasArray.length; j++){
 							var coorArray = coordenadasArray[j].split(" ");
 							//Ahora solo tenemos 2 elementos en el array que se unirán al JSON
@@ -1020,7 +1020,7 @@ Requests.buscarTodasZonasParken(function(status, data){
 						var coordenadasEP = data.rows[i].ubicacionespacioparken.substring(ini, f)
 						var centroArray = coordenadasEP.split(" ");
 						jeison = jeison + ', { "coordinates": { "lat":' + centroArray[1] +' , "lng":' + centroArray[0]+'}}';
-							
+
 						}
 
 	//					', "espaciosParken": ['
@@ -1104,7 +1104,7 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 						'"token":"' + data.rows[i].token + '"} ';
 
 					if(i != data.rowCount - 1){	jeison = jeison + ', ';}
-				}	
+				}
 
 				jeison = jeison + '] }';
 				jsonResponse = jeison;
@@ -1124,7 +1124,7 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 
 });
 
-	
+
 
 	// Función para buscar si existen zonas parken cercanas a un punto geografico.
 	app.post("/obtenerZonasParken", function(req,res){
@@ -1412,30 +1412,30 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 				if(data.rowCount != 0){
 					if (data.rows[0].idsupervisor != null){
 							//if (data.rows[0].idautomovilista != null){
-							jsonResponse ='{success:1, ' +
-							'idSupervisor:"' + data.rows[0].idsupervisor + '", ' +
-							'Nombre: "' + data.rows[0].nombre + '", ' +
-							'Apellido: "' + data.rows[0].apellido + '", ' +
-							'Email: "' + data.rows[0].email + '", ' +
-							'Contrasena: "' + data.rows[0].contrasena + '", ' +
-							'Celular: "' + data.rows[0].celular + '", ' +
-							'Direccion: "' + data.rows[0].direccion + '", ' +
-							'Estatus: "'+ data.rows[0].estatus + '", ' +
-							'Zona: "' + data.rows[0].zonaparken_idzonaparken + '", ' +
-							'Token: "' + data.rows[0].token + '" ' +
+							jsonResponse ='{"success":1, ' +
+							'"idSupervisor":"' + data.rows[0].idsupervisor + '", ' +
+							'"Nombre": "' + data.rows[0].nombre + '", ' +
+							'"Apellido": "' + data.rows[0].apellido + '", ' +
+							'"Email": "' + data.rows[0].email + '", ' +
+							'"Contrasena": "' + data.rows[0].contrasena + '", ' +
+							'"Celular": "' + data.rows[0].celular + '", ' +
+							'"Direccion": "' + data.rows[0].direccion + '", ' +
+							'"Estatus": "'+ data.rows[0].estatus + '", ' +
+							'"Zona": "' + data.rows[0].zonaparken_idzonaparken + '", ' +
+							'"Token": "' + data.rows[0].token + '" ' +
 							'}';
 							res.send(jsonResponse);
 
 					//No existe el ususario
 					}
 				}else{
-					jsonResponse = '{success:2}';
+					jsonResponse = '{"success":2}';
 					res.send(jsonResponse);
 				}
 
 		// Error con la conexion a la bd
 			} else {
-				jsonResponse = '{succes:0}';
+				jsonResponse = '{"success":0}';
 				res.send(jsonResponse);
 			}
 		});
@@ -1680,7 +1680,7 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 app.delete("/administrador/eliminarAdministrador", function(req,res){
 	console.log(req.body);
 	var idadministrador = req.body.idadministrador;
-	
+
 	Requests.eliminarAdministrador(idadministrador.toString(), function(status, data){
 
 		var jsonResponse = null;
@@ -1706,7 +1706,7 @@ app.delete("/administrador/eliminarAdministrador", function(req,res){
 app.delete("/administrador/eliminarSupervisor", function(req,res){
 	console.log(req.body);
 	var idsupervisor = req.body.idsupervisor;
-	
+
 	Requests.eliminarSupervisor(idsupervisor.toString(), function(status, data){
 		var jsonResponse = null;
 		// Delete generado con éxito
@@ -1789,14 +1789,14 @@ app.post("/administrador/editarSupervisor", function(req,res){
 	var estatus = req.body.estatus;
 	var zona = req.body.zona;
 
-	Requests.actualizarSupervisor(idsupervisor, nombre, apellido, 
+	Requests.actualizarSupervisor(idsupervisor, nombre, apellido,
 		correo, contrasena, celular, direccion, estatus, zona, function(status, data){
 
 		var jsonResponse = null;
 		// Consuta generada con éxito
 		if(status==1) {
 			if(data.rowCount != 0){
-				jeison = '{ "success": 1, ' + 
+				jeison = '{ "success": 1, ' +
 				'"id":' + data.rows[0].idsupervisor + ', ' +
 				'"nombre": "' + data.rows[0].nombre + '", ' +
 				'"apellido":"' + data.rows[0].apellido + '", ' +
@@ -1810,9 +1810,9 @@ app.post("/administrador/editarSupervisor", function(req,res){
 			}else{
 				jeison = '{ "success" : 2 }';
 			}
-			
+
 			jsonResponse = jeison;
-			
+
 			res.send(jsonResponse);
 	// Error con la conexion a la bd
 		} else {
@@ -3090,16 +3090,16 @@ app.post("/supervisor/estatusEspacioParken", function(req, res){
 										var centroArray = coordenadasCentro.split(" ");
 
 										 var jeison = '{ ' +
-											'success : 1, ' +
-											'idespacioparken : ' + data.rows[0].idespacioparken + ', ' +
-											'estatusespacioparken : "' + data.rows[0].estatusespacioparken + '", ' +
+											'"success" : 1, ' +
+											'"idespacioparken" : ' + data.rows[0].idespacioparken + ', ' +
+											'"estatusespacioparken" : "' + data.rows[0].estatusespacioparken + '", ' +
 
-											'coordenada : [ {' +
-											'latitud : '  + centroArray[0] + ', ' +
-											'longitud : ' + centroArray[1] + '} ], ' +
-											'direccion : "' + data.rows[0].direccion + '", ' +
-											'zona :' + data.rows[0].idzonaparken + ', ' +
-											'nombrezonaparken : "' + data.rows[0].nombre + '"' +
+											'"coordenada" : [ {' +
+											'"latitud" : '  + centroArray[0] + ', ' +
+											'"longitud" : ' + centroArray[1] + '} ], ' +
+											'"direccion" : "' + data.rows[0].direccion + '", ' +
+											'"zona" :' + data.rows[0].idzonaparken + ', ' +
+											'"nombrezonaparken" : "' + data.rows[0].nombre + '"' +
 										' }';
 
 
@@ -3109,7 +3109,7 @@ app.post("/supervisor/estatusEspacioParken", function(req, res){
 									}else{
 
 										jsonResponse = '{ ' +
-											'success : 2' +
+											'"success" : 2' +
 										' }';
 										res.send(jsonResponse);
 
@@ -3127,7 +3127,7 @@ app.post("/supervisor/estatusEspacioParken", function(req, res){
 
 			}else{
 				jsonResponse = '{ ' +
-					'success : 2' +
+					'"success" : 2' +
 				' }';
 
 				res.send(jsonResponse);
@@ -3157,9 +3157,9 @@ app.post("/supervisor/obtenerEspaciosParkenParaSesion", function(req, res){
 
 			if(data.rowCount != 0){
 
-				var jeison = '{ success :1, ' +
-				'numeroespaciosparken:' + data.rowCount + ', ' +
-				'espaciosparken:[';
+				var jeison = '{ "success" :1, ' +
+				'"numeroespaciosparken":' + data.rowCount + ', ' +
+				'"espaciosparken":[';
 
 				for(var i = 0; i < data.rowCount; i++){
 
@@ -3169,13 +3169,13 @@ app.post("/supervisor/obtenerEspaciosParkenParaSesion", function(req, res){
 					var centroArray = coordenadasCentro.split(" ");
 
 					jeison =  jeison +
-					'{ idespacioparken :' + data.rows[i].idespacioparken + ', ' +
-					'estatusespacioparken : "' + data.rows[i].estatus + '", ' +
-					'coordenada : [ {' +
-					'latitud :' + centroArray[0] + ', ' +
-					'longitud :' + centroArray[1] + '} ],' +
-					'direccion :"' + data.rows[i].direccion + '", ' +
-					'zona :' + data.rows[i].zonaparken_idzonaparken;
+					'{ "idespacioparken" :' + data.rows[i].idespacioparken + ', ' +
+					'"estatusespacioparken" : "' + data.rows[i].estatus + '", ' +
+					'"coordenada" : [ {' +
+					'"latitud" :' + centroArray[0] + ', ' +
+					'"longitud" :' + centroArray[1] + '} ],' +
+					'"direccion" :"' + data.rows[i].direccion + '", ' +
+					'"zona" :' + data.rows[i].zonaparken_idzonaparken;
 
 					if(i == data.rowCount - 1){	jeison = jeison + ' }'; } else { jeison = jeison + ' },'; }
 				}
@@ -3184,7 +3184,7 @@ app.post("/supervisor/obtenerEspaciosParkenParaSesion", function(req, res){
 			} else{
 
 			var	jeison = '{ ' +
-					'success : 3' +
+					'"success" : 3' +
 				' }';
 			}
 
@@ -3194,7 +3194,7 @@ app.post("/supervisor/obtenerEspaciosParkenParaSesion", function(req, res){
 		}else{
 
 				jsonResponse = '{ ' +
-					'success : 2' +
+					'"success" : 2' +
 				' }';
 
 				res.send(jsonResponse);
@@ -3220,9 +3220,9 @@ app.post("/supervisor/obtenerTodosEspaciosParken", function(req, res){
 
 			if(data.rowCount != 0){
 
-				var jeison = '{ success :1, ' +
-				'numeroespaciosparken:' + data.rowCount + ', ' +
-				'espaciosparken:';
+				var jeison = '{ "success" :1, ' +
+				'"numeroespaciosparken":' + data.rowCount + ', ' +
+				'"espaciosparken":[';
 
 				for(var i = 0; i < data.rowCount; i++){
 
@@ -3232,22 +3232,22 @@ app.post("/supervisor/obtenerTodosEspaciosParken", function(req, res){
 					var centroArray = coordenadasCentro.split(" ");
 
 					jeison =  jeison +
-					'{ idespacioparken :' + data.rows[i].idespacioparken + ', ' +
-					'estatusespacioparken : "' + data.rows[i].estatus + '", ' +
-					'coordenada : [ {' +
-					'latitud :' + centroArray[0] + ', ' +
-					'longitud :' + centroArray[1] + '} ],' +
-					'direccion :"' + data.rows[i].direccion + '", ' +
-					'zona :' + data.rows[i].zonaparken_idzonaparken;
+					'{ "idespacioparken" :' + data.rows[i].idespacioparken + ', ' +
+					'"estatusespacioparken" : "' + data.rows[i].estatus + '", ' +
+					'"coordenada" : [ {' +
+					'"latitud" :' + centroArray[0] + ', ' +
+					'"longitud" :' + centroArray[1] + '} ],' +
+					'"direccion" :"' + data.rows[i].direccion + '", ' +
+					'"zona" :' + data.rows[i].zonaparken_idzonaparken;
 
 					if(i == data.rowCount - 1){	jeison = jeison + ' }'; } else { jeison = jeison + ' },'; }
 				}
-				jeison = jeison + ' }';
+				jeison = jeison + ' ]}';
 
 			} else{
 
 			var	jeison = '{ ' +
-					'success : 3' +
+					'"success" : 3' +
 				' }';
 			}
 
@@ -3257,7 +3257,7 @@ app.post("/supervisor/obtenerTodosEspaciosParken", function(req, res){
 		}else{
 
 				jsonResponse = '{ ' +
-					'success : 2' +
+					'"success" : 2' +
 				' }';
 
 				res.send(jsonResponse);
