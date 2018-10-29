@@ -1677,7 +1677,7 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 	});
 
 // Función para eliminar un administrador
-app.delete("/administrador/eliminarAdministrador", function(req,res){
+app.delete("/administrador/eliminarAdministrador", function(req,res, next){
 	console.log(req.body);
 	var idadministrador = req.body.idadministrador;
 
@@ -1703,7 +1703,7 @@ app.delete("/administrador/eliminarAdministrador", function(req,res){
 
 
 // Función para eliminar un supervisor
-app.delete("/administrador/eliminarSupervisor", function(req,res){
+app.delete("/administrador/eliminarSupervisor", function(req,res, next){
 	console.log(req.body);
 	var idsupervisor = req.body.idsupervisor;
 

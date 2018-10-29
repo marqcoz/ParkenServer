@@ -1888,9 +1888,9 @@ functions.obtenerSupervisoresXZona = function(idzona, callback){
 
   var qry;
   if(idzona == '0'){
-    qry = 'SELECT *, zp.nombre AS nombrezona, s.nombre AS nombresupervisor FROM supervisor s INNER JOIN zonaparken zp ON s.zonaparken_idzonaparken=zp.idzonaparken WHERE zonaparken_idzonaparken != 0;';
+    qry = 'SELECT *, zp.nombre AS nombrezona, s.nombre AS nombresupervisor FROM supervisor s INNER JOIN zonaparken zp ON s.zonaparken_idzonaparken=zp.idzonaparken WHERE zonaparken_idzonaparken != 0 ORDER BY s.nombre;';
   }else{
-    qry = 'SELECT *, zp.nombre AS nombrezona, s.nombre AS nombresupervisor FROM supervisor s INNER JOIN zonaparken zp ON s.zonaparken_idzonaparken=zp.idzonaparken WHERE zonaparken_idzonaparken = ' + idzona + ';';
+    qry = 'SELECT *, zp.nombre AS nombrezona, s.nombre AS nombresupervisor FROM supervisor s INNER JOIN zonaparken zp ON s.zonaparken_idzonaparken=zp.idzonaparken WHERE zonaparken_idzonaparken = ' + idzona + ' ORDER BY s.nombre;';
   }
 
   console.log(qry)
