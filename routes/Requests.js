@@ -454,11 +454,11 @@ app.get("/administrador/verificarAdministrador", function(req,res){
 			if(data.rowCount != 0){
 
 				jeison ='{ "success": 1, ' +
-						'"id":' + data.rows[i].idadministrador + ', ' +
-						'"nombre":"' + data.rows[i].nombre + '", ' +
-						'"apellido":"' + data.rows[i].apellido + '", ' +
-						'"correo":"' + data.rows[i].email + '", ' +
-						'"contrasena":"' + data.rows[i].contrasena + '"}';
+						'"id":' + data.rows[0].idadministrador + ', ' +
+						'"nombre":"' + data.rows[0].nombre + '", ' +
+						'"apellido":"' + data.rows[0].apellido + '", ' +
+						'"correo":"' + data.rows[0].email + '", ' +
+						'"contrasena":"' + data.rows[0].contrasena + '"}';
 
 			}else {
 				jeison = '{"success":2}';
