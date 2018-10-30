@@ -438,6 +438,44 @@ module.exports  = function(app) {
 
 	});
 
+// Función para verificar que el administrador todavia existe en el sistema
+app.get("/administrador/verificarAdministrador", function(req,res){
+
+	var jeison;
+	var administrador = req.body.administrador;
+
+	Requests.verificarAdmnistrador(administrador, function(status, data){
+
+		var jsonResponse = null;
+		// Consuta generada con éxito
+		if(status==1) {
+			//Primero validamos si data nos devuelve un registros
+			if(data.rowCount != 0){
+
+				jeison ='{ "success": 1, ' +
+						'"id":' + data.rows[i].idadministrador + ', ' +
+						'"nombre":"' + data.rows[i].nombre + '", ' +
+						'"apellido":"' + data.rows[i].apellido + '", ' +
+						'"correo":"' + data.rows[i].email + '", ' +
+						'"contrasena":"' + data.rows[i].contrasena + '"}';
+
+			}else {
+				jeison = '{"success":2}';
+
+			}
+			jsonResponse = jeison;
+			res.send(jsonResponse);
+
+	// Error con la conexion a la bd
+		} else {
+			jsonResponse = '{"success":0}';
+			res.send(jsonResponse);
+		}
+	});
+
+});
+
+
 // Función para obtener todos los administradores del sistema
 app.post("/administrador/agregarAdministrador", function(req,res){
 
@@ -1770,10 +1808,10 @@ app.post("/administrador/editarAdministrador", function(req,res){
 		if(status==1) {
 			 jsonResponse = '{ "success" : 1,' +
 			 '"id": ' + data.rows[0].idadministrador + ', ' +
-			 '"nombre": "' + data.rows[0].nombre + '", ' + 
-			 '"apellido": "' + data.rows[0].apellido + '", ' + 
-			 '"email": "' + data.rows[0].email + '", ' + 
-			 '"password": "' + data.rows[0].contrasena + '"' + 
+			 '"nombre": "' + data.rows[0].nombre + '", ' +
+			 '"apellido": "' + data.rows[0].apellido + '", ' +
+			 '"email": "' + data.rows[0].email + '", ' +
+			 '"password": "' + data.rows[0].contrasena + '"' +
 			'}';
 			res.send(jsonResponse);
 	// Error con la conexion a la bd

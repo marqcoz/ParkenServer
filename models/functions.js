@@ -2023,6 +2023,33 @@ functions.verificarEstatusSesionParken = function(idSesion, estatus, callback){
 })
 };
 
+// Funcíon que regresa la infromación personal de un usuario
+functions.verificarAdmnistrador = function(id, callback){
+
+  const query = {
+    text: 'SELECT * FROM administrador WHERE idadministrador = $1;',
+    values: [id]
+    //rowMode: 'array',
+  }
+//console.log(query)
+  db.pool.connect((err, client, done) => {
+    if (err) throw err
+
+  db.pool.query(query, (err, res) =>{
+    if (err) {
+      // Error en la conexión con la BD
+      callback(0, err.stack);
+     console.log(err.stack)
+    } else{
+        callback(1,res);
+    }
+
+  //db.pool.end()
+})
+})
+};
+
+
 // Función que crea una cuenta de Automovilista
 functions.liberarVehiculo= function(user, id, column, value, callback){
   console.log("Se editará el perfil del automovilista...");
