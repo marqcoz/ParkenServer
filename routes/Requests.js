@@ -1713,7 +1713,7 @@ app.delete("/administrador/eliminarSupervisor", function(req,res, next){
 		if(status==1) {
 			console.log(data);
 			//Al eliminar enviamos una notificación al supervisor, sin que se de cuenta para que cuando se conecte se cierre la sesión
-			
+
 			jsonResponse ='{ "success" : 1 }';
 			res.send(jsonResponse);
 	// Error con la conexion a la bd
@@ -1768,7 +1768,13 @@ app.post("/administrador/editarAdministrador", function(req,res){
 		var jsonResponse = null;
 		// Consuta generada con éxito
 		if(status==1) {
-			jsonResponse = '{ "success" : 1}';
+			 jsonResponse = '{ "success" : 1,' +
+			 '"id": ' + data.rows[0].idadministrador + ', ' +
+			 '"nombre": "' + data.rows[0].nombre + '", ' + 
+			 '"apellido": "' + data.rows[0].apellido + '", ' + 
+			 '"email": "' + data.rows[0].email + '", ' + 
+			 '"password": "' + data.rows[0].contrasena + '"' + 
+			'}';
 			res.send(jsonResponse);
 	// Error con la conexion a la bd
 		} else {

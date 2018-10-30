@@ -990,7 +990,7 @@ var query = 'UPDATE ' + 'administrador' +
 '\', apellido =\'' + apellido +
 '\', contrasena =\'' + contrasena +
 '\', email =\'' + email +
-'\' WHERE ' + 'id' + 'administrador' + '=' + id + ';';
+'\' WHERE ' + 'id' + 'administrador' + '=' + id + ' RETURNING idadministrador, nombre, apellido, contrasena, email;';
 console.log(query);
   // callback
   db.pool.query(query, (err, res) => {
