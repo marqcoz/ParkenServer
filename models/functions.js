@@ -2024,7 +2024,7 @@ functions.verificarEstatusSesionParken = function(idSesion, estatus, callback){
 };
 
 // Funcíon que regresa la infromación personal de un usuario
-functions.verificarAdmnistrador = function(id, callback){
+functions.verificarAdministrador = function(id, callback){
 
   const query = {
     text: 'SELECT * FROM administrador WHERE idadministrador = $1;',
