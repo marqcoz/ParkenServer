@@ -1712,6 +1712,8 @@ app.delete("/administrador/eliminarSupervisor", function(req,res, next){
 		// Delete generado con éxito
 		if(status==1) {
 			console.log(data);
+			//Al eliminar enviamos una notificación al supervisor, sin que se de cuenta para que cuando se conecte se cierre la sesión
+			
 			jsonResponse ='{ "success" : 1 }';
 			res.send(jsonResponse);
 	// Error con la conexion a la bd
