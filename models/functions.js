@@ -680,7 +680,7 @@ functions.buscarZonaParken = function(latitud, longitud, distancia, callback){
   ' zParken.nombre, zParken.ubicacion, zParken.estatus, (ST_Length(ST_ShortestLine((zParken.ubicacion),'+
   ' ST_GeomFromText(\'POINT( ~1 )\') )::GEOGRAPHY)) AS distancia FROM zonaparken AS zParken '+
   'JOIN ST_DumpPoints(zParken.ubicacion) dump ON TRUE '+
-'GROUP BY zParken.idzonaparken, zParken.nombre)) As sDistance ';+
+'GROUP BY zParken.idzonaparken, zParken.nombre)) As sDistance WHERE zParken.idzonaparken != 0;';+
 //'WHERE idzonaparken in (4)';
 //'WHERE sDistance.distancia <= ~2';
 'WHERE sDistance.distancia <= 10000';
