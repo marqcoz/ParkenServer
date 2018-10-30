@@ -441,10 +441,11 @@ module.exports  = function(app) {
 // Función para verificar que el administrador todavia existe en el sistema
 app.get("/administrador/verificarAdministrador", function(req,res){
 
+	console.log(req.body);
 	var jeison;
 	var administrador = req.body.administrador;
 
-	Requests.verificarAdmnistrador(administrador, function(status, data){
+	Requests.verificarAdministrador(administrador, function(status, data){
 
 		var jsonResponse = null;
 		// Consuta generada con éxito
