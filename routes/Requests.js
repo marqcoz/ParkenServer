@@ -441,9 +441,9 @@ module.exports  = function(app) {
 // Función para verificar que el administrador todavia existe en el sistema
 app.get("/administrador/verificarAdministrador", function(req,res){
 
-	console.log(req.body);
+	console.log(req);
 	var jeison;
-	var administrador = req.body.administrador;
+	var administrador = req.query.administrador;
 
 	Requests.verificarAdministrador(administrador, function(status, data){
 
