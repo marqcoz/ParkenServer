@@ -465,6 +465,7 @@ app.get("/administrador/verificarAdministrador", function(req,res){
 
 			}
 			jsonResponse = jeison;
+			console.log(jsonResponse);
 			res.send(jsonResponse);
 
 	// Error con la conexion a la bd
