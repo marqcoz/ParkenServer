@@ -301,8 +301,6 @@ functions.crearCuentaSupervisor = function(nombre, apellido, correo, contrasena,
 // Funcíon que valida el inicio de sesión en la BD para todos los usuarios
 functions.iniciarSesion = function(correo, contrasena, usuario, callback){
 
-  var user;
-  var user2;
   var consulta;
 
   if (usuario == '1'){
@@ -317,32 +315,22 @@ functions.iniciarSesion = function(correo, contrasena, usuario, callback){
   //Consulta para verificar si el correo esta registrado
   const query = {
     text: consulta + 'WHERE email = $1 AND contrasena = $2;',
-    values: [correo, contrasena],
-    //rowMode: 'array',
+    values: [correo, contrasena]
   }
 //console.log(query)
   db.pool.connect((err, client, done) => {
     if (err) throw err
-
   db.pool.query(query, (err, res) =>{
     if (err) {
       // Error en la conexión con la BD
       callback(0, err.stack);
      console.log(err.stack)
     } else{
-      //Verificamos si la consulta regresa un valor
-      if(res.rows == ''){
-          //console.log(res.rows)
-      }
-
       callback(1,res);
-
     }
-
   //db.pool.end()
 })
 })
-
 };
 
 // Funcíon que regresa la infromación personal de un usuario
@@ -1029,8 +1017,21 @@ functions.actualizarSupervisor= function(idsupervisor, nombre, apellido,
     db.pool.query(query, (err, res) => {
       // Si el UPDATE regresa un error entonces
       if (err) {
+        if(err.stack[7] === '2'){
+          callback(0, err.stack.substring(9,40));
+        }else{
+          if(err.stack[7] === '3'){
+            callback(0, err.stack.substring(9,41));
+          }else{
+            if(err.stack[7] === '5'){
+              callback(0, err.stack.substring(9,28));
+
+            }else{
+            callback(0, err.stack);
+          }
+        }
+        }
         console.log(err.stack)
-        callback(0,err);
       }else {
         //console.log(res.rows[0])
         //console.log(res.rows)
@@ -1882,6 +1883,105 @@ functions.eliminarSupervisor= function(idsupervisor, callback){
   })
 };
 
+functions.eliminarZonaParken= function(idzonaparken, callback){
+
+  const query = {
+    text: 'DELETE FROM zonaparken WHERE idzonaparken = $1;',
+    values: [idzonaparken],
+  }
+
+  //console.log(query)
+    db.pool.connect((err, client, done) => {
+      if (err) throw err
+
+    db.pool.query(query, (err, res) =>{
+      if (err) {
+          // Error en la conexión con la BD
+          switch(err.stack[7]){
+            case '0':
+              callback(0, err.stack);
+            break;
+
+            case '7':
+              callback(7, err.stack);
+            break;
+
+            case '6':
+              callback(6, err.stack);
+            break;
+
+            case '5':
+              callback(5, err.stack);
+            break;
+
+            case '4':
+              callback(4, err.stack);
+            break;
+
+            default:
+              callback(0, err.stack);
+            break;
+          }
+          console.log(err.stack)
+      } else{
+        callback(1,res);
+      }
+
+    //db.pool.end()
+    })
+  })
+};
+
+
+functions.actualizarZonaParken= function(idzona, nombre, estatus, precio, poligono, espacios, callback){
+
+  const query = {
+    text: 'UPDATE zonaparken SET nombre = $1, estatus = $2, precio = $3 WHERE idzonaparken = $4 RETURNING idzonaparken, nombre, estatus, precio;',
+    values: [nombre, estatus, precio, idzona]
+  }
+
+  console.log(query)
+    db.pool.connect((err, client, done) => {
+      if (err) throw err
+
+    db.pool.query(query, (err, res) =>{
+      if (err) {
+          // Error en la conexión con la BD
+          switch(err.stack[7]){
+            case '0':
+              callback(0, err.stack);
+            break;
+
+            case '2':
+              callback(6, err.stack);
+            break;
+
+            case '3':
+              callback(5, err.stack);
+            break;
+
+            case '4':
+              callback(4, err.stack);
+            break;
+
+            case '5':
+              callback(7, err.stack);
+            break;
+
+            default:
+              callback(0, err.stack);
+            break;
+          }
+          console.log(err.stack)
+      } else{
+        callback(1,res);
+      }
+
+    //db.pool.end()
+    })
+  })
+};
+
 
 
 functions.obtenerSupervisoresXZona = function(idzona, callback){
@@ -2033,7 +2133,7 @@ console.log("Verificando administrador...");
   }
 //console.log(query)
   db.pool.connect((err, client, done) => {
-    if (err) throw err
+    if (err) return done(err)
 
   db.pool.query(query, (err, res) =>{
     if (err) {

@@ -182,8 +182,8 @@ module.exports  = function(app) {
 
 	// Función para validar el inicio de sesión
 	app.post("/login", function(req,res, next){
-
-//console.log(req);
+		console.log(req.headers.origin);
+		console.log(req.body);
 		var correo = req.body.correo;
 		var contrasena = req.body.contrasena;
 		var usuario = req.body.app;
@@ -262,7 +262,7 @@ module.exports  = function(app) {
 								if(usuario === '3') user = 'administrador';
 
 							console.log("El usuario " +  user + " " + data.rows[0].id  + " inició sesión");
-
+console.log("Json response: " +jsonResponse);
 							res.send(jsonResponse);
 					//No existe el ususario
 
@@ -274,6 +274,7 @@ module.exports  = function(app) {
 		// Error con la conexion a la bd
 			} else {
 				jsonResponse = '{"success":0}';
+				console.log("Json response: " +jsonResponse);
 				res.send(jsonResponse);
 			}
 		});
@@ -439,12 +440,14 @@ module.exports  = function(app) {
 	});
 
 // Función para verificar que el administrador todavia existe en el sistema
-app.get("/administrador/verificarAdministrador", function(req,res){
+app.get("/administrador/verificarAdministrador", function(req,res, next){
 
-	//console.log(req);
+	console.log("From: " + req.headers.origin);
 	var jeison;
 	var administrador = req.query.administrador;
+	if(administrador){
 
+	
 	Requests.verificarAdministrador(administrador, function(status, data){
 
 		var jsonResponse = null;
@@ -465,16 +468,19 @@ app.get("/administrador/verificarAdministrador", function(req,res){
 
 			}
 			jsonResponse = jeison;
-			console.log(jsonResponse);
+			console.log("Json Response: " +jsonResponse);
 			res.send(jsonResponse);
 
 	// Error con la conexion a la bd
 		} else {
+			console.log("Json Response: " +jsonResponse);
 			jsonResponse = '{"success":0}';
 			res.send(jsonResponse);
 		}
 	});
-
+}else{
+	return next();
+}
 });
 
 
@@ -1148,16 +1154,19 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 
 				jeison = jeison + '] }';
 				jsonResponse = jeison;
+				console.log(jsonResponse);
 				res.send(jsonResponse);
 
 			}else{
-				jsonResponse = '{"success":2, "numerosupervisores": 0}';
+				jsonResponse = '{"success":2, "numerosupervisores": 0, "supervisores":[{}]}';
+				console.log(jsonResponse);
 				res.send(jsonResponse);
 			}
 
 	// Error con la conexion a la bd
 		} else {
 			jsonResponse = '{ "success" : 0 }';
+			console.log(jsonResponse);
 			res.send(jsonResponse);
 		}
 	});
@@ -1769,6 +1778,53 @@ app.delete("/administrador/eliminarSupervisor", function(req,res, next){
 });
 
 
+// Función para eliminar un supervisor
+app.delete("/administrador/eliminarZonaParken", function(req,res){
+	console.log(req.body);
+	var idzonaparken = req.body.idzonaparken;
+
+	Requests.eliminarZonaParken(idzonaparken.toString(), function(status, data){
+		var jsonResponse = null;
+		// Delete generado con éxito
+		if(status==1) {
+			console.log(data);
+			//Al eliminar enviamos una notificación al supervisor, sin que se de cuenta para que cuando se conecte se cierre la sesión
+
+			jsonResponse ='{ "success" : 1 }';
+			res.send(jsonResponse);
+	// Error con la conexion a la bd
+		} else {
+			switch(status){
+				case 2:
+				jsonResponse = '{ "success" : 2, "error": "' + status +'" }';
+				break;
+	
+				case 4:
+				jsonResponse = '{ "success" : 2, "error": "' + status +'" }';
+				break;
+	
+				case 5:
+				jsonResponse = '{ "success" : 2, "error": "' + status +'" }';
+				break;
+	
+				case 6:
+				  jsonResponse = '{ "success" : 2, "error": "' + status +'" }';
+				break;
+
+				case 7:
+				  jsonResponse = '{ "success" : 2, "error": "' + status +'" }';
+				break;
+	
+				default:
+				jsonResponse = '{ "success" : 0 }';
+				break;
+			  }
+
+			res.send(jsonResponse);
+		}
+	});
+});
+
 
 	// Función para verificar si ya existe registrado un correo o número celular
 	app.post("/automovilista/actualizarVehiculo", function(req,res){
@@ -1864,7 +1920,9 @@ app.post("/administrador/editarSupervisor", function(req,res){
 			res.send(jsonResponse);
 	// Error con la conexion a la bd
 		} else {
-			jsonResponse = '{ "success" : 0 }';
+			jsonResponse = '{ "success" : 0, ' +
+			'"error": "' + data + '" }';
+			console.log(jsonResponse);
 			res.send(jsonResponse);
 		}
 	});
@@ -1912,6 +1970,44 @@ app.post("/administrador/editarSupervisor", function(req,res){
 		});
 	});
 
+
+
+// Función para verificar si ya existe registrado un correo o número celular
+app.post("/administrador/actualizarZonaParken", function(req,res){
+
+	console.log(req.body);
+	var idzona = req.body.idzonaparken;
+	var nombre = req.body.nombre;
+	var estatus = req.body.estatus;
+	var precio = req.body.precio;
+	var poligono = req.body.coordenadasPoly;
+	var espacios = req.body.coodenadasMarker;
+
+	Requests.actualizarZonaParken(idzona, nombre, estatus, precio, poligono, espacios, function(status, data){
+
+		var jsonResponse = null;
+		// Consulta generada con éxito
+		if(status==1) {
+			 jsonResponse = '{ "success": 1, '+
+			 '"idzonaparken": ' + data.rows[0].idzonaparken + ', ' +
+			 '"nombre": "' + data.rows[0].nombre + '", ' +
+			 '"estatus": "' + data.rows[0].estatus + '", ' +
+			 '"precio": "' + data.rows[0].precio + '" ' +
+			'}';
+			console.log(jsonResponse);
+			res.send(jsonResponse);
+	// Error con la conexion a la bd
+		} else {
+			if(status === 0){
+				jsonResponse = '{"success": '+ status+',  "error": "Error con la base de datos"}';
+			}else{
+				jsonResponse = '{"success": '+ status+',  "error": "' + data+'"}';
+			}
+			console.log(jsonResponse);
+			res.send(jsonResponse);
+		}
+	});
+});
 
 	// Función para buscar si existen zonas parken cercanas a un punto geografico.
 	app.post("/automovilista/apartarEspacioParken", function(req,res){
