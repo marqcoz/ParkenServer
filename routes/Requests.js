@@ -54,7 +54,7 @@ jsonReporte =
 //Requests.androidNotificationSingle(10002, 'automovilista', 'Nueva zona Parken', 'Ya estamos operando en la colonia Roma.', '{ "datos" : "OK", "idNotification" : "1"}');
 //Requests.androidNotificationSingle(20000, 'supervisor', 'Nueva reporte', 'Necesitamos de tu ayuda. Revisa que sucede en el espacio Parken.', '{ "datos" : "OK", "idNotification" : "100", ' + jsonReporte+' }');
 
-
+//Requests.androidNotificationSingle(20035, 'supervisor', 'Supervisor eliminado', 'Tu cuenta ha sido eliminada', '{ "datos" : "OK", "idNotification" : "200"}');
 
 //Funcionparaobtenerlos valores iniciales tambien aqui
 /*Requests.obtenerValoresDelServer(function(status,data){
@@ -461,6 +461,52 @@ app.get("/administrador/verificarAdministrador", function(req,res, next){
 						'"nombre":"' + data.rows[0].nombre + '", ' +
 						'"apellido":"' + data.rows[0].apellido + '", ' +
 						'"correo":"' + data.rows[0].email + '", ' +
+						'"contrasena":"' + data.rows[0].contrasena + '"}';
+
+			}else {
+				jeison = '{"success":2}';
+
+			}
+			jsonResponse = jeison;
+			console.log("Json Response: " +jsonResponse);
+			res.send(jsonResponse);
+
+	// Error con la conexion a la bd
+		} else {
+			console.log("Json Response: " +jsonResponse);
+			jsonResponse = '{"success":0}';
+			res.send(jsonResponse);
+		}
+	});
+}else{
+	return next();
+}
+});
+
+
+// Función para verificar que el administrador todavia existe en el sistema
+app.post("/supervisor/verificarSupervisor", function(req,res, next){
+
+	console.log("From: " + req.headers.origin);
+	var jeison;
+	var supervisor = req.body.idSupervisor;
+	console.log(supervisor);
+	if(supervisor){
+	Requests.verificarSupervisor(supervisor, function(status, data){
+
+		var jsonResponse = null;
+		// Consuta generada con éxito
+		if(status==1) {
+			//Primero validamos si data nos devuelve un registros
+			if(data.rowCount != 0){
+
+				jeison ='{ "success": 1, ' +
+						'"id":' + data.rows[0].idadministrador + ', ' +
+						'"nombre":"' + data.rows[0].nombre + '", ' +
+						'"apellido":"' + data.rows[0].apellido + '", ' +
+						'"correo":"' + data.rows[0].email + '", ' +
+						'"celular":"' + data.rows[0].celular + '", ' +
+						'"token":"' + data.rows[0].token + '", ' +
 						'"contrasena":"' + data.rows[0].contrasena + '"}';
 
 			}else {
@@ -1058,14 +1104,14 @@ Requests.buscarTodasZonasParken(function(status, data){
 						f = data.rows[i].ubicacionespacioparken.length - 1;
 						coordenadasEP = data.rows[i].ubicacionespacioparken.substring(ini, f);
 						centroArray = coordenadasEP.split(" ");
-						jeison = jeison + ', "espaciosParken": [{ "coordinates": { "lat":' + centroArray[1] +', "lng":' + centroArray[0]+'}}';
+						jeison = jeison + ', "espaciosParken": [{ "idespacio":'+ data.rows[i].idespacioparken+', "coordinates": { "lat":' + centroArray[1] +', "lng":' + centroArray[0]+'}}';
 						}else{
 							//Si son iguales unicamente agregamos la coordenada del espacio Parken
 						var ini = "POINT(".length;
 						var f = data.rows[i].ubicacionespacioparken.length - 1;
 						var coordenadasEP = data.rows[i].ubicacionespacioparken.substring(ini, f)
 						var centroArray = coordenadasEP.split(" ");
-						jeison = jeison + ', { "coordinates": { "lat":' + centroArray[1] +' , "lng":' + centroArray[0]+'}}';
+						jeison = jeison + ', { "idespacio":'+ data.rows[i].idespacioparken+', "coordinates": { "lat":' + centroArray[1] +' , "lng":' + centroArray[0]+'}}';
 
 						}
 
@@ -1095,6 +1141,7 @@ Requests.buscarTodasZonasParken(function(status, data){
 					}
 					jeison = jeison + '] }';
 					jsonResponse = jeison;
+					//console.log(jsonResponse);
 					res.send(jsonResponse);
 
 
@@ -1102,12 +1149,14 @@ Requests.buscarTodasZonasParken(function(status, data){
 
 		}else{
 			jsonResponse = '{"success":2, "Zonas": 0}';
+			console.log(jsonResponse);
 			res.send(jsonResponse);
 		}
 
 // Error con la conexion a la bd
 	} else {
 		jsonResponse = '{"success":0}';
+		console.log(jsonResponse);
 		res.send(jsonResponse);
 	}
 });
@@ -1120,7 +1169,7 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 	//console.log(req);
 	var idZona = req.query.idzona;
 
-	console.log(idZona);
+	//console.log(idZona);
 
 	Requests.obtenerSupervisoresXZona(idZona, function(status, data){
 
@@ -1154,7 +1203,7 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 
 				jeison = jeison + '] }';
 				jsonResponse = jeison;
-				console.log(jsonResponse);
+				//console.log(jsonResponse);
 				res.send(jsonResponse);
 
 			}else{
@@ -1753,18 +1802,30 @@ app.delete("/administrador/eliminarAdministrador", function(req,res, next){
 
 // Función para eliminar un supervisor
 app.delete("/administrador/eliminarSupervisor", function(req,res, next){
+	console.log("Eliminando supervisor");
 	console.log(req.body);
 	var idsupervisor = req.body.idsupervisor;
+	//Requests.androidNotificationSingle(idsupervisor, 'supervisor', 'Supervisor eliminado', 'Tu cuenta ha sido eliminada', '{ "datos" : "OK", "idNotification" : "200"}');
 
 	Requests.eliminarSupervisor(idsupervisor.toString(), function(status, data){
 		var jsonResponse = null;
 		// Delete generado con éxito
+		
 		if(status==1) {
-			console.log(data);
 			//Al eliminar enviamos una notificación al supervisor, sin que se de cuenta para que cuando se conecte se cierre la sesión
+			console.log(data.rows[0].idsupervisor);
+			var tokenSuper = data.rows[0].token;
+			if(tokenSuper === null || tokenSuper === ''){
 
+			}else{
+				Requests.sendNotificationSingle(tokenSuper, 'Supervisor eliminado', 'Tu cuenta ha sido eliminada', '{ "datos" : "OK", "idNotification" : "200"}', function(status, data){});
+			}
+			console.log(data.rows[0].token);
+			//idsuper = data.rows[0].idsupervisor;
+			//token = data.rows[0].token;
 			jsonResponse ='{ "success" : 1 }';
 			res.send(jsonResponse);
+			
 	// Error con la conexion a la bd
 		} else {
 			if(status === 2 || status === 3){
@@ -1978,30 +2039,118 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 	console.log(req.body);
 	var idzona = req.body.idzonaparken;
 	var nombre = req.body.nombre;
+	var nombreBefore = req.body.nombreBefore;
 	var estatus = req.body.estatus;
+	var estatusBefore = req.body.estatusBefore;
 	var precio = req.body.precio;
-	var poligono = req.body.coordenadasPoly;
-	var espacios = req.body.coodenadasMarker;
+	var precioBefore = req.body.precioBefore;
+	var coordenadasZona = req.body.coordenadasPoly;
+	var coordenadasZonaBefore = req.body.coordenadasPolyBefore;
+	var coordenadasEspacios = req.body.coordenadasMarker;
+	var espaciosEliminados = req.body.coordenadasDeleted;
 
-	Requests.actualizarZonaParken(idzona, nombre, estatus, precio, poligono, espacios, function(status, data){
+	var coordenadaZ = '';
+	for(var i = 0; i < coordenadasZona.length; i++){
+		coordenadaZ = coordenadaZ + coordenadasZona[i].lng + ' ' + coordenadasZona[i].lat;
+
+		//Vamos a armar el string de la siguinte forma
+		//'lat0 lng0, lat1 lng1, lat2 lng2,'
+		if(i != coordenadasZona.length - 1) {
+			coordenadaZ = coordenadaZ + ',';
+		}
+	}
+
+	var coordenadaE = '';
+	if(coordenadasEspacios.length === 0){
+
+	}else{
+		for(var i = 0; i < coordenadasEspacios.length; i++){
+			coordenadaE = coordenadaE + coordenadasEspacios[i].coordinates.lng + ' ' + coordenadasEspacios[i].coordinates.lat;
+	
+			//Vamos a armar el string de la siguinte forma
+			//'lat0 lng0, lat1 lng1, lat2 lng2,'
+			if(i != coordenadasEspacios.length - 1) {
+				coordenadaE = coordenadaE + ',';
+			}
+		}
+	
+	}
+
+	var epEliminados;
+	if(espaciosEliminados.length === 0){
+		epEliminados = "";
+	}else{
+		epEliminados = "("+espaciosEliminados.toString()+")";
+	}
+	
+	console.log(epEliminados);
+
+	console.log(coordenadaZ);
+	console.log(coordenadaE);
+	console.log(epEliminados);
+
+	Requests.actualizarZonaParken(idzona, nombre, estatus, precio, coordenadaZ, function(status, data){
 
 		var jsonResponse = null;
 		// Consulta generada con éxito
 		if(status==1) {
-			 jsonResponse = '{ "success": 1, '+
-			 '"idzonaparken": ' + data.rows[0].idzonaparken + ', ' +
-			 '"nombre": "' + data.rows[0].nombre + '", ' +
-			 '"estatus": "' + data.rows[0].estatus + '", ' +
-			 '"precio": "' + data.rows[0].precio + '" ' +
+
+			//jeison = '{ "success": 1, "idzonaparken": '+ data.rows[0].idzonaparken +'}';
+			jeison = '{ "success": 1, '+
+			'"idzonaparken": ' + data.rows[0].idzonaparken + ', ' +
+			'"nombre": "' + data.rows[0].nombre + '", ' +
+			'"estatus": "' + data.rows[0].estatus + '", ' +
+			'"precio": "' + data.rows[0].precio + '" ' +
 			'}';
-			console.log(jsonResponse);
-			res.send(jsonResponse);
-	// Error con la conexion a la bd
-		} else {
+
+			Requests.eliminarEspaciosParkenFuera(idzona, epEliminados, function(status, data){
+				if(status === 1){
+
+					Requests.agregarEspacioAZonaParken(coordenadaE, idzona, function(status, data){
+						if(status === 1){
+							jsonResponse = jeison;
+							if(estatus != estatusBefore && estatus === "DISPONIBLE"){
+								Requests.sendNotificationTopic('automovilista', 'Nueva zona Parken', 'Ahora podrás estacionarte en ' + nombre, '{"datos": "OK", "idNotification": "1", "title": "Nueva zona Parken", "msg": "Ahora podrás estacionarte en ' + nombre + '."}', function(status, data){});
+							}
+						
+						}else{
+							jsonResponse = '{"success": '+ status+',  "error": "' + data + '"}';
+						}
+						console.log(jsonResponse);
+						res.send(jsonResponse);	
+					});
+
+
+				}else{
+					//Si no se eliminaron entonces regresamos a la información anterior
+					var coordenadaZBefore = '';
+					for(var i = 0; i < coordenadasZonaBefore.length; i++){
+						coordenadaZBefore = coordenadaZBefore + coordenadasZonaBefore[i].lng + ' ' + coordenadasZonaBefore[i].lat;
+						if(i != coordenadasZonaBefore.length - 1) {
+							coordenadaZBefore = coordenadaZBefore + ',';
+						}
+					}
+					Requests.actualizarZonaParken(idzona, nombreBefore, estatusBefore, precioBefore, coordenadaZBefore, function(status2, data2){
+						if(status2 === 1){
+							jsonResponse = '{"success": '+ status+',  "error": "' + data + '"}';
+							
+						}else{
+							jsonResponse = '{"success": '+ status2+',  "error": "' + data2 + '"}';
+						}
+						console.log(jsonResponse);
+							res.send(jsonResponse);	
+					});
+					
+				}
+						
+			});
+
+		// Error con la conexion a la bd
+		}else {
 			if(status === 0){
 				jsonResponse = '{"success": '+ status+',  "error": "Error con la base de datos"}';
 			}else{
-				jsonResponse = '{"success": '+ status+',  "error": "' + data+'"}';
+				jsonResponse = '{"success": '+ status+',  "error": "' + data + '"}';
 			}
 			console.log(jsonResponse);
 			res.send(jsonResponse);
