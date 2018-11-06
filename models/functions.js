@@ -1891,7 +1891,11 @@ functions.eliminarEspaciosParkenFuera = function(idzona, espaciosParken, callbac
                   if(err.stack[7] === '6'){
                     callback(6, "La zona debe tener al menos un espacio Parken.");
                   }else{
-                    callback(0, "No es posible eliminar espacios Parken.");
+                    if(err.stack[7] === '4'){
+                      callback(4, "No se han finalizado algunas sesiones Parken en la zona.");
+                    }else{
+                      callback(0, "No es posible eliminar espacios Parken.");
+                    }
                   }
                 }
 

@@ -2130,6 +2130,7 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 							coordenadaZBefore = coordenadaZBefore + ',';
 						}
 					}
+					console.log("Coordenada anterior" + coordenadaZBefore);
 					Requests.actualizarZonaParken(idzona, nombreBefore, estatusBefore, precioBefore, coordenadaZBefore, function(status2, data2){
 						if(status2 === 1){
 							jsonResponse = '{"success": '+ status+',  "error": "' + data + '"}';
