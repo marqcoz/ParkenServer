@@ -1973,6 +1973,8 @@ app.post("/administrador/editarSupervisor", function(req,res){
 				'"estatus":"' + data.rows[0].estatus + '", ' +
 				'"zonaparken":' + data.rows[0].zonaparken_idzonaparken + ' }';
 
+				Requests.androidNotificationSingle(data.rows[0].idsupervisor, 'automovilista', 'Actualización del perfil ', 'Modificación de la información', '\'{ "datos" : "OK", "idNotification" : "200"}\'');
+
 			}else{
 				jeison = '{ "success" : 2 }';
 			}
