@@ -2449,10 +2449,7 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 	// Función para verificar si ya existe registrado un correo o número celular
 	app.post("/automovilista/pagarSancion", function(req,res){
 
-
-		//
 		var idSancion = req.body.idSancion;
-
 
 		Requests.pagarSancion(idSancion, function(status, data){
 
@@ -3498,6 +3495,57 @@ app.post("/supervisor/obtenerEspaciosParkenParaSesion", function(req, res){
 		}
 
 
+	});
+
+});
+
+app.post("/supervisor/obtenerEspaciosParkenParaPagarSancion", function(req, res){
+	//console.log(req.body);
+	var idZona = req.body.idZona;
+	console.log(idZona);
+
+	Requests.obtenerEspaciosParkenConSanciones(idZona, function(status, data){
+		//console.log(status);
+		var jsonResponse;
+		if(status === 1){
+
+			if(data.rowCount != 0){
+
+				var jeison = '{ "success" :1, ' +
+				'"numeroespaciosparken":' + data.rowCount + ', ' +
+				'"monto": 700.0, ' +
+				'"espaciosparken":[';
+
+				for(var i = 0; i < data.rowCount; i++){
+					jeison =  jeison +
+					'{ "idespacioparken" :' + data.rows[i].espacioparken_idespacioparken + ', ' +
+					'"idsancion" : "' + data.rows[i].idsancion + '", ' +
+					'"idvehiculo" :"' + data.rows[i].idvehiculo + '", ' +
+					'"marcavehiculo" : "' + data.rows[i].marca + '", ' +
+					'"modelovehiculo" :"' + data.rows[i].modelo + '", ' +
+					'"placavahiculo" :"' + data.rows[i].placa + '", ' +
+					'"zona" :' + data.rows[i].espacioparken_zonaparken_idzonaparken;
+
+					if(i == data.rowCount - 1){	jeison = jeison + ' }'; } else { jeison = jeison + ' },'; }
+				}
+				jeison = jeison + '] }';
+
+			} else{
+
+			var	jeison = '{ ' +
+					'"success" : 2' +
+				' }';
+			}
+
+			jsonResponse = jeison;
+			res.send(jsonResponse);
+
+		}else{
+				jsonResponse = '{ ' +
+					'"success" : 0' +
+				' }';
+				res.send(jsonResponse);
+		}
 	});
 
 });

@@ -501,6 +501,28 @@ console.log("ObtenerDatosSupervisor: "+ query);
 };
 
 
+// Función que obtiene los espacios parken con sanciones de una zona Parken
+functions.obtenerEspaciosParkenConSanciones = function(idzona, callback){
+
+  var query = 'SELECT * FROM sancion s INNER JOIN vehiculo v ON s.vehiculo_idvehiculo = v.idvehiculo WHERE s.espacioparken_zonaparken_idzonaparken = '+ idzona + ' AND s.estatus =\'PENDIENTE\' ORDER BY s.espacioparken_idespacioparken;';
+  console.log(query);
+  db.pool.connect((err, client, done) => {
+    if (err) throw err
+    db.pool.query(query, (err, res) =>{
+      if (err) {
+        // Error en la conexión con la BD
+        callback(0, err.stack);
+      console.log(err.stack)
+      } else{
+        callback(1,res);
+        console.log(res.rows)
+      }
+    //db.pool.end()
+    })
+  })
+};
+
+
 // Función que crea una cuenta de Automovilista
 functions.crearNuevoVehiculo = function(automovilista, marca, modelo, placa, callback){
   console.log("Agregando vehículo del automovilista...");
