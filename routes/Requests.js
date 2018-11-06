@@ -3555,9 +3555,10 @@ app.post("/supervisor/obtenerTodosEspaciosParken", function(req, res){
 
 	//console.log(req.body);
 	var idZona = req.body.idZona;
+	var opc = req.body.opc;
 	//console.log(idZona);
 
-	Requests.obtenerTodosEspaciosParken(idZona, function(status, data){
+	Requests.obtenerTodosEspaciosParken(idZona, opc, function(status, data){
 
 		//console.log(status);
 		var jsonResponse;

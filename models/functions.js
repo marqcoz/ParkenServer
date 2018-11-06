@@ -1423,12 +1423,19 @@ functions.obtenerEspaciosParkenParaSesion = function(id, callback){
 };
 
 // Función que consulta todas las sesiones Parken del automovilista
-functions.obtenerTodosEspaciosParken = function(id, callback){
+functions.obtenerTodosEspaciosParken = function(id, opc, callback){
   console.log("Consultando todos los espacios Parken" + "...");
-
-  var query = 'SELECT *, ST_AsText(ubicacion) AS coordenada ' +
-  'FROM espacioparken ' +
-  'WHERE zonaparken_idzonaparken = ' + id + ' ORDER BY idespacioparken ASC;';
+  var query;
+    if(opc === '1'){
+      query = 'SELECT *, ST_AsText(ubicacion) AS coordenada ' +
+      'FROM espacioparken ' +
+      'WHERE zonaparken_idzonaparken = ' + id + ' ORDER BY idespacioparken ASC;';
+    }else{
+      query = 'SELECT *, ST_AsText(ubicacion) AS coordenada ' +
+      'FROM espacioparken ' +
+      'WHERE zonaparken_idzonaparken = ' + id + 'AND estatus != \'SANCIONADO\' ORDER BY idespacioparken ASC;';
+    }
+  
   // callback
   db.pool.query(query, (err, res) => {
     // Si el SELECT regresa un error entonces
