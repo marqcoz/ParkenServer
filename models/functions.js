@@ -475,7 +475,7 @@ functions.agregarSupervisor = function(nombre, apellido, correo, contrasena, cel
 // Funcíon que regresa la infromación personal de un usuario
 functions.obtenerDatosSupervisor = function(id, callback){
   console.log("ObtenerDatosSupervisor: Entra a la consulta");
-  var query = 'SELECT * FROM supervisor WHERE idsupervisor ='+id+';'
+  var query = 'SELECT * FROM supervisor s INNER JOIN (SELECT idzonaparken, nombre AS nombreZona FROM zonaparken) AS zp ON s.zonaparken_idzonaparken = zp.idzonaparken WHERE idsupervisor ='+id+';'
 console.log("ObtenerDatosSupervisor: "+ query);
   db.pool.connect((err, client, done) => {
     if (err) throw err

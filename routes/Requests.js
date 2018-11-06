@@ -1520,6 +1520,7 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 							'"Direccion": "' + data.rows[0].direccion + '", ' +
 							'"Estatus": "'+ data.rows[0].estatus + '", ' +
 							'"Zona": "' + data.rows[0].zonaparken_idzonaparken + '", ' +
+							'"NombreZona": "' + data.rows[0].nombrezona + '", ' +
 							'"Token": "' + data.rows[0].token + '" ' +
 							'}';
 							res.send(jsonResponse);
