@@ -57,40 +57,40 @@ jsonReporte =
 //Requests.androidNotificationSingle(20035, 'supervisor', 'Supervisor eliminado', 'Tu cuenta ha sido eliminada', '{ "datos" : "OK", "idNotification" : "200"}');
 
 //Funcionparaobtenerlos valores iniciales tambien aqui
-/*Requests.obtenerValoresDelServer(function(status,data){
+Requests.obtenerValoresDelServer(function(status,data){
 
 	if(status==1) {
 
 		timerMinutosEspacioReservado = data.rows[0].duracionminutos;
 		timerSegundosEspacioReservado = data.rows[0].duracionsegundos;
-		console.log('Timer espacioParkenReservado: ' + timerMinutosEspacioReservado + ':' + timerSegundosEspacioReservado);
+		//console.log('Timer espacioParkenReservado: ' + timerMinutosEspacioReservado + ':' + timerSegundosEspacioReservado);
 
 		timerMinutosDialogParken = data.rows[1].duracionminutos;
 		timerSegundosDialogParken = data.rows[1].duracionsegundos ;
-		console.log('Timer DialogParken: ' + timerMinutosDialogParken + ':' + timerSegundosDialogParken);
+		//console.log('Timer DialogParken: ' + timerMinutosDialogParken + ':' + timerSegundosDialogParken);
 
 		timerMinutosPago = data.rows[2].duracionminutos;
 		timerSegundosPago = data.rows[2].duracionsegundos;
-		console.log('Timer SegundosPago: ' + timerMinutosPago+ ':' + timerSegundosPago);
+		//console.log('Timer SegundosPago: ' + timerMinutosPago+ ':' + timerSegundosPago);
 
 		timerMinutosCheckMove = data.rows[3].duracionminutos;
 		timerSegundosCheckMove = data.rows[3].duracionsegundos;
-		console.log('Timer CheckMove: ' + timerMinutosCheckMove + ':' + timerSegundosCheckMove);
+		//console.log('Timer CheckMove: ' + timerMinutosCheckMove + ':' + timerSegundosCheckMove);
 
 		timerMinutosMinSesionParken = data.rows[4].duracionminutos;
 		timerSegundosMinSesionParken = data.rows[4].duracionsegundos;
-		console.log('Timer SesionParken: ' + timerMinutosMinSesionParken + ':' + timerSegundosMinSesionParken);
+		//console.log('Timer SesionParken: ' + timerMinutosMinSesionParken + ':' + timerSegundosMinSesionParken);
 
 		timerMinutosTolerancia = data.rows[5].duracionminutos;
 		timerSegundosTolerancia = data.rows[5].duracionsegundos;
-		console.log('Timer Tolerancia: ' + timerMinutosTolerancia + ':' + timerSegundosTolerancia);
+		//console.log('Timer Tolerancia: ' + timerMinutosTolerancia + ':' + timerSegundosTolerancia);
 
 // Ocurrió un error
 	} else {
 		console.log("Error al cargar los datos iniciales");
 	}
 });
-*/
+
 
 
 
@@ -834,7 +834,7 @@ app.post("/administrador/agregarZonaParken", function(req,res){
 								}
 								jeison = jeison + '] }';
 								jsonResponse = jeison;
-								console.log(jsonResponse);
+								//console.log(jsonResponse);
 								res.send(jsonResponse);
 
 						//No existe el ususario
@@ -977,7 +977,7 @@ app.post("/administrador/agregarZonaParken", function(req,res){
 							}
 							jeison = jeison + '] }';
 							jsonResponse = jeison;
-							console.log(jsonResponse);
+							//console.log(jsonResponse);
 							res.send(jsonResponse);
 
 					//No existe el ususario
@@ -2297,6 +2297,7 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 			var jsonResponse = null;
 			// Consuta generada con éxito
 			if(status==1) {
+				console.log(data.rows);
 				//Primero validamos si data nos devuelve un registros
 				if(data.rowCount != 0){
 							//if (data.rows[0].idautomovilista != null){
@@ -2577,6 +2578,8 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 	// Función para desactivar una sesionparken
 	app.post("/automovilista/modificarSesionParken", function(req,res){
 
+		console.log("/modificarSesionParken");
+		console.log(req.body);
 		var idSesion = req.body.idSesionParken;
 		var estatus = req.body.Estatus;
 		var fecha = req.body.Fecha;
@@ -2615,7 +2618,6 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 					}
 
 					if(newEstatus != 'ERROR'){
-
 
 						date.setMinutes(date.getMinutes()+tiempoMin);
 						date.setSeconds(date.getSeconds()+tiempoSeg + timerAux);
@@ -2676,10 +2678,6 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 						);
 
 						}
-
-
-
-
 
 
 

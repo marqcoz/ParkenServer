@@ -542,7 +542,7 @@ functions.crearNuevoVehiculo = function(automovilista, marca, modelo, placa, cal
 
         //Si el error es 3: Placas registradas en la base de datos.
         if(err.stack[7] == 3){
-          //callback(3, err.stack);
+          callback(3, err.stack);
         }
 
         //Si no es ningún de esos errores, hay un error de conexion con la BD
@@ -649,7 +649,7 @@ functions.obtenerInfoZonaParken = function(idZona, callback){
 
 // Consulta las zonas parken a tantos kilometros de un punto
 functions.buscarZonaParken = function(latitud, longitud, distancia, callback){
-  console.log("Buscando zonas Parken...");
+  console.log("Buscando zonas Parken a " + distancia +" mts...");
   var uno = longitud + ' ' + latitud;
   //console.log(uno);
   var qry = 'SELECT idzonaparken, nombre, distancia, ST_AsText(ubicacion) AS poligono, estatus, radio,'+
@@ -658,13 +658,11 @@ functions.buscarZonaParken = function(latitud, longitud, distancia, callback){
   ' zParken.nombre, zParken.ubicacion, zParken.estatus, (ST_Length(ST_ShortestLine((zParken.ubicacion),'+
   ' ST_GeomFromText(\'POINT( ~1 )\') )::GEOGRAPHY)) AS distancia FROM zonaparken AS zParken '+
   'JOIN ST_DumpPoints(zParken.ubicacion) dump ON TRUE '+
-'GROUP BY zParken.idzonaparken, zParken.nombre)) As sDistance WHERE idzonaparken != 0;';+
-//'WHERE idzonaparken in (4)';
-//'WHERE sDistance.distancia <= ~2';
-'WHERE sDistance.distancia <= 10000';
+'GROUP BY zParken.idzonaparken, zParken.nombre)) As sDistance ' +
+'WHERE idzonaparken != 0 AND estatus = \'DISPONIBLE\' AND sDistance.distancia <= ~2;';
   var qry2 = qry.replace('~1',uno);
   qry2 = qry2.replace('~2',distancia);
-  //console.log(qry2);
+  console.log(qry2);
 
 /*
   const query = {
@@ -1163,6 +1161,7 @@ functions.obtenerSancionesAutomovilista = function(automovilista, callback){
 's.espacioparken_zonaparken_idzonaparken = zp.idzonaparken ' +
 'INNER JOIN automovilista AS au ON s.automovilista_idautomovilista = au.idautomovilista ' +
 'WHERE automovilista_idautomovilista = ' + automovilista +
+' AND idzonaparken != 0'+
 ' ORDER BY tiempo DESC';
 
 
@@ -1260,6 +1259,7 @@ functions.obtenerSesionesParken = function(automovilista, callback){
       'INNER JOIN zonaparken zp ON sp.espacioparken_zonaparken_idzonaparken = zp.idzonaparken ' +
       'INNER JOIN sancion s ON sp.idsesionparken = s.sesionparken_idsesionparken ' +
       'WHERE sp.estatus != \'RESERVADO\' ' +
+      'AND idzonaparken != 0 '+
       //'AND s.estatus = \'PENDIENTE\'' +
       'AND sp.automovilista_idautomovilista = ' + automovilista +
       ')' +
@@ -1283,6 +1283,7 @@ functions.obtenerSesionesParken = function(automovilista, callback){
           'INNER JOIN espacioparken ep ON sp.espacioparken_idespacioparken = ep.idespacioparken ' +
           'INNER JOIN zonaparken zp ON sp.espacioparken_zonaparken_idzonaparken = zp.idzonaparken ' +
           'WHERE sp.estatus != \'RESERVADO\' ' +
+          'AND idzonaparken != 0 '+
           //'AND s.estatus = \'PENDIENTE\'' +
           'AND sp.automovilista_idautomovilista = ' + automovilista +
           ') ORDER BY fechainicio DESC';
@@ -1488,7 +1489,7 @@ functions.obtenerValoresDelServer = function(callback){
   var query ='SELECT tiempo, duracion, ' +
   '(extract(minute from duracion)) AS duracionminutos, ' +
   '(extract(second from duracion)) AS duracionsegundos ' +
-  'FROM tiempo ORDER BY idtiempo ASC';
+  'FROM tiempo ORDER BY idtiempo ASC;';
 
       //console.log(query);
 
@@ -2107,24 +2108,19 @@ functions.obtenerSupervisoresXZona = function(idzona, callback){
 functions.modificarSesionParken = function(idSesion, estatus, fecha, callback){
 
     var query;
-
-
     if(fecha){
       query = {
         text: 'UPDATE sesionparken SET estatus = $2, fechafinal = NOW()  WHERE idsesionparken = $1;',
         values: [idSesion, estatus],
       }
-
     }else{
-
       query = {
         text: 'UPDATE sesionparken SET estatus = $2 WHERE idsesionparken = $1;',
         values: [idSesion, estatus],
       }
-
     }
 
-  console.log(query)
+    console.log(query)
     db.pool.connect((err, client, done) => {
       if (err) throw err
 
@@ -2156,7 +2152,7 @@ functions.sesionParkenPagando= function(idSesion, minutos, segundos, callback){
   console.log(query);
 */
   var query = 'UPDATE sesionparken SET estatus = \'PAGANDO\', fechafinal = NOW() + interval \''+ minutos +' minutes '+ segundos +' seconds\' WHERE idsesionparken ='+ idSesion +' RETURNING idsesionparken, espacioparken_idespacioparken, espacioparken_zonaparken_idzonaparken;';
-  //console.log(query);
+  console.log(query);
 
   //console.log(query)
     db.pool.connect((err, client, done) => {
