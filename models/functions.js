@@ -76,7 +76,7 @@ if(datos == '{}'){
 
     var message = {
                       "topic": topic,
-                     
+
                     "data" : datosJSON
 
                   };
@@ -416,7 +416,7 @@ functions.agregarAdministrador = function(nombre, apellido, correo, contrasena, 
       }else{
         callback(0, err.stack);
       }
-      
+
      console.log(err.stack)
     } else{
       //Verificamos si la consulta regresa un valor
@@ -455,7 +455,7 @@ functions.agregarSupervisor = function(nombre, apellido, correo, contrasena, cel
           callback(0, err.stack);
         }
       }
-      
+
      console.log(err.stack)
     } else{
       //Verificamos si la consulta regresa un valor
@@ -626,7 +626,7 @@ functions.obtenerInfoZonaParken = function(idZona, callback){
 
   var qry ='SELECT *, ST_AsText(ep.ubicacion) AS ubicacionEspacioParken, ST_AsText(zp.ubicacion) AS ubicacionZonaParken ' +
   'FROM espacioparken ep ' +
-  'INNER JOIN zonaparken zp ' + 
+  'INNER JOIN zonaparken zp ' +
   'ON ep.zonaparken_idzonaparken = zp.idzonaparken ' +
   'WHERE zp.idzonaparken =' + idZona +' '+
   'ORDER BY idespacioparken ASC;' ;
@@ -637,7 +637,7 @@ functions.obtenerInfoZonaParken = function(idZona, callback){
     if (err) {
        console.log(err.stack);
         callback(0, err.stack);
-      
+
     } else {
       //console.log(res.rows)
       callback(1, res);
@@ -659,7 +659,7 @@ functions.buscarZonaParken = function(latitud, longitud, distancia, callback){
   ' ST_GeomFromText(\'POINT( ~1 )\') )::GEOGRAPHY)) AS distancia FROM zonaparken AS zParken '+
   'JOIN ST_DumpPoints(zParken.ubicacion) dump ON TRUE '+
 'GROUP BY zParken.idzonaparken, zParken.nombre)) As sDistance ' +
-'WHERE idzonaparken != 0 AND estatus = \'DISPONIBLE\' AND sDistance.distancia <= ~2;';
+'WHERE idzonaparken != 0 AND idzonaparken != 1 AND estatus = \'DISPONIBLE\' AND sDistance.distancia <= ~2;';
   var qry2 = qry.replace('~1',uno);
   qry2 = qry2.replace('~2',distancia);
   console.log(qry2);
@@ -693,9 +693,9 @@ functions.buscarZonaParken = function(latitud, longitud, distancia, callback){
 functions.buscarTodasZonasParken = function(callback){
   console.log("Descargando la información de las zonas Parken...");
   //var qry = 'SELECT *, ST_AsText(ubicacion) AS poligono, ST_AsText(ST_Centroid(ubicacion)) AS centro FROM zonaparken;';
-  var qry = 'SELECT *, ST_AsText(ep.ubicacion) AS ubicacionespacioparken, ST_AsText(zp.ubicacion) AS poligono, ST_AsText(ST_Centroid(zp.ubicacion)) AS centro ' + 
+  var qry = 'SELECT *, ST_AsText(ep.ubicacion) AS ubicacionespacioparken, ST_AsText(zp.ubicacion) AS poligono, ST_AsText(ST_Centroid(zp.ubicacion)) AS centro ' +
   'FROM espacioparken ep ' +
-  'INNER JOIN zonaparken zp ' + 
+  'INNER JOIN zonaparken zp ' +
   'ON ep.zonaparken_idzonaparken = zp.idzonaparken WHERE ep.idespacioparken != 0' +
   'ORDER BY idzonaparken, idespacioparken ASC;'
   db.pool.query(qry, (err, res) => {
@@ -736,7 +736,7 @@ functions.obtenerZonasParken = function(idZona, callback){
 // Consulta todas las zonas parken
 functions.buscarTodasZonasParkenID = function(callback){
   console.log("Descargando la información de las zonas Parken...");
-  var qry = 'SELECT * FROM zonaparken WHERE idzonaparken != 0 ORDER BY idzonaparken;';
+  var qry = 'SELECT * FROM zonaparken WHERE idzonaparken != 0 AND idzonaparken != 1 ORDER BY idzonaparken;';
 
   db.pool.query(qry, (err, res) => {
     // Si el SELECT regresa un error entonces
@@ -959,7 +959,7 @@ var query = 'UPDATE ' + user +
 
 // Función que actualiza el perfil del administrador
 functions.actualizarAdministrador= function(id, nombre, apellido, contrasena, email, callback){
-  
+
 
 var query = 'UPDATE ' + 'administrador' +
 ' SET nombre =\'' + nombre +
@@ -985,10 +985,10 @@ console.log(query);
 
 
 // Función que actualiza el perfil del administrador
-functions.actualizarSupervisor= function(idsupervisor, nombre, apellido, 
-  correo, contrasena, 
+functions.actualizarSupervisor= function(idsupervisor, nombre, apellido,
+  correo, contrasena,
   celular, direccion, estatus, zona, callback){
-  
+
   var query = 'UPDATE ' + 'supervisor' +
   ' SET nombre =\'' + nombre +
   '\', apellido =\'' + apellido +
@@ -998,7 +998,7 @@ functions.actualizarSupervisor= function(idsupervisor, nombre, apellido,
   '\', direccion =\'' + direccion +
   '\', estatus =\'' + estatus +
   '\', zonaparken_idzonaparken = ' + zona +
-  ' WHERE ' + 'id' + 'supervisor' + '=' + idsupervisor + 
+  ' WHERE ' + 'id' + 'supervisor' + '=' + idsupervisor +
   ' RETURNING idsupervisor, nombre, apellido, email, contrasena, celular, direccion, estatus, zonaparken_idzonaparken;';
   console.log(query);
     // callback
@@ -1028,7 +1028,7 @@ functions.actualizarSupervisor= function(idsupervisor, nombre, apellido,
       //db.pool.end()
     })
   };
-  
+
 
 // Función par eliminar un vehiculo del automovilista,
 // No se elimina el vehiculo de la tabla vehiculo, pero si de la tabla que
@@ -1162,6 +1162,7 @@ functions.obtenerSancionesAutomovilista = function(automovilista, callback){
 'INNER JOIN automovilista AS au ON s.automovilista_idautomovilista = au.idautomovilista ' +
 'WHERE automovilista_idautomovilista = ' + automovilista +
 ' AND idzonaparken != 0'+
+' AND idzonaparken != 1'+
 ' ORDER BY tiempo DESC';
 
 
@@ -1260,6 +1261,7 @@ functions.obtenerSesionesParken = function(automovilista, callback){
       'INNER JOIN sancion s ON sp.idsesionparken = s.sesionparken_idsesionparken ' +
       'WHERE sp.estatus != \'RESERVADO\' ' +
       'AND idzonaparken != 0 '+
+      ' AND idzonaparken != 1'+
       //'AND s.estatus = \'PENDIENTE\'' +
       'AND sp.automovilista_idautomovilista = ' + automovilista +
       ')' +
@@ -1284,6 +1286,7 @@ functions.obtenerSesionesParken = function(automovilista, callback){
           'INNER JOIN zonaparken zp ON sp.espacioparken_zonaparken_idzonaparken = zp.idzonaparken ' +
           'WHERE sp.estatus != \'RESERVADO\' ' +
           'AND idzonaparken != 0 '+
+          ' AND idzonaparken != 1'+
           //'AND s.estatus = \'PENDIENTE\'' +
           'AND sp.automovilista_idautomovilista = ' + automovilista +
           ') ORDER BY fechainicio DESC';
@@ -1436,7 +1439,7 @@ functions.obtenerTodosEspaciosParken = function(id, opc, callback){
       'FROM espacioparken ' +
       'WHERE zonaparken_idzonaparken = ' + id + 'AND estatus != \'SANCIONADO\' ORDER BY idespacioparken ASC;';
     }
-  
+
   // callback
   db.pool.query(query, (err, res) => {
     // Si el SELECT regresa un error entonces
@@ -1564,7 +1567,7 @@ functions.agregarZonaParken = function(nombreZona, coordenadasZona, coordenadasE
 			'ST_GeomFromText(\'POLYGON((' + coordenadasZona + '))\'), \'' +
 			estatusZona +'\', ' +
 			precioZona + ') RETURNING idzonaparken;';
-    
+
       //console.log(query);
 
   db.pool.query(query, (err, res) => {
@@ -1580,7 +1583,7 @@ functions.agregarZonaParken = function(nombreZona, coordenadasZona, coordenadasE
         }
       }
       console.log(err.stack);
-      
+
     } else {
       console.log(res.rows[0])
       //console.log(res.rows)
@@ -1619,17 +1622,17 @@ functions.agregarZonaParken = function(nombreZona, coordenadasZona, coordenadasE
       console.log(error);
       direccion = "-";
     });
-      query = query + 
+      query = query +
       '(ST_GeomFromText(\'POINT('+coordenadas[i]+')\'), \'DISPONIBLE\', '+idZona+', \''+direccion+'\')';
-      
+
       if(i != coordenadas.length - 1){
         query = query + ', ';
       }
     }
-  
+
     //console.log(query);
-  
-    db.pool.query(query, (err, res) => {
+
+    await db.pool.query(query, (err, res) => {
       // Si el INSERT regresa un error entonces
       if (err) {
         console.log(err.stack);
@@ -1840,7 +1843,7 @@ functions.eliminarAdministrador = function(idadministrador, callback){
       if (err) {
           // Error en la conexión con la BD
           if(err.stack[7] === '0'){
-            callback(2, err.stack[7]);  
+            callback(2, err.stack[7]);
           }else{
             callback(0, err.stack);
           }
@@ -1864,15 +1867,15 @@ functions.eliminarEspaciosParken = function(idzona, espaciosParken, callback){
     console.log(query)
       db.pool.connect((err, client, done) => {
         if (err) throw err
-  
+
       db.pool.query(query, (err, res) =>{
         if (err) {
             // Error en la conexión con la BD
             if(err.stack[7] === '0'){
-              callback(2, err.stack[7]);  
+              callback(2, err.stack[7]);
             }else{
               if(err.stack[7] === '7'){
-                callback(7, "Espacios Parken no disponibles");  
+                callback(7, "Espacios Parken no disponibles");
               }else{
               callback(0, err.stack);
               }
@@ -1881,7 +1884,7 @@ functions.eliminarEspaciosParken = function(idzona, espaciosParken, callback){
         } else{
           callback(1,res);
         }
-  
+
       //db.pool.end()
       })
     })
@@ -1905,7 +1908,7 @@ functions.eliminarEspaciosParkenFuera = function(idzona, espaciosParken, callbac
     console.log(query)
       db.pool.connect((err, client, done) => {
         if (err) throw err
-  
+
       db.pool.query(query, (err, res) =>{
         if (err) {
             // Error en la conexión con la BD
@@ -1931,12 +1934,12 @@ functions.eliminarEspaciosParkenFuera = function(idzona, espaciosParken, callbac
 
               }
             }
-            
+
             console.log(err.stack)
         } else{
           callback(1,res);
         }
-  
+
       //db.pool.end()
       })
     })
@@ -1958,7 +1961,7 @@ functions.eliminarSupervisor= function(idsupervisor, callback){
       if (err) {
           // Error en la conexión con la BD
           if(err.stack[7] === '0'){
-            callback(2, err.stack[7]);  
+            callback(2, err.stack[7]);
           }else{
             if(err.stack[7] === '5'){
               callback(3, err.stack[7]);
@@ -2011,6 +2014,10 @@ functions.eliminarZonaParken= function(idzonaparken, callback){
               callback(4, err.stack);
             break;
 
+            case '3':
+              callback(3, err.stack);
+            break;
+
             default:
               callback(0, err.stack);
             break;
@@ -2028,7 +2035,7 @@ functions.eliminarZonaParken= function(idzonaparken, callback){
 
 functions.actualizarZonaParken= function(idzona, nombre, estatus, precio, coordenadasZona, callback){
 
-  var query = 'UPDATE zonaparken SET nombre = \'' + nombre + 
+  var query = 'UPDATE zonaparken SET nombre = \'' + nombre +
   '\' , estatus = \'' + estatus + '\', ' +
   'precio = ' + precio + ', ' +
   'ubicacion = ST_GeomFromText(\'POLYGON((' + coordenadasZona + '))\') ' +
@@ -2082,7 +2089,7 @@ functions.obtenerSupervisoresXZona = function(idzona, callback){
 
   var qry;
   if(idzona == '0'){
-    qry = 'SELECT *, zp.nombre AS nombrezona, s.nombre AS nombresupervisor FROM supervisor s INNER JOIN zonaparken zp ON s.zonaparken_idzonaparken=zp.idzonaparken WHERE zonaparken_idzonaparken != 0 ORDER BY s.nombre;';
+    qry = 'SELECT *, zp.nombre AS nombrezona, s.nombre AS nombresupervisor FROM supervisor s INNER JOIN zonaparken zp ON s.zonaparken_idzonaparken=zp.idzonaparken WHERE zonaparken_idzonaparken != 0 AND zonaparken_idzonaparken != 1 ORDER BY s.nombre;';
   }else{
     qry = 'SELECT *, zp.nombre AS nombrezona, s.nombre AS nombresupervisor FROM supervisor s INNER JOIN zonaparken zp ON s.zonaparken_idzonaparken=zp.idzonaparken WHERE zonaparken_idzonaparken = ' + idzona + ' ORDER BY s.nombre;';
   }
@@ -2249,7 +2256,7 @@ functions.verificarSupervisor = function(id, callback){
   //console.log(query)
     db.pool.connect((err, client, done) => {
       if (err) return done(err)
-  
+
     db.pool.query(query, (err, res) =>{
       if (err) {
         // Error en la conexión con la BD
@@ -2258,13 +2265,13 @@ functions.verificarSupervisor = function(id, callback){
       } else{
           callback(1,res);
       }
-  
+
     //db.pool.end()
   })
   })
   };
 
-  
+
 // Función que crea una cuenta de Automovilista
 functions.liberarVehiculo= function(user, id, column, value, callback){
   console.log("Se editará el perfil del automovilista...");

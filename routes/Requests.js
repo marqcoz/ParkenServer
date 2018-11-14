@@ -447,7 +447,7 @@ app.get("/administrador/verificarAdministrador", function(req,res, next){
 	var administrador = req.query.administrador;
 	if(administrador){
 
-	
+
 	Requests.verificarAdministrador(administrador, function(status, data){
 
 		var jsonResponse = null;
@@ -666,28 +666,34 @@ app.post("/administrador/agregarZonaParken", function(req,res){
 
 		var jsonResponse = null;
 		// Consuta generada con éxito
-		if(status==1) {
+		if(status === 1) {
 			//Primero validamos si data nos devuelve un registros
 			if(data.rowCount != 0){
-
-					jeison = '{ "success": 1, "idzonaparken": '+ data.rows[0].idzonaparken +'}';
+					var zonita = data.rows[0].idzonaparken;
 
 					Requests.agregarEspacioAZonaParken(coordenadaE, data.rows[0].idzonaparken, function(status, data){
-						if(status == 1){
-
+						if(status === 1){
+							console.log("se agregaron los espacios");
+							jeison = '{ "success": 1, "idzonaparken": '+ zonita +'}';
+							jsonResponse = jeison;
+							console.log(jsonResponse);
+							res.send(jsonResponse);
 						}else{
 							jeison = '{"success":4}';
+							jsonResponse = jeison;
+							console.log(jsonResponse);
+							res.send(jsonResponse);
 						}
 					});
-
-					jsonResponse = jeison;
-					res.send(jsonResponse);
+					
 			}else {
 				jeison = '{"success":2}';
-
+				jsonResponse = jeison;
+				console.log(jsonResponse);
+				res.send(jsonResponse);
 			}
 
-
+			
 	// Error con la conexion a la bd
 		} else {
 
@@ -1811,7 +1817,7 @@ app.delete("/administrador/eliminarSupervisor", function(req,res, next){
 	Requests.eliminarSupervisor(idsupervisor.toString(), function(status, data){
 		var jsonResponse = null;
 		// Delete generado con éxito
-		
+
 		if(status==1) {
 			//Al eliminar enviamos una notificación al supervisor, sin que se de cuenta para que cuando se conecte se cierre la sesión
 			console.log(data.rows[0].idsupervisor);
@@ -1826,7 +1832,7 @@ app.delete("/administrador/eliminarSupervisor", function(req,res, next){
 			//token = data.rows[0].token;
 			jsonResponse ='{ "success" : 1 }';
 			res.send(jsonResponse);
-			
+
 	// Error con la conexion a la bd
 		} else {
 			if(status === 2 || status === 3){
@@ -1850,8 +1856,6 @@ app.delete("/administrador/eliminarZonaParken", function(req,res){
 		// Delete generado con éxito
 		if(status==1) {
 			console.log(data);
-			//Al eliminar enviamos una notificación al supervisor, sin que se de cuenta para que cuando se conecte se cierre la sesión
-
 			jsonResponse ='{ "success" : 1 }';
 			res.send(jsonResponse);
 	// Error con la conexion a la bd
@@ -1860,15 +1864,19 @@ app.delete("/administrador/eliminarZonaParken", function(req,res){
 				case 2:
 				jsonResponse = '{ "success" : 2, "error": "' + status +'" }';
 				break;
+
+				case 3:
+				jsonResponse = '{ "success" : 2, "error": "' + status +'" }';
+				break;
 	
 				case 4:
 				jsonResponse = '{ "success" : 2, "error": "' + status +'" }';
 				break;
-	
+
 				case 5:
 				jsonResponse = '{ "success" : 2, "error": "' + status +'" }';
 				break;
-	
+
 				case 6:
 				  jsonResponse = '{ "success" : 2, "error": "' + status +'" }';
 				break;
@@ -1876,7 +1884,7 @@ app.delete("/administrador/eliminarZonaParken", function(req,res){
 				case 7:
 				  jsonResponse = '{ "success" : 2, "error": "' + status +'" }';
 				break;
-	
+
 				default:
 				jsonResponse = '{ "success" : 0 }';
 				break;
@@ -2069,14 +2077,14 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 	}else{
 		for(var i = 0; i < coordenadasEspacios.length; i++){
 			coordenadaE = coordenadaE + coordenadasEspacios[i].coordinates.lng + ' ' + coordenadasEspacios[i].coordinates.lat;
-	
+
 			//Vamos a armar el string de la siguinte forma
 			//'lat0 lng0, lat1 lng1, lat2 lng2,'
 			if(i != coordenadasEspacios.length - 1) {
 				coordenadaE = coordenadaE + ',';
 			}
 		}
-	
+
 	}
 
 	var epEliminados;
@@ -2085,7 +2093,7 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 	}else{
 		epEliminados = "("+espaciosEliminados.toString()+")";
 	}
-	
+
 	console.log(epEliminados);
 
 	console.log(coordenadaZ);
@@ -2115,12 +2123,12 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 							if(estatus != estatusBefore && estatus === "DISPONIBLE"){
 								Requests.sendNotificationTopic('automovilista', 'Nueva zona Parken', 'Ahora podrás estacionarte en ' + nombre, '{"datos": "OK", "idNotification": "1", "title": "Nueva zona Parken", "msg": "Ahora podrás estacionarte en ' + nombre + '."}', function(status, data){});
 							}
-						
+
 						}else{
 							jsonResponse = '{"success": '+ status+',  "error": "' + data + '"}';
 						}
 						console.log(jsonResponse);
-						res.send(jsonResponse);	
+						res.send(jsonResponse);
 					});
 
 
@@ -2137,16 +2145,16 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 					Requests.actualizarZonaParken(idzona, nombreBefore, estatusBefore, precioBefore, coordenadaZBefore, function(status2, data2){
 						if(status2 === 1){
 							jsonResponse = '{"success": '+ status+',  "error": "' + data + '"}';
-							
+
 						}else{
 							jsonResponse = '{"success": '+ status2+',  "error": "' + data2 + '"}';
 						}
 						console.log(jsonResponse);
-							res.send(jsonResponse);	
+							res.send(jsonResponse);
 					});
-					
+
 				}
-						
+
 			});
 
 		// Error con la conexion a la bd
