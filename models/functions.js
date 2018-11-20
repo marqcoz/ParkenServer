@@ -2,24 +2,19 @@
 
 var db = require('../db/pgConfig');
 var functions = {};
-var admin = require('firebase-admin');
 var axios = require('axios');
 
+var admin = require('firebase-admin');
 var serviceAccount = require('../parken-217616-firebase-adminsdk-a4h2k-c6dc7ae7d0.json');
-
-
-
 //Fragmento para inicializa el SDK de Firebase
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   //databaseURL: 'https://<DATABASE_NAME>.firebaseio.com'
   databaseURL: 'http://localhost:50546/'
-
 });
 
 
 functions.sendNotificationSingle = function(idToken, titulo, mensaje, datos, callback){
-
 var registrationToken = idToken;
 if(datos == '{}'){
   datos = '{ "datos" : "NONE" }';
@@ -27,29 +22,9 @@ if(datos == '{}'){
 var datosJSON = JSON.parse(datos);
 
   var message = {
-                    "token": registrationToken,
-
+                  "token": registrationToken,
                   "data" : datosJSON
-
                 };
-/*
-  {
-  "message":{
-    "token":"bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1...",
-    "notification":{
-      "title":"Portugal vs. Denmark",
-      "body":"great match!"
-    },
-    "data" : {
-      "Nick" : "Mario",
-      "Room" : "PortugalVSDenmark"
-    }
-  }
-}
-*/
-
-  // Send a message to the device corresponding to the provided
-  // registration token.
 
   admin.messaging().send(message)
     .then((response) => {
@@ -61,29 +36,20 @@ var datosJSON = JSON.parse(datos);
       console.log('Error al enviar la notificación:', error);
       callback(0);
     });
-
 };
-
 
 functions.sendNotificationTopic = function(topic, titulo, mensaje, datos, callback){
   // This registration token comes from the client FCM SDKs.
-
 if(datos == '{}'){
   datos = '{ "datos" : "NONE" }';
 }
-
   var datosJSON = JSON.parse(datos);
-
-    var message = {
-                      "topic": topic,
-
+  var message = {
+                    "topic": topic,
                     "data" : datosJSON
-
                   };
-
   // Send a message to the device corresponding to the provided
   // registration token.
-
   admin.messaging().send(message)
     .then((response) => {
       // Response is a message ID string.
@@ -94,7 +60,6 @@ if(datos == '{}'){
       console.log('Error al enviar la notificación:'+ error);
       callback(0);
     });
-
 };
 
 
@@ -127,18 +92,16 @@ functions.sendNotificationDry = function(topic1, tipo, titulo, mensaje, accion, 
 
 };
 
-
 functions.androidNotificationSingle = function (idUser, tipoUser, titulo, mensaje, datos){
 	//Funcion que envia una notificación
   //Necesitamos llamar a la funcion obtenerDatosAutomovilista
-  console.log("Se enviará una notificación");
-  console.log(idUser);
+  //console.log("Se enviará una notificación al " + tipoUser + " " + idUser);
 	if(tipoUser === 'automovilista' && idUser != '0'){
-    console.log("Ingreso automovilista");
+
 		functions.obtenerDatosAutomovilista(idUser, function(status, data){
 			//Aqui adentro obtenemos el id y despues lo reenviamos a la funcion sendNotificationSingle
 			if(status==1) {
-        console.log(data);
+        //console.log(data);
 				if(data.rowCount != 0){
 					if (data.rows[0].token != null){
 						//enviamos el token a la  funcion para enviar notificiaciones
@@ -151,7 +114,6 @@ functions.androidNotificationSingle = function (idUser, tipoUser, titulo, mensaj
 			} else {
 				console.log('No se estableció la conexión con la BD');
 			}
-
 		});
 	}
 
@@ -161,7 +123,7 @@ functions.androidNotificationSingle = function (idUser, tipoUser, titulo, mensaj
 		functions.obtenerDatosSupervisor(idUser, function(status, data){
 			//Aqui adentro obtenemos el id y despues lo reenviamos a la funcion sendNotificationSingle
 			if(status==1) {
-        console.log("Información: " + data.rows);
+        //console.log("Información: " + data.rows);
 				if(data.rowCount != 0){
 					if (data.rows[0].token != null){
 						//enviamos el token a la  funcion para enviar notificiaciones
@@ -474,9 +436,9 @@ functions.agregarSupervisor = function(nombre, apellido, correo, contrasena, cel
 
 // Funcíon que regresa la infromación personal de un usuario
 functions.obtenerDatosSupervisor = function(id, callback){
-  console.log("ObtenerDatosSupervisor: Entra a la consulta");
+  //console.log("ObtenerDatosSupervisor: Entra a la consulta");
   var query = 'SELECT * FROM supervisor s INNER JOIN (SELECT idzonaparken, nombre AS nombreZona FROM zonaparken) AS zp ON s.zonaparken_idzonaparken = zp.idzonaparken WHERE idsupervisor ='+id+';'
-console.log("ObtenerDatosSupervisor: "+ query);
+  //console.log("ObtenerDatosSupervisor: "+ query);
   db.pool.connect((err, client, done) => {
     if (err) throw err
 
@@ -487,11 +449,8 @@ console.log("ObtenerDatosSupervisor: "+ query);
      console.log(err.stack)
     } else{
       //Verificamos si la consulta regresa un valor
-      if(res.rows == ''){
-          console.log(res.rows)
-      }
       callback(1,res);
-      console.log(res.rows)
+      //console.log(res.rows)
 
     }
 
@@ -755,7 +714,7 @@ functions.buscarTodasZonasParkenID = function(callback){
 
 // Consulta las zonas parken a tantos kilometros de un punto
 functions.buscarEspacioParken = function(latitud, longitud, callback){
-  console.log("Buscando espacio Parken...");
+  console.log("Buscando el mejor espacio Parken...");
   var uno = longitud + ' ' + latitud;
   //console.log(uno);
 
@@ -897,7 +856,7 @@ if(user === 'automovilista'){
   ' SET ' + column + '=\'' + value +
   '\' WHERE ' + 'id' + user + '=' + id +' RETURNING idsupervisor, nombre, apellido, email, contrasena, celular, direccion, estatus, zonaparken_idzonaparken, token;';
 }
-console.log(query);
+//console.log(query);
   // callback
   db.pool.query(query, (err, res) => {
     // Si el UPDATE regresa un error entonces
@@ -906,7 +865,7 @@ console.log(query);
       callback(0,err);
     }else {
       //console.log(res.rows[0])
-      console.log(res.rows)
+      //console.log(res.rows)
       callback(1, res);
     }
     //db.pool.end()
@@ -1568,7 +1527,7 @@ functions.agregarZonaParken = function(nombreZona, coordenadasZona, coordenadasE
 			estatusZona +'\', ' +
 			precioZona + ') RETURNING idzonaparken;';
 
-      //console.log(query);
+      console.log(query);
 
   db.pool.query(query, (err, res) => {
     // Si el INSERT regresa un error entonces
@@ -1630,7 +1589,7 @@ functions.agregarZonaParken = function(nombreZona, coordenadasZona, coordenadasE
       }
     }
 
-    //console.log(query);
+    console.log(query);
 
     await db.pool.query(query, (err, res) => {
       // Si el INSERT regresa un error entonces
@@ -2220,29 +2179,26 @@ functions.verificarEstatusSesionParken = function(idSesion, estatus, callback){
 };
 
 // Funcíon que regresa la infromación personal de un usuario
+
 functions.verificarAdministrador = function(id, callback){
 console.log("Verificando administrador...");
   const query = {
     text: 'SELECT * FROM administrador WHERE idadministrador = $1;',
     values: [id]
-    //rowMode: 'array',
   }
-//console.log(query)
+  //console.log(query)
   db.pool.connect((err, client, done) => {
     if (err) return done(err)
-
-  db.pool.query(query, (err, res) =>{
-    if (err) {
-      // Error en la conexión con la BD
-      callback(0, err.stack);
-     console.log(err.stack)
-    } else{
+    db.pool.query(query, (err, res) =>{
+      if (err) {
+        // Error en la conexión con la BD
+        callback(0, err.stack);
+        console.log(err.stack)
+      } else{
         callback(1,res);
-    }
-
-  //db.pool.end()
-})
-})
+      }
+    })
+  })
 };
 
 // Funcíon que regresa la infromación personal de un usuario

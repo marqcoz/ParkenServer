@@ -57,7 +57,8 @@ io.on('connection', function(socket){
 
   socket.on('buscar espacio parken', function(msg){
     //console.log('message of ' + socket.id + ': ' + msg );
-
+    console.log("JSON Request: ");
+		console.log(msg);
     var latitud = msg.latitud;
     var longitud	 = msg.longitud;
 		var idAuto = msg.idAutomovilista.toString();
@@ -76,7 +77,6 @@ io.on('connection', function(socket){
           var coordenadasCentro = data.rows[0].coordenada.substring(ini, f)
           var centroArray = coordenadasCentro.split(" ");
 
-
               jeison = '{ "success":1, ' +
                 '"id":' + data.rows[0].idespacioparken + ', ' +
                 '"zona":' + data.rows[0].zonaparken + ', ' +
@@ -91,32 +91,14 @@ io.on('connection', function(socket){
                   }
                   store.set(idAuto, data.rows[0].idespacioparken.toString());
 
-
                 }else {
                   store.set(idAuto, data.rows[0].idespacioparken.toString());
                 }
 
-
-
-/*
-                								if(localStorage.getItem(idAuto) === "undefined" || localStorage.getItem(idAuto) === null){
-                									console.log('Aviso: NO existe localstorage');
-                									localStorage.setItem(idAuto, data.rows[0].idespacioparken.toString());
-                								}else{
-                									console.log('Aviso: YA existe localstorage ' + localStorage.getItem(idAuto));
-                									if(localStorage.getItem(idAuto) != data.rows[0].idespacioparken.toString()){
-                										console.log('Aviso: HA cambiado el espacio ' + localStorage.getItem(idAuto));
-                										localStorage.setItem(idAuto, data.rows[0].idespacioparken.toString())
-                										routes.androidNotificationSingle(idAuto, 'automovilista', 'Nuevo espacio Parken', 'El espacio '+ data.rows[0].idespacioparken.toString() + ' ahora es el más cercano a tu destino.', '{ "datos" : "OK", "idNotification" : "200", "espacioParken" : "' + data.rows[0].idespacioparken.toString() + '" }');
-                									}
-
-                								}
-*/
-
                 jsonResponse = jeison;
               //res.send(jsonResponse);
               socket.emit('buscar espacio parken', jsonResponse);
-              //console.log(jsonResponse);
+              console.log("Respuesta JSON: " + jsonResponse);
 
 
 
@@ -125,15 +107,15 @@ io.on('connection', function(socket){
           jsonResponse = '{"success":2}';
           //res.send(jsonResponse);
           socket.emit('buscar espacio parken', jsonResponse);
-          //console.log(jsonResponse);
+          console.log("Respuesta JSON: " + jsonResponse);
         }
 
     // Error con la conexion a la bd
       } else {
-        jsonResponse = '{success:0}';
+        jsonResponse = '{ "success": 0 }';
         //res.send(jsonResponse);
         socket.emit('buscar espacio parken', jsonResponse);
-        //console.log(jsonResponse);
+        console.log(jsonResponse);
       }
     });
     //io.emit('chat message', msg);
