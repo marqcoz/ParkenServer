@@ -40,7 +40,7 @@ jsonReporte = '{ ' +
 'idsupervisor: '  + data.rows[0].supervisor_idsupervisor +', ' +
 'idespacioparken: '  + data.rows[0].espacioparken_idespacioparken +', ' +
 'idzonaparken: ' + data.rows[0].espacioparken_zonaparken_idzonaparken + ' } ';
-*/
+
 jsonReporte =
 '"idreporte": "' + 10571 +'", ' +
 '"tipo": "' + 'PAGO' +'", ' +
@@ -58,7 +58,7 @@ console.log(jsonReporte);
 Requests.androidNotificationSingle(20074, 'supervisor', 'Nueva reporte', 'Necesitamos de tu ayuda. Revisa que sucede en el espacio Parken.', '{ "datos" : "OK", "idNotification" : "100", ' + jsonReporte+' }');
 
 //Requests.androidNotificationSingle(20035, 'supervisor', 'Supervisor eliminado', 'Tu cuenta ha sido eliminada', '{ "datos" : "OK", "idNotification" : "200"}');
-
+*/
 //Funcionparaobtenerlos valores iniciales tambien aqui
 Requests.obtenerValoresDelServer(function(status,data){
 
