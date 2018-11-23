@@ -619,7 +619,7 @@ functions.buscarZonaParken = function(latitud, longitud, distancia, callback){
 'WHERE idzonaparken != 0 AND idzonaparken != 1 AND estatus = \'DISPONIBLE\' AND sDistance.distancia <= ~2;';
   var qry2 = qry.replace('~1',uno);
   qry2 = qry2.replace('~2',distancia);
-  console.log(qry2);
+  //console.log(qry2);
 
 /*
   const query = {
