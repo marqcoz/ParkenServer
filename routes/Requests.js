@@ -1417,6 +1417,7 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 				jeison = '{ "success":1, ' +
 					'"id":' + data.rows[0].idespacioparken + ', ' +
 					'"zona":' + data.rows[0].zonaparken + ', ' +
+					'"nombrezona":"' + data.rows[0].nombrezona + '", ' +
 					'"direccion":"' + data.rows[0].direccion + '", ' +
 					'"coordenada": [ {' +
 						'"latitud":' + centroArray[1] + ', ' +

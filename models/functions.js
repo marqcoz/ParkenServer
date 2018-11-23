@@ -717,10 +717,10 @@ functions.buscarEspacioParken = function(latitud, longitud, distance, callback){
   //var uno = latitud + ' ' + longitud;
   //console.log(uno);
 
-  var qry = 'SELECT idespacioparken, direccion, estatus, zonaparken_idzonaparken As zonaparken, coordenada, distancia FROM ' +
-  '(SELECT idespacioparken, direccion, estatus, zonaparken_idzonaparken, ST_AsText(ubicacion) AS coordenada, ' +
-  '(ST_Distance_Sphere(ubicacion, ST_GeomFromText(\'POINT(~1)\'))) AS distancia ' +
-  'FROM espacioparken) AS eParken ' +
+  var qry = 'SELECT idespacioparken, direccion, estatus, zonaparken_idzonaparken As zonaparken, nombrezona, coordenada, distancia FROM ' +
+  '(SELECT idespacioparken, direccion, esp.estatus, zonaparken_idzonaparken, ST_AsText(esp.ubicacion) AS coordenada, ' +
+  '(ST_Distance_Sphere(esp.ubicacion, ST_GeomFromText(\'POINT(~1)\'))) AS distancia, zop.nombre AS nombrezona ' +
+  'FROM espacioparken esp INNER JOIN zonaparken zop ON esp.zonaparken_idzonaparken = zop.idzonaparken) AS eParken ' +
   'WHERE eParken.distancia = ('+
   'SELECT MIN(ST_Distance_Sphere(ubicacion, ST_GeomFromText(\'POINT(~1)\'))) FROM espacioparken ' +
   'WHERE estatus = \'DISPONIBLE\') ' +
@@ -733,7 +733,7 @@ functions.buscarEspacioParken = function(latitud, longitud, distance, callback){
  'WHERE idzonaparken != 0 AND idzonaparken != 1 AND estatus = \'DISPONIBLE\' AND sDistance.distancia <= ~2) AND eParken.estatus = \'DISPONIBLE\' ORDER BY idespacioparken limit 1;';				   
 
   var qry2 = qry.replace('~1',uno).replace('~1',uno).replace('~1',uno).replace('~2', distance);
-  //console.log(qry2);
+  console.log(qry2);
 
   // callback
   db.pool.query(qry2, (err, res) => {
