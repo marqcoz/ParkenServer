@@ -1398,8 +1398,8 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 
 	// Función para buscar si existen zonas parken cercanas a un punto geografico.
 	app.post("/automovilista/buscarEspacioParken", function(req,res){
-		console.log("JSON Request: ");
-		console.log(req.body);
+		//console.log("JSON Request: ");
+		//console.log(req.body);
 		var jeison;
 		var latitud = req.body.latitud;
 		var longitud = req.body.longitud;
@@ -1440,7 +1440,7 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 					store.set(idAuto, data.rows[0].idespacioparken.toString());
 				  }
 				  jsonResponse = jeison;
-				  console.log("Respuesta JSON: " + jsonResponse);
+				  //console.log("Respuesta JSON: " + jsonResponse);
 				  res.send(jsonResponse);
 				  
 		  }else{
@@ -1464,13 +1464,13 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 			}
 
 			res.send(jsonResponse);
-			console.log("Respuesta JSON: " + jsonResponse);
+			//console.log("Respuesta JSON: " + jsonResponse);
 		  }
 	  // Error con la conexion a la bd
 		} else {
 		  jsonResponse = '{"success":0}';
 		  res.send(jsonResponse);
-		  console.log("Respuesta JSON: " + jsonResponse);
+		  //console.log("Respuesta JSON: " + jsonResponse);
 		}
 	  });
 	});
