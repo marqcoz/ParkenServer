@@ -1423,9 +1423,9 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 						'"longitud":' + centroArray[0] + '} ] }';
 	
 				  if(store.hasOwn(idAuto)){
-					  console.log("HAsOWn");
+					  //console.log("HAsOWn");
 					if(store.get(idAuto) != data.rows[0].idespacioparken.toString()){
-						console.log("Sending NOtificaction");
+						//console.log("Sending NOtificaction");
 					  Requests.androidNotificationSingle(idAuto, 
 						'automovilista', 'Nuevo espacio Parken', 
 						'El espacio '+ data.rows[0].idespacioparken.toString() + 
@@ -1433,10 +1433,10 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 						'{ "datos" : "OK", "idNotification" : "200", "espacioParken" : "' 
 						+ data.rows[0].idespacioparken.toString() + '" }');
 					}
-					console.log("Nothing");
+					//console.log("Nothing");
 					store.set(idAuto, data.rows[0].idespacioparken.toString());
 				  }else {
-					console.log("Lovely");
+					//console.log("Lovely");
 					store.set(idAuto, data.rows[0].idespacioparken.toString());
 				  }
 				  jsonResponse = jeison;
@@ -1448,18 +1448,18 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 			jsonResponse = '{"success":2}';
 
 			if(store.hasOwn(idAuto)){
-				console.log("HAsOWn");
+				//console.log("HAsOWn");
 			  if(store.get(idAuto) != "0"){
-				  console.log("Sending NOtificaction");
+				  //console.log("Sending NOtificaction");
 				Requests.androidNotificationSingle(idAuto, 
 				  'automovilista', 'Espacios Parken no disponibles', 
 				  'No hay espacios Parken disponibles', 
 				  '{"datos": "OK", "idNotification": "1", "title": "Espacios Parken no disponibles", "msg": "No te preocupess, te notificaremos cuando un espacio este disponible."}');
 			  }
-			  console.log("Nothing");
+			  //console.log("Nothing");
 			  store.set(idAuto, "0");
 			}else {
-			  console.log("Lovely");
+			  //console.log("Lovely");
 			  store.set(idAuto,"0");
 			}
 
