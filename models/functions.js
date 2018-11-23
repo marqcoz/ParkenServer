@@ -747,7 +747,7 @@ functions.buscarEspacioParken = function(latitud, longitud, distance, callback){
     } else {
       //console.log(res.rows[0])
       callback(1, res);
-      console.log(res.rows[0])
+      //console.log(res.rows[0])
     }
     //db.pool.end()
   });
