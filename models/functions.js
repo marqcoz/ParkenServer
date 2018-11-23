@@ -95,7 +95,7 @@ functions.sendNotificationDry = function(topic1, tipo, titulo, mensaje, accion, 
 functions.androidNotificationSingle = function (idUser, tipoUser, titulo, mensaje, datos){
 	//Funcion que envia una notificación
   //Necesitamos llamar a la funcion obtenerDatosAutomovilista
-  //console.log("Se enviará una notificación al " + tipoUser + " " + idUser);
+  console.log("Se enviará una notificación al " + tipoUser + " " + idUser);
 	if(tipoUser === 'automovilista' && idUser != '0'){
 
 		functions.obtenerDatosAutomovilista(idUser, function(status, data){
@@ -316,10 +316,8 @@ functions.obtenerDatosAutomovilista = function(id, callback){
      console.log(err.stack)
     } else{
       //Verificamos si la consulta regresa un valor
-      if(res.rows == ''){
-          console.log(res.rows)
-      }
       callback(1,res);
+      console.log(res.rows)
 
     }
 
@@ -713,9 +711,10 @@ functions.buscarTodasZonasParkenID = function(callback){
 
 
 // Consulta las zonas parken a tantos kilometros de un punto
-functions.buscarEspacioParken = function(latitud, longitud, callback){
+functions.buscarEspacioParken = function(latitud, longitud, distance, callback){
   console.log("Buscando el mejor espacio Parken...");
   var uno = longitud + ' ' + latitud;
+  //var uno = latitud + ' ' + longitud;
   //console.log(uno);
 
   var qry = 'SELECT idespacioparken, direccion, estatus, zonaparken_idzonaparken As zonaparken, coordenada, distancia FROM ' +
@@ -724,13 +723,22 @@ functions.buscarEspacioParken = function(latitud, longitud, callback){
   'FROM espacioparken) AS eParken ' +
   'WHERE eParken.distancia = ('+
   'SELECT MIN(ST_Distance_Sphere(ubicacion, ST_GeomFromText(\'POINT(~1)\'))) FROM espacioparken ' +
-  'WHERE estatus = \'DISPONIBLE\')';
+  'WHERE estatus = \'DISPONIBLE\') ' +
+  'AND zonaparken_idzonaparken IN (SELECT idzonaparken from ((SELECT zParken.idzonaparken, zParken.precio, ' +
+    'max(ST_Distance_Sphere(dump.geom, ST_Centroid(zParken.ubicacion))) AS radio, ' +
+    'zParken.nombre, zParken.ubicacion, zParken.estatus, (ST_Length(ST_ShortestLine((zParken.ubicacion), ' +
+    'ST_GeomFromText(\'POINT(~1)\') )::GEOGRAPHY)) AS distancia FROM zonaparken AS zParken ' +
+   'JOIN ST_DumpPoints(zParken.ubicacion) dump ON TRUE ' +
+ 'GROUP BY zParken.idzonaparken, zParken.nombre)) As sDistance '+
+ 'WHERE idzonaparken != 0 AND idzonaparken != 1 AND estatus = \'DISPONIBLE\' AND sDistance.distancia <= ~2) AND eParken.estatus = \'DISPONIBLE\' ORDER BY idespacioparken limit 1;';				   
 
-  var qry2 = qry.replace('~1',uno).replace('~1',uno);
-  //console.log(qry2);
+  var qry2 = qry.replace('~1',uno).replace('~1',uno).replace('~1',uno).replace('~2', distance);
+  console.log(qry2);
 
   // callback
   db.pool.query(qry2, (err, res) => {
+    db.pool.connect((err, client, done) => {
+      if (err) throw err
     // Si el SELECT regresa un error entonces
     if (err) {
       console.log(err.stack);
@@ -739,9 +747,11 @@ functions.buscarEspacioParken = function(latitud, longitud, callback){
     } else {
       //console.log(res.rows[0])
       callback(1, res);
+      console.log(res.rows[0])
     }
     //db.pool.end()
-  })
+  });
+});
 };
 
 
@@ -900,7 +910,7 @@ functions.actualizarToken= function(id, token, user, callback){
 var query = 'UPDATE ' + user +
 ' SET token =\'' + token +
 '\' WHERE ' + 'id' + user + '=' + id;
-//console.log(query);
+console.log(query);
   // callback
   db.pool.query(query, (err, res) => {
     // Si el UPDATE regresa un error entonces

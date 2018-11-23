@@ -96,26 +96,27 @@ io.on('connection', function(socket){
                 }
 
                 jsonResponse = jeison;
+                console.log("Respuesta JSON: " + jsonResponse);
               //res.send(jsonResponse);
-              socket.emit('buscar espacio parken', jsonResponse);
-              console.log("Respuesta JSON: " + jsonResponse);
-
-
+              io.emit('buscar espacio parken', jsonResponse);
+              
 
         }else{
           //NO hay espacios Parken Disponible
           jsonResponse = '{"success":2}';
-          //res.send(jsonResponse);
-          socket.emit('buscar espacio parken', jsonResponse);
           console.log("Respuesta JSON: " + jsonResponse);
+          //res.send(jsonResponse);
+          io.emit('buscar espacio parken', jsonResponse);
+          
         }
 
     // Error con la conexion a la bd
       } else {
         jsonResponse = '{ "success": 0 }';
-        //res.send(jsonResponse);
-        socket.emit('buscar espacio parken', jsonResponse);
         console.log(jsonResponse);
+        //res.send(jsonResponse);
+        io.emit('buscar espacio parken', jsonResponse);
+        
       }
     });
     //io.emit('chat message', msg);

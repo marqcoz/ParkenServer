@@ -3,7 +3,7 @@ var Reque = {};
 var schedule = require('node-schedule');
 
 const Store = require('data-store');
-const store = new Store({ path: 'config.json' });
+const store = new Store({ path: '../config.json' });
 
 //Variables Timers en minutos
 //Timer espacio RESERVADO
@@ -1354,8 +1354,6 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 				if(data.rowCount != 0){
 							//if (data.rows[0].idautomovilista != null){
 
-
-
 							jeison = '{ "success":1, ' +
 							'"Espacios":' + data.rowCount + ', ' +
 							'"EspaciosParken":[';
@@ -1370,7 +1368,7 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 
 								jeison = jeison +
 								'{ "id":' + data.rows[i].idespacioparken + ', ' +
-								'"estatus":' + data.rows[i].estatus + ', ' +
+								'"estatus":"' + data.rows[i].estatus + '", ' +
 								'"zonaparken":' + data.rows[i].zonaparken + ', ' +
 								'"coordenada": [ {' +
 								'"latitud":' + centroArray[0] + ', ' +
@@ -1391,7 +1389,7 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 
 		// Error con la conexion a la bd
 			} else {
-				jsonResponse = '{succes:0}';
+				jsonResponse = '{"success":0}';
 				res.send(jsonResponse);
 			}
 		});
@@ -1405,25 +1403,29 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 		var jeison;
 		var latitud = req.body.latitud;
 		var longitud = req.body.longitud;
+		var distancia = req.body.distancia;
 		var idAuto = req.body.idAutomovilista.toString();
-    Requests.buscarEspacioParken(latitud, longitud, function(status, data){
+
+    Requests.buscarEspacioParken(latitud, longitud, distancia, function(status, data){
 		var jsonResponse = null;
 		if(status === 1) {
 		  if(data.rowCount != 0){
 			var ini = "POINT(".length;
 			var f = data.rows[0].coordenada.length - 1;
-			var coordenadasCentro = data.rows[0].coordenada.substring(ini, f)
+			var coordenadasCentro = data.rows[0].coordenada.substring(ini, f);
 			var centroArray = coordenadasCentro.split(" ");
 				jeison = '{ "success":1, ' +
 					'"id":' + data.rows[0].idespacioparken + ', ' +
 					'"zona":' + data.rows[0].zonaparken + ', ' +
 					'"direccion":"' + data.rows[0].direccion + '", ' +
 					'"coordenada": [ {' +
-						'"latitud":' + centroArray[0] + ', ' +
-						'"longitud":' + centroArray[1] + '} ] }';
+						'"latitud":' + centroArray[1] + ', ' +
+						'"longitud":' + centroArray[0] + '} ] }';
 	
 				  if(store.hasOwn(idAuto)){
+					  console.log("HAsOWn");
 					if(store.get(idAuto) != data.rows[0].idespacioparken.toString()){
+						console.log("Sending NOtificaction");
 					  Requests.androidNotificationSingle(idAuto, 
 						'automovilista', 'Nuevo espacio Parken', 
 						'El espacio '+ data.rows[0].idespacioparken.toString() + 
@@ -1431,22 +1433,42 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 						'{ "datos" : "OK", "idNotification" : "200", "espacioParken" : "' 
 						+ data.rows[0].idespacioparken.toString() + '" }');
 					}
+					console.log("Nothing");
 					store.set(idAuto, data.rows[0].idespacioparken.toString());
 				  }else {
+					console.log("Lovely");
 					store.set(idAuto, data.rows[0].idespacioparken.toString());
 				  }
 				  jsonResponse = jeison;
-				  res.send(jsonResponse);
 				  console.log("Respuesta JSON: " + jsonResponse);
+				  res.send(jsonResponse);
+				  
 		  }else{
 			//NO hay espacios Parken Disponible
 			jsonResponse = '{"success":2}';
+
+			if(store.hasOwn(idAuto)){
+				console.log("HAsOWn");
+			  if(store.get(idAuto) != "0"){
+				  console.log("Sending NOtificaction");
+				Requests.androidNotificationSingle(idAuto, 
+				  'automovilista', 'Espacios Parken no disponibles', 
+				  'No hay espacios Parken disponibles', 
+				  '{"datos": "OK", "idNotification": "1", "title": "Espacios Parken no disponibles", "msg": "No te preocupess, te notificaremos cuando un espacio este disponible."}');
+			  }
+			  console.log("Nothing");
+			  store.set(idAuto, "0");
+			}else {
+			  console.log("Lovely");
+			  store.set(idAuto,"0");
+			}
+
 			res.send(jsonResponse);
 			console.log("Respuesta JSON: " + jsonResponse);
 		  }
 	  // Error con la conexion a la bd
 		} else {
-		  jsonResponse = '{success:0}';
+		  jsonResponse = '{"success":0}';
 		  res.send(jsonResponse);
 		  console.log("Respuesta JSON: " + jsonResponse);
 		}
@@ -3017,11 +3039,11 @@ var zp;
 	// Se ha creado exitosamente la cuenta.
 	 var jsonResponse = 'null' ;
 		if(status==1) {
-			jsonResponse = '{success:1}';
+			jsonResponse = '{"success":1}';
 			res.send(jsonResponse);
 	// Ocurrió un error
 		} else {
-			jsonResponse = '{success:0}';
+			jsonResponse = '{"success":0}';
 				res.send(jsonResponse);
 		}
 	});
