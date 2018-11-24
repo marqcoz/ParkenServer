@@ -1075,6 +1075,7 @@ var query = 'UPDATE espacioparken '+
 
 functions.apartarEspacioParken = function(espacioP, zonaP, idAutomovilista, callback){
 
+  console.log("Se va a apartar el espacio Parken " + espacioP + " de la zona " + zonaP);
   const query = {
     text: 'SELECT book_parken_space($1, $2, $3)',
     values: [espacioP, zonaP, idAutomovilista],

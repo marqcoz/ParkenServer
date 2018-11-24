@@ -2249,7 +2249,7 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 
 			var jsonResponse = null;
 			// Consuta generada con éxito
-			if(status==1) {
+			if(status === 1) {
 				//Primero validamos si data nos devuelve registros
 				if(data.rowCount != 0){
 
@@ -2326,10 +2326,10 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 		// Error con la conexion a la bd
 			} else {
 				if(status == 2){
-					jsonResponse = '{success:2}';
+					jsonResponse = '{"success":2}';
 					res.send(jsonResponse);
 				}else{
-					jsonResponse = '{success:0}';
+					jsonResponse = '{"success":0}';
 					res.send(jsonResponse);
 				}
 
