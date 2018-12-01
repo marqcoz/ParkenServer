@@ -737,6 +737,7 @@ functions.buscarEspacioParken = function(latitud, longitud, distance, callback){
 
   // callback
   db.pool.query(qry2, (err, res) => {
+    done();
     db.pool.connect((err, client, done) => {
       if (err) throw err
     // Si el SELECT regresa un error entonces
