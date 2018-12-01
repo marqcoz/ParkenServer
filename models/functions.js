@@ -157,6 +157,9 @@ functions.crearCuentaAuto = function(nombre, apellido, correo, contrasena, celul
   }
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el INSERT regresa un error entonces
     if (err) {
@@ -184,6 +187,7 @@ functions.crearCuentaAuto = function(nombre, apellido, correo, contrasena, celul
     }
     //db.pool.end()
   })
+})
 };
 
 // Función que crea una cuenta de Supervisor
@@ -199,6 +203,9 @@ functions.crearCuentaSupervisor = function(nombre, apellido, correo, contrasena,
   }
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el INSERT regresa un error entonces
     if (err) {
@@ -225,6 +232,7 @@ functions.crearCuentaSupervisor = function(nombre, apellido, correo, contrasena,
     }
     //db.pool.end()
   })
+})
 };
 
 // Función que crea una cuenta de Administrador
@@ -240,6 +248,9 @@ functions.crearCuentaSupervisor = function(nombre, apellido, correo, contrasena,
   }
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el INSERT regresa un error entonces
     if (err) {
@@ -260,6 +271,7 @@ functions.crearCuentaSupervisor = function(nombre, apellido, correo, contrasena,
     }
     //db.pool.end()
   })
+})
 };
 
 // Funcíon que valida el inicio de sesión en la BD para todos los usuarios
@@ -499,6 +511,9 @@ functions.crearNuevoVehiculo = function(automovilista, marca, modelo, placa, cal
   }
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el INSERT regresa un error entonces
     if (err) {
@@ -525,6 +540,7 @@ functions.crearNuevoVehiculo = function(automovilista, marca, modelo, placa, cal
     }
     //db.pool.end()
   })
+})
 };
 
 // Función que consulta todos los vehiculos registrados de un automovilista
@@ -538,6 +554,9 @@ functions.obtenerVehiculosAutomovilista = function(automovilista,callback){
   }
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el SELECT regresa un error entonces
     if (err) {
@@ -552,7 +571,7 @@ functions.obtenerVehiculosAutomovilista = function(automovilista,callback){
     //db.pool.done();
   })
   //client
-
+  })
 };
 
 
@@ -567,6 +586,9 @@ functions.obtenerIdVehiculo = function(placa,callback){
   }
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el SELECT regresa un error entonces
     if (err) {
@@ -581,7 +603,7 @@ functions.obtenerIdVehiculo = function(placa,callback){
     //db.pool.done();
   })
   //client
-
+  })
 };
 
 // Consulta la información de las zonas Parken incluidos los espacios Parken
@@ -807,6 +829,9 @@ if(tipo == 1){
   //console.log(query);
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el SELECT regresa un error entonces
     if (err) {
@@ -819,6 +844,7 @@ if(tipo == 1){
     }
     //db.pool.end()
   })
+})
 };
 
 // Consulta las zonas parken a tantos kilometros de un punto
@@ -839,6 +865,9 @@ if(tipo == 1){
   //console.log(query);
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el SELECT regresa un error entonces
     if (err) {
@@ -851,6 +880,7 @@ if(tipo == 1){
     }
     //db.pool.end()
   })
+})
 };
 
 // Función que crea una cuenta de Automovilista
@@ -877,7 +907,7 @@ if(user === 'automovilista'){
 }
 //console.log(query);
   // callback
-  db.pool.query(query, (err, res) => {
+  db.pool.query(query, (err, res) =>{
     // Si el UPDATE regresa un error entonces
     if (err) {
       console.log(err.stack)
@@ -898,6 +928,9 @@ functions.actualizarPuntosParken= function(id, value, callback){
 var query = 'SELECT refresh_puntosparken('+ value +', '+ id +')';
 //console.log(query);
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el UPDATE regresa un error entonces
     if (err) {
@@ -910,6 +943,7 @@ var query = 'SELECT refresh_puntosparken('+ value +', '+ id +')';
     }
     //db.pool.end()
   })
+})
 };
 
 // Función que actualiza el token de un usuario (automovilista o supervisor)
@@ -921,6 +955,9 @@ var query = 'UPDATE ' + user +
 '\' WHERE ' + 'id' + user + '=' + id;
 console.log(query);
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el UPDATE regresa un error entonces
     if (err) {
@@ -933,6 +970,7 @@ console.log(query);
     }
     //db.pool.end()
   })
+})
 };
 
 // Función que actualiza el perfil del administrador
@@ -947,6 +985,9 @@ var query = 'UPDATE ' + 'administrador' +
 '\' WHERE ' + 'id' + 'administrador' + '=' + id + ' RETURNING idadministrador, nombre, apellido, contrasena, email;';
 console.log(query);
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el UPDATE regresa un error entonces
     if (err) {
@@ -959,6 +1000,7 @@ console.log(query);
     }
     //db.pool.end()
   })
+})
 };
 
 
@@ -980,6 +1022,9 @@ functions.actualizarSupervisor= function(idsupervisor, nombre, apellido,
   ' RETURNING idsupervisor, nombre, apellido, email, contrasena, celular, direccion, estatus, zonaparken_idzonaparken;';
   console.log(query);
     // callback
+    db.pool.connect((err, client, done) => {     
+      done();
+      if (err) throw err
     db.pool.query(query, (err, res) => {
       // Si el UPDATE regresa un error entonces
       if (err) {
@@ -1005,6 +1050,7 @@ functions.actualizarSupervisor= function(idsupervisor, nombre, apellido,
       }
       //db.pool.end()
     })
+  })
   };
 
 
@@ -1021,6 +1067,9 @@ functions.eliminarVehiculo= function(idvehiculo, idautomovilista, callback){
     values: [idvehiculo, idautomovilista],
   }
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el UPDATE regresa un error entonces
     if (err) {
@@ -1033,6 +1082,7 @@ functions.eliminarVehiculo= function(idvehiculo, idautomovilista, callback){
     }
     //db.pool.end()
   })
+})
 };
 
 // Función que crea una cuenta de Automovilista
@@ -1045,6 +1095,9 @@ var query = 'UPDATE vehiculo '+
 ' WHERE idvehiculo = ' + idvehiculo + ';'
 //console.log(query);
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el UPDATE regresa un error entonces
     if (err) {
@@ -1057,6 +1110,7 @@ var query = 'UPDATE vehiculo '+
     }
     //db.pool.end()
   })
+})
 };
 
 // Función que crea una cuenta de Automovilista
@@ -1068,6 +1122,9 @@ var query = 'UPDATE espacioparken '+
 ' WHERE idespacioparken = ' + idEspacio + ';'
 //console.log(query);
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el UPDATE regresa un error entonces
     if (err) {
@@ -1080,6 +1137,7 @@ var query = 'UPDATE espacioparken '+
     }
     //db.pool.end()
   })
+})
 };
 
 functions.apartarEspacioParken = function(espacioP, zonaP, idAutomovilista, callback){
@@ -1147,6 +1205,9 @@ functions.obtenerSancionesAutomovilista = function(automovilista, callback){
 
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el SELECT regresa un error entonces
     if (err) {
@@ -1159,6 +1220,7 @@ functions.obtenerSancionesAutomovilista = function(automovilista, callback){
     }
     //db.pool.end()
   })
+})
 };
 
 functions.pagarSancion = function(idSancion, callback){
@@ -1277,7 +1339,11 @@ functions.obtenerSesionesParken = function(automovilista, callback){
 
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
+
     // Si el SELECT regresa un error entonces
     if (err) {
       console.log(err.stack);
@@ -1288,6 +1354,7 @@ functions.obtenerSesionesParken = function(automovilista, callback){
     }
     //db.pool.end()
   })
+})
 };
 
 // Función que consulta todas las sesiones Parken del automovilista
@@ -1325,6 +1392,9 @@ functions.obtenerAllSesionesParken = function(automovilista, callback){
 
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el SELECT regresa un error entonces
     if (err) {
@@ -1336,6 +1406,7 @@ functions.obtenerAllSesionesParken = function(automovilista, callback){
     }
     //db.pool.end()
   })
+})
 };
 
 
@@ -1371,6 +1442,9 @@ functions.obtenerEstatusEspacioParken = function(id, callback){
 
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el SELECT regresa un error entonces
     if (err) {
@@ -1383,6 +1457,7 @@ functions.obtenerEstatusEspacioParken = function(id, callback){
     }
     //db.pool.end()
   })
+})
 };
 
 
@@ -1394,6 +1469,9 @@ functions.obtenerEspaciosParkenParaSesion = function(id, callback){
   'FROM espacioparken ' +
   'WHERE zonaparken_idzonaparken = ' + id + ' AND (estatus = \'DISPONIBLE\' OR estatus = \'OCUPADO\') ORDER BY idespacioparken;';
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el SELECT regresa un error entonces
     if (err) {
@@ -1406,6 +1484,7 @@ functions.obtenerEspaciosParkenParaSesion = function(id, callback){
     }
     //db.pool.end()
   })
+})
 };
 
 // Función que consulta todas las sesiones Parken del automovilista
@@ -1423,6 +1502,9 @@ functions.obtenerTodosEspaciosParken = function(id, opc, callback){
     }
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el SELECT regresa un error entonces
     if (err) {
@@ -1435,6 +1517,7 @@ functions.obtenerTodosEspaciosParken = function(id, opc, callback){
     }
     //db.pool.end()
   })
+})
 };
 
 // Función que consulta todas las sesiones Parken del automovilista
@@ -1453,6 +1536,9 @@ functions.obtenerTodosReportes = function(id, callback){
 'WHERE r.supervisor_idsupervisor = ' + id + 'ORDER BY tiempo DESC;';
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     if (err) {
         console.log(err.stack);
@@ -1462,6 +1548,7 @@ functions.obtenerTodosReportes = function(id, callback){
     }
     //db.pool.end()
   })
+})
 };
 
 
@@ -1480,6 +1567,9 @@ functions.obtenerValoresDelServer = function(callback){
 
 
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el SELECT regresa un error entonces
     if (err) {
@@ -1491,6 +1581,7 @@ functions.obtenerValoresDelServer = function(callback){
     }
     //db.pool.end()
   })
+})
 };
 
 
@@ -1525,6 +1616,9 @@ functions.crearReporte = function(estatus, tipo, observaciones, automovilista, e
 
     //console.log(query);
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el INSERT regresa un error entonces
     if (err) {
@@ -1537,6 +1631,7 @@ functions.crearReporte = function(estatus, tipo, observaciones, automovilista, e
     }
     //db.pool.end()
   })
+})
 };
 
 // Función para insertar una ZonaParken
@@ -1552,6 +1647,9 @@ functions.agregarZonaParken = function(nombreZona, coordenadasZona, coordenadasE
 
       console.log(query);
 
+      db.pool.connect((err, client, done) => {     
+        done();
+        if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el INSERT regresa un error entonces
     if (err) {
@@ -1573,6 +1671,7 @@ functions.agregarZonaParken = function(nombreZona, coordenadasZona, coordenadasE
     }
     //db.pool.end()
   })
+})
 };
 
 // Función para insertar espaciosParken
@@ -1614,6 +1713,10 @@ functions.agregarZonaParken = function(nombreZona, coordenadasZona, coordenadasE
 
     console.log(query);
 
+    db.pool.connect((err, client, done) => {     
+      done();
+      if (err) throw err
+
     await db.pool.query(query, (err, res) => {
       // Si el INSERT regresa un error entonces
       if (err) {
@@ -1625,8 +1728,10 @@ functions.agregarZonaParken = function(nombreZona, coordenadasZona, coordenadasE
       }
       //db.pool.end()
     })
+  })
 
   }
+  
 };
 
 
@@ -1661,6 +1766,9 @@ functions.crearSancion = function(idAutomovilista, idVehiculo, idSupervisor, idE
 	'sesionparken_idsesionparken;';
 //
 
+db.pool.connect((err, client, done) => {     
+  done();
+  if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el INSERT regresa un error entonces
     if (err) {
@@ -1672,6 +1780,7 @@ functions.crearSancion = function(idAutomovilista, idVehiculo, idSupervisor, idE
     }
     //db.pool.end()
   })
+})
 };
 
 
@@ -2277,6 +2386,9 @@ var query = 'UPDATE ' + user +
 '\' WHERE ' + 'id' + user + '=' + id +' RETURNING idautomovilista, nombre, apellido, email, contrasena, celular, puntosparken, estatus;';
 //console.log(query);
   // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
   db.pool.query(query, (err, res) => {
     // Si el UPDATE regresa un error entonces
     if (err) {
@@ -2289,5 +2401,6 @@ var query = 'UPDATE ' + user +
     }
     //db.pool.end()
   })
+})
 };
 module.exports = functions;
