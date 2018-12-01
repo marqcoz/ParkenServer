@@ -283,6 +283,7 @@ functions.iniciarSesion = function(correo, contrasena, usuario, callback){
   }
 //console.log(query)
   db.pool.connect((err, client, done) => {
+    done();
     if (err) throw err
   db.pool.query(query, (err, res) =>{
     if (err) {
@@ -307,6 +308,7 @@ functions.obtenerDatosAutomovilista = function(id, callback){
   }
 //console.log(query)
   db.pool.connect((err, client, done) => {
+    done();
     if (err) throw err
 
   db.pool.query(query, (err, res) =>{
@@ -335,6 +337,7 @@ functions.obtenerAdministradores = function( callback){
   }
 //console.log(query)
   db.pool.connect((err, client, done) => {
+    done();
     if (err) throw err
 
   db.pool.query(query, (err, res) =>{
@@ -366,6 +369,7 @@ functions.agregarAdministrador = function(nombre, apellido, correo, contrasena, 
   }
 //console.log(query)
   db.pool.connect((err, client, done) => {
+    done();
     if (err) throw err
 
   db.pool.query(query, (err, res) =>{
@@ -400,7 +404,8 @@ functions.agregarSupervisor = function(nombre, apellido, correo, contrasena, cel
     values: [nombre, apellido, correo, contrasena, celular, direccion, estatus, zona]
   }
 //console.log(query)
-  db.pool.connect((err, client, done) => {
+  db.pool.connect((err, client, done) => {     
+    done();
     if (err) throw err
 
   db.pool.query(query, (err, res) =>{
@@ -437,7 +442,8 @@ functions.obtenerDatosSupervisor = function(id, callback){
   //console.log("ObtenerDatosSupervisor: Entra a la consulta");
   var query = 'SELECT * FROM supervisor s INNER JOIN (SELECT idzonaparken, nombre AS nombreZona FROM zonaparken) AS zp ON s.zonaparken_idzonaparken = zp.idzonaparken WHERE idsupervisor ='+id+';'
   //console.log("ObtenerDatosSupervisor: "+ query);
-  db.pool.connect((err, client, done) => {
+  db.pool.connect((err, client, done) => {     
+    done();
     if (err) throw err
 
   db.pool.query(query, (err, res) =>{
@@ -463,7 +469,8 @@ functions.obtenerEspaciosParkenConSanciones = function(idzona, callback){
 
   var query = 'SELECT * FROM sancion s INNER JOIN vehiculo v ON s.vehiculo_idvehiculo = v.idvehiculo WHERE s.espacioparken_zonaparken_idzonaparken = '+ idzona + ' AND s.estatus =\'PENDIENTE\' ORDER BY s.espacioparken_idespacioparken;';
   console.log(query);
-  db.pool.connect((err, client, done) => {
+  db.pool.connect((err, client, done) => {     
+    done();
     if (err) throw err
     db.pool.query(query, (err, res) =>{
       if (err) {
@@ -1084,7 +1091,8 @@ functions.apartarEspacioParken = function(espacioP, zonaP, idAutomovilista, call
   }
 
   //console.log(query)
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) throw err
 
     db.pool.query(query, (err, res) =>{
@@ -1161,7 +1169,8 @@ functions.pagarSancion = function(idSancion, callback){
   }
 
   //console.log(query)
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) throw err
 
     db.pool.query(query, (err, res) =>{
@@ -1191,7 +1200,8 @@ functions.cerrarReporte = function(idreporte, callback){
   }
 
   //console.log(query)
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) throw err
 
     db.pool.query(query, (err, res) =>{
@@ -1673,7 +1683,8 @@ functions.verificarEstatusVehiculo = function(idVehiculo, callback){
     values: [idVehiculo],
   }
 //console.log(query)
-  db.pool.connect((err, client, done) => {
+  db.pool.connect((err, client, done) => {     
+    done();
     if (err) throw err
 
   db.pool.query(query, (err, res) =>{
@@ -1705,7 +1716,8 @@ functions.activarSesionParken = function(idSesionParken, idAutomovilista, fechaF
   }
 
   //console.log(query)
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) throw err
 
     db.pool.query(query, (err, res) =>{
@@ -1731,7 +1743,8 @@ functions.obtenerEspacioParken = function(idEspacioParken, callback){
   }
 
   //console.log(query)
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) throw err
 
     db.pool.query(query, (err, res) =>{
@@ -1758,7 +1771,8 @@ functions.obtenerPuntosParken = function(idAutomovilista, callback){
   }
 
   //console.log(query)
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) throw err
 
     db.pool.query(query, (err, res) =>{
@@ -1783,7 +1797,8 @@ functions.eliminarSesionParken = function(sesionparken, callback){
   }
 
   //console.log(query)
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) throw err
 
     db.pool.query(query, (err, res) =>{
@@ -1808,7 +1823,8 @@ functions.eliminarAdministrador = function(idadministrador, callback){
   }
 
   //console.log(query)
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) throw err
 
     db.pool.query(query, (err, res) =>{
@@ -1837,7 +1853,8 @@ functions.eliminarEspaciosParken = function(idzona, espaciosParken, callback){
   }else{
     var query = 'DELETE FROM espacioparken WHERE zonaparken_idzonaparken = ' + idzona + ' AND idespacioparken IN ' + espaciosParken + ';';
     console.log(query)
-      db.pool.connect((err, client, done) => {
+      db.pool.connect((err, client, done) => {     
+        done();
         if (err) throw err
 
       db.pool.query(query, (err, res) =>{
@@ -1878,7 +1895,8 @@ functions.eliminarEspaciosParkenFuera = function(idzona, espaciosParken, callbac
      }
      query = query + ' AND zonaparken_idzonaparken = '+idzona+';';
     console.log(query)
-      db.pool.connect((err, client, done) => {
+      db.pool.connect((err, client, done) => {     
+        done();
         if (err) throw err
 
       db.pool.query(query, (err, res) =>{
@@ -1926,7 +1944,8 @@ functions.eliminarSupervisor= function(idsupervisor, callback){
   }
 
   //console.log(query)
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) throw err
 
     db.pool.query(query, (err, res) =>{
@@ -1959,7 +1978,8 @@ functions.eliminarZonaParken= function(idzonaparken, callback){
   }
 
   //console.log(query)
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) throw err
 
     db.pool.query(query, (err, res) =>{
@@ -2014,7 +2034,8 @@ functions.actualizarZonaParken= function(idzona, nombre, estatus, precio, coorde
   ' WHERE idzonaparken = ' + idzona + ' RETURNING idzonaparken, nombre, estatus, precio, ubicacion;';
 
   console.log(query);
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) throw err
 
     db.pool.query(query, (err, res) =>{
@@ -2067,7 +2088,8 @@ functions.obtenerSupervisoresXZona = function(idzona, callback){
   }
 
   //console.log(qry)
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) throw err
 
     db.pool.query(qry, (err, res) =>{
@@ -2100,7 +2122,8 @@ functions.modificarSesionParken = function(idSesion, estatus, fecha, callback){
     }
 
     console.log(query)
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) throw err
 
     db.pool.query(query, (err, res) =>{
@@ -2134,7 +2157,8 @@ functions.sesionParkenPagando= function(idSesion, minutos, segundos, callback){
   console.log(query);
 
   //console.log(query)
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) throw err
 
     db.pool.query(query, (err, res) =>{
@@ -2166,7 +2190,8 @@ functions.verificarEstatusSesionParken = function(idSesion, estatus, callback){
     //rowMode: 'array',
   }
 //console.log(query)
-  db.pool.connect((err, client, done) => {
+  db.pool.connect((err, client, done) => {     
+    done();
     if (err) throw err
 
   db.pool.query(query, (err, res) =>{
@@ -2200,7 +2225,8 @@ console.log("Verificando administrador...");
     values: [id]
   }
   //console.log(query)
-  db.pool.connect((err, client, done) => {
+  db.pool.connect((err, client, done) => {     
+    done();
     if (err) return done(err)
     db.pool.query(query, (err, res) =>{
       if (err) {
@@ -2223,7 +2249,8 @@ functions.verificarSupervisor = function(id, callback){
       //rowMode: 'array',
     }
   //console.log(query)
-    db.pool.connect((err, client, done) => {
+    db.pool.connect((err, client, done) => {     
+      done();
       if (err) return done(err)
 
     db.pool.query(query, (err, res) =>{
