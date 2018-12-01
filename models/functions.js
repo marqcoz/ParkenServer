@@ -1713,11 +1713,11 @@ functions.agregarZonaParken = function(nombreZona, coordenadasZona, coordenadasE
 
     console.log(query);
 
-    db.pool.connect((err, client, done) => {     
+    await db.pool.connect((err, client, done) => {     
       done();
       if (err) throw err
 
-    await db.pool.query(query, (err, res) => {
+     db.pool.query(query, (err, res) => {
       // Si el INSERT regresa un error entonces
       if (err) {
         console.log(err.stack);
