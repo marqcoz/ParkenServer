@@ -1335,7 +1335,7 @@ functions.obtenerSesionesParken = function(automovilista, callback){
           //'AND s.estatus = \'PENDIENTE\'' +
           'AND sp.automovilista_idautomovilista = ' + automovilista +
           ' ORDER BY fechainicio ASC' +
-          ') ORDER BY estatus, fechainicio ASC;';
+          ') ORDER BY idsesionparken DESC;';
 
       //console.log(query);
 
