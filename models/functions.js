@@ -1386,7 +1386,7 @@ functions.obtenerAllSesionesParken = function(automovilista, callback){
             //'WHERE sp.estatus != \'RESERVADO\' ' +
             //'AND s.estatus = \'PENDIENTE\'' +
             'AND sp.automovilista_idautomovilista = ' + automovilista +
-            ') ORDER BY fechainicio DESC';
+            ') ORDER BY estatus, fechainicio DESC';
 
       //console.log(query);
 
