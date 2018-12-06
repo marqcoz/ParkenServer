@@ -44,6 +44,7 @@ var test = {
 
 io.on('connection', function(socket){
   console.log('a user connected');
+  console.log(socket.id);
 
     socket.emit('chat message', test);
   socket.on('disconnect', function(){
