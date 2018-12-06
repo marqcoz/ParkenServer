@@ -47,7 +47,7 @@ io.on('connection', function(socket){
 
     socket.emit('chat message', test);
   socket.on('disconnect', function(){
-    console.log('Usuario desconectado' + ' ' + socket.id;
+    console.log('Usuario desconectado' + ' ' + socket.id);
   });
 
   socket.on('location', function(loc){
