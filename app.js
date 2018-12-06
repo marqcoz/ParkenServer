@@ -47,12 +47,13 @@ io.on('connection', function(socket){
 
     socket.emit('chat message', test);
   socket.on('disconnect', function(){
-    console.log('Usuario desconectado');
-
+    console.log('Usuario desconectado' + ' ' + socket.id());
   });
 
-
-
+  socket.on('location', function(loc){
+    console.log('ID');
+    console.log(socket.id);
+  });
 
 
   socket.on('buscar espacio parken', function(msg){
