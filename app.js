@@ -9,7 +9,7 @@ var reque = require('./routes/Requests');
 var io = require('socket.io')(http);
 
 const Store = require('data-store');
-const store = new Store({ path: 'config.json' });
+const store = new Store({ path: '../config.json' });
 
 app.set('port', process.env.PORT || 3001);
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -65,6 +65,16 @@ io.on('connection', function(socket){
     console.log('ID');
     console.log(socket.id);
     console.log(loc);
+    //Creamos el json con la información del supervisor
+    var jsonLocation = {
+      id: loc.idSupervisor,
+      idZona: loc.idZonaParken,
+      lat: loc.lat,
+      lng: loc.lng
+    }
+    //Aqui vamos a guardarlo en el localstorage
+    store.set(socket.id, jsonLocation);
+  
   });
 
 
