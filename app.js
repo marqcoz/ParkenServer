@@ -62,6 +62,8 @@ io.on('connection', function(socket){
   socket.on('disconnect', function(){
     //Cuando se desconecte un usuario, eliminamos su registro en storage
     console.log('Usuario desconectado' + ' ' + socket.id);
+    //Eliminamos el array del usuario desconectado
+    deleteSuperJson(socket.id);
     store.del(socket.id);
     console.log(store.data);
   });
@@ -71,6 +73,7 @@ io.on('connection', function(socket){
     //console.log(loc);
     //Creamos el json con la información del supervisor
     var jsonLocation = {
+      socket: socket.id,
       id: loc.idSupervisor,
       idZona: loc.idZonaParken,
       lat: loc.lat,
@@ -81,8 +84,9 @@ io.on('connection', function(socket){
     store.set(socket.id, jsonLocation);
     //console.log(store.data);
     console.log(jsonSupers);
-
-    //obtenerUbicacionSupervisores(18, function(status, data){});
+    obtenerUbicacionSupervisores(18, function(data){
+      console.log(data);
+    });
   });
 
 
@@ -171,23 +175,32 @@ crearReporte2 = function(callback){
 obtenerUbicacionSupervisores = function(idZona, callback){
   //Esta funcion va a crear un json con las ubicaciones de los supervisores de las zonaParken ingresada
   //Primero recorremos todos los registros
-  console.log('Store');
-  //console.log(store);
-  var stringStore = store.json();
-  //console.log(jsonStore);
-  //console.log(jsonStore[7]["id"]);
-  //console.log(store.get());
+  var jsonUbicacionesSuper = [];
+  var jsonUbicacionesSuperAux;
+
+  for(var i = 0; i < jsonSupers.length; i++){
+    //Nos detenemos en los json con la zona correspondiente
+    if(jsonSupers[i].idZona == idZona){
+      //Aqui vamos guardando en el json la información
+      jsonUbicacionesSuperAux = {
+        id: jsonSupers[i].id,
+        lat: jsonSupers[i].lat,
+        lng: jsonSupers[i].lng
+      }
+      jsonUbicacionesSuper = jsonUbicacionesSuper.concat(jsonUbicacionesSuperAux);
+    }
+  }
   
-  //console.log('Alerta');
-  var jsonStore = JSON.parse(stringStore);
-  console.log(jsonStore[0]['id']);
-  //for(var i = 0; i < jsonStore.length; i++){
-    //console.log(jsonStore[i][0]);
-  //}
-
-  var jsonUbicacionesSuper = '{}';
   callback(jsonUbicacionesSuper);
+};
 
+deleteSuperJson = function(socket){
+  for(var i = 0; i < jsonSupers.length; i++){
+    if(jsonSupers[i].socket == socket){
+      jsonSuper.splice(i, 1);
+      break;
+    }
+  }
 };
 
 /*
