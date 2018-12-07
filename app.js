@@ -67,7 +67,7 @@ io.on('connection', function(socket){
   socket.on('disponibleAReportes', function(loc){
     console.log('ID');
     console.log(socket.id);
-    var jsonLoc = JSON.stringify(eval("(" + loc + ")"));
+    var jsonLoc = JSON.stringify(loc);
     //Creamos el json con la información del supervisor
     var jsonLocation = {
       id: jsonLoc.idSupervisor,
