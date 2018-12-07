@@ -2378,6 +2378,45 @@ functions.verificarSupervisor = function(id, callback){
   })
   };
 
+// Crea una tabla con las distancias de los supervisores y el numero de reportes asignados
+functions.obtenerMejorSupervisor = function(supervisores, idEspacioParken, peticion, callback){
+  console.log("Buscando al mejor supervisor...");
+
+  //Tenemos supervisores[{id: 3, lat:19.56, ln: 99.875}, {id: 3, lat:19.56, ln: 99.875}]
+  //Recorremos el json y por cada arreglo vamos creando el texto con la consulta asi:
+
+  var queryCREATE = 'CREATE TEMPORARY TABLE temp_supers_distance' + peticion + '(id integer, distancia double precision, estatus varchar, reportes int); ';
+
+  var queryINSERT = 'INSERT INTO temp_supers_distance' + peticion + '(id, distancia, estatus, reportes) VALUES';
+
+  for(var i = 0; i < supervisores.length; i++){
+    queryINSERT = queryINSERT + '(' + supervisores[i].id + ', ' + 
+    '(ST_Distance_Sphere(' +
+			'(SELECT ubicacion FROM espacioparken WHERE idespacioparken = ' + idEspacioParken + '), ' + 
+			'ST_GeomFromText(\'POINT(' + supervisores[i].lat + ' ' + supervisores[i].lng + ')\'))), ' +	   (SELECT estatus FROM supervisor WHERE idsupervisor = 3),
+    '(SELECT (*) FROM reporte WHERE supervisor_idsupervisor = ' + supervisores[i].id + ' AND estatus = \'ASIGNADO\'))';
+    
+    if(i != supervisores.length - 1){
+      queryINSERT = queryINSERT + ', ';
+    }
+  }
+
+  var query = queryCREATE + queryINSERT;
+  console.log(query);
+  
+  // callback
+  db.pool.query(query, (err, res) => {
+    // Si el SELECT regresa un error entonces
+    if (err) {
+      console.log(err.stack);
+        callback(0, err.stack);
+    } else {
+      console.log(res.rows);
+      callback(1, res);
+    }
+  })
+};
+
 
 // Función que crea una cuenta de Automovilista
 functions.liberarVehiculo= function(user, id, column, value, callback){

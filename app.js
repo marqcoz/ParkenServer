@@ -69,6 +69,7 @@ io.on('connection', function(socket){
   });
 
   socket.on('disponibleAReportes', function(loc){
+    //Evento que guarda la ubicacion de todos los supervisores en una variable.
     //console.log(socket.id);
     //console.log(loc);
     //Creamos el json con la información del supervisor
@@ -85,11 +86,77 @@ io.on('connection', function(socket){
     //Aqui vamos a guardarlo en el localstorage
     store.set(socket.id, jsonLocation);
     //console.log(store.data);
-    console.log(jsonSupers);
-    obtenerUbicacionSupervisores(18, function(data){
-      console.log(data);
-    });
+    //console.log(jsonSupers);
+
+    //Esta no la mandaremos a llamas mas tarde
+    obtenerUbicacionSupervisores(18, function(supervisores){
+      //Obtenemos al mejor supervisor del que le acabamos de mandar
+      Requests.obtenerMejorSupervisor(supervisores, 324, 10023, function(status, data){
+        console.log("Resultado:");
+        console.log(status, data);
+      });
+      //console.log(supervisores);
+    });  
   });
+
+
+crearReporte2 = function(callback){
+  obtenerUbicacionSupervisores(18, function(status, data){});
+};
+
+
+
+obtenerUbicacionSupervisores = function(idZona, callback){
+  //Esta funcion va a crear un json con las ubicaciones de los supervisores de las zonaParken ingresada
+  //Primero recorremos todos los registros
+  var jsonUbicacionesSuper = [];
+  var jsonUbicacionesSuperAux;
+
+  for(var i = 0; i < jsonSupers.length; i++){
+    //Nos detenemos en los json con la zona correspondiente
+    if(jsonSupers[i].idZona == idZona){
+      //Aqui vamos guardando en el json la información
+      jsonUbicacionesSuperAux = {
+        id: jsonSupers[i].id,
+        lat: jsonSupers[i].lat,
+        lng: jsonSupers[i].lng
+      }
+      jsonUbicacionesSuper = jsonUbicacionesSuper.concat(jsonUbicacionesSuperAux);
+    }
+  }
+  
+  callback(jsonUbicacionesSuper);
+};
+
+deleteSuperJson = function(socket){
+  for(var i = 0; i < jsonSupers.length; i++){
+    if(jsonSupers[i].socket == socket){
+      jsonSupers.splice(i, 1);
+      break;
+    }
+  }
+};
+
+agregarUbicacionSupervisores = function(json){
+  var j =[];
+  j = j.concat(json);
+
+  for(var i = 0; i < jsonSupers.length; i++){
+    if(jsonSupers[i].socket == j[0].socket){ //Si existe el socket, entonces lo actualizamos
+      jsonSupers[i].lat = j[0].lat;
+      jsonSupers[i].lng = j[0].lng;
+      break;
+    }
+
+    if(i == jsonSupers.length - 1){ //Entonces llegamos al final de todo y no encontro nada, entonces lo concatenamos
+      jsonSupers = jsonSupers.concat(json);
+    }
+  }
+  if(jsonSupers.length == 0){
+    jsonSupers = jsonSupers.concat(json);
+  }
+};
+
 
 
   socket.on('buscar espacio parken', function(msg){
@@ -160,71 +227,9 @@ io.on('connection', function(socket){
   });
 });
 
-
-
-
-
 http.listen(app.get('port'), function() {
 	console.log("Parken server running on http://localhost:"+app.get('port'));
 });
-
-crearReporte2 = function(callback){
-  obtenerUbicacionSupervisores(1, function(status, data){});
-};
-
-
-
-obtenerUbicacionSupervisores = function(idZona, callback){
-  //Esta funcion va a crear un json con las ubicaciones de los supervisores de las zonaParken ingresada
-  //Primero recorremos todos los registros
-  var jsonUbicacionesSuper = [];
-  var jsonUbicacionesSuperAux;
-
-  for(var i = 0; i < jsonSupers.length; i++){
-    //Nos detenemos en los json con la zona correspondiente
-    if(jsonSupers[i].idZona == idZona){
-      //Aqui vamos guardando en el json la información
-      jsonUbicacionesSuperAux = {
-        id: jsonSupers[i].id,
-        lat: jsonSupers[i].lat,
-        lng: jsonSupers[i].lng
-      }
-      jsonUbicacionesSuper = jsonUbicacionesSuper.concat(jsonUbicacionesSuperAux);
-    }
-  }
-  
-  callback(jsonUbicacionesSuper);
-};
-
-deleteSuperJson = function(socket){
-  for(var i = 0; i < jsonSupers.length; i++){
-    if(jsonSupers[i].socket == socket){
-      jsonSupers.splice(i, 1);
-      break;
-    }
-  }
-};
-
-agregarUbicacionSupervisores = function(json){
-  var j =[];
-  j = j.concat(json);
-
-  
-  for(var i = 0; i < jsonSupers.length; i++){
-    if(jsonSupers[i].socket == j[0].socket){ //Si existe el socket, entonces lo actualizamos
-      jsonSupers[i].lat = j[0].lat;
-      jsonSupers[i].lng = j[0].lng;
-      break;
-    }
-
-    if(i == jsonSupers.length - 1){ //Entonces llegamos al final de todo y no encontro nada, entonces lo concatenamos
-      jsonSupers = jsonSupers.concat(json);
-    }
-  }
-  if(jsonSupers.length == 0){
-    jsonSupers = jsonSupers.concat(json);
-  }
-};
 
 /*
 
@@ -255,3 +260,9 @@ http.listen(3000, function(){
 });
 
 */
+
+//Ahora, en un instante de tiempo ya tenemos la ubicación de todos los suspervisores, 
+//lo interesente es saber cuando vamos a llamar a esa funcion, 
+//que es lo que vamos a hacer ahora
+//Funcion que crea un tabala temporal con la ifnromación que le vamos a apasar de los supervisores 
+//Y al final consultamos esa tabla ordendaita y regresamos el primer valor, yo pienso que esa funcion va air en request, dodne estan todas las demas
