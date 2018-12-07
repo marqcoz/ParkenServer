@@ -170,7 +170,7 @@ obtenerUbicacionSupervisores = function(idZona, callback){
   console.log('Store');
   console.log(store);
   console.log('Alerta');
-    console.log(store.data[7]["id"]);
+    console.log(store[7]["id"]);
   for(var i = 0; i < Object.keys(store).length; i++){
 
   }
