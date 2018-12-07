@@ -2393,7 +2393,8 @@ functions.obtenerMejorSupervisor = function(supervisores, idEspacioParken, petic
     queryINSERT = queryINSERT + '(' + supervisores[i].id + ', ' + 
     '(ST_Distance_Sphere(' +
 			'(SELECT ubicacion FROM espacioparken WHERE idespacioparken = ' + idEspacioParken + '), ' + 
-			'ST_GeomFromText(\'POINT(' + supervisores[i].lat + ' ' + supervisores[i].lng + ')\'))), ' +	   (SELECT estatus FROM supervisor WHERE idsupervisor = 3),
+      'ST_GeomFromText(\'POINT(' + supervisores[i].lat + ' ' + supervisores[i].lng + ')\'))), ' +	   
+      '(SELECT estatus FROM supervisor WHERE idsupervisor = ' + supervisores[i].id + '), ' +
     '(SELECT (*) FROM reporte WHERE supervisor_idsupervisor = ' + supervisores[i].id + ' AND estatus = \'ASIGNADO\'))';
     
     if(i != supervisores.length - 1){
