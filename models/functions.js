@@ -2452,7 +2452,7 @@ functions.asignarReporte = function(idReporte, idSupervisor, callback){
 functions.obtenerReporteUrgente = function(idZona, callback){
   console.log("Buscando el reporte más antiguo...");
 
-  var query = query + ' SELECT * FROM reporte WHERE estatus = \'PENDIENTE\' AND espacioparken_zonaparken_idzonaparken = ' + idZona + ' ORDER BY tiempo ASC;'
+  var query =' SELECT * FROM reporte WHERE estatus = \'PENDIENTE\' AND espacioparken_zonaparken_idzonaparken = ' + idZona + ' ORDER BY tiempo ASC;'
   
   console.log(query);
   
