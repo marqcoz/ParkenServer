@@ -63,16 +63,13 @@ io.on('connection', function(socket){
     //Cuando se desconecte un usuario, eliminamos su registro en storage
     console.log('Usuario desconectado' + ' ' + socket.id);
     //Eliminamos el array del usuario desconectado
-    deleteSuperJson(socket.id);
+    Requests.deleteSuperJson(socket.id);
     store.del(socket.id);
     console.log(store.data);
   });
 
   socket.on('disponibleAReportes', function(loc){
     //Evento que guarda la ubicacion de todos los supervisores en una variable.
-    //console.log(socket.id);
-    //console.log(loc);
-    //Creamos el json con la información del supervisor
     var jsonLocation = {
       socket: socket.id,
       id: loc.idSupervisor,
@@ -82,110 +79,8 @@ io.on('connection', function(socket){
     };
     //Concatenamos si no existe, si ya existe reemplazamos
     Requests.agregarUbicacionSupervisores(jsonLocation);
-
-    //Aqui vamos a guardarlo en el localstorage
-    store.set(socket.id, jsonLocation);
-    //console.log(store.data);
-    //console.log(jsonSupers); 
   });
 });
-
-  asignarReportesAutomaticamente = function(idZona, callback){
-    //Hay reportes pendientes?
-    Requests.obtenerReporteUrgente(idZona, function(status, data){
-      if(status === 1){//Si hay reportes pendientes, los asignamos, y obtenemos el reporte
-
-        onAssignReport(data, function(data){
-          callback(data);
-        }); 
-                      
-      }else{
-        if(status === -1){
-          callback(-1);
-        }else{
-          //Error con la base de datos
-          callback(0);
-        }
-      }
-
-    });
-  };
-
-crearReporte2 = function(callback){
-  Requests.obtenerUbicacionSupervisores(18, function(status, data){});
-};
-
-onAssignReport = function(data, callback){
-
-  //Listos para asignar
-  var idEspacioReport = data.rows[0].espacioparken_idespacioparken;
-  var idReport = data.rows[0].idreporte;
-  var tipoReport = data.rows[0].tipo;
-  var estatusReport =  data.rows[0].estatus;
-  var tiempoReport = data.rows[0].tiempo;
-  var observacionReport = data.rows[0].observacion;
-  var idautomovilistaReport = data.rows[0].automovilista_idautomovilista;
-  var idzonaparkenReport =  data.rows[0].espacioparken_zonaparken_idzonaparken;
-
-Requests.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores){
-  if(supervisores == []){ //No hay supers
-    callback(-2);
-  }else{
-    //Obtenemos al mejor supervisor
-    Requests.obtenerMejorSupervisor(supervisores, idEspacioReport, idReport, function(status, data){
-
-      if(status === 1){
-
-        var mejorSuper;
-
-        if(data.rowCount != 0){
-          //Encontramos al mejor supervisor
-          mejorSuper = data.rows[0].id;
-          //Asignar reporte
-          Requests.asignarReporte(idReport, mejorSuper, function(status, data){
-            if(status === 1){ //Se asignó exitosamente
-              //Hasta este momento se manda la notificación al supervisor
-              //Enviar la notificacion de nuevo reporte
-              //Armamos el json con el reporte
-              var jsonReporte = '"idreporte": "' + idReport +'", ' +
-                  '"tipo": "' + tipoReport +'", ' +
-                  '"estatus": "' + estatusReport +'", ' +
-                  '"tiempo": "'  + tiempoReport +'", ' +
-                  '"observacion": "' + observacionReport + '", ' +
-                  '"idautomovilista": "' + idautomovilistaReport +'", ' +
-                  '"idsupervisor": "' + mejorSuper +'", ' +
-                  '"idespacioparken": "'  + idEspacioReport +'", ' +
-                  '"idzonaparken": "' + idzonaparkenReport +'"';
-
-              Requests.androidNotificationSingle(mejorSuper, 'supervisor', 'Nueva reporte', 'Necesitamos de tu ayuda. Revisa que sucede en el espacio Parken.', '{ "datos" : "OK", "idNotification" : "100", ' + jsonReporte + ' }');
-              callback(1);
-
-            }else{ //No se asignó
-              callback(-4);
-            }
-          });
-        }else{
-          //No hay supervisores
-          mejorSuper = -1;
-          callback(-3.2);
-        }
-      }else{
-        callback(-3);
-      }
-    });
-  
-  }
-}); 
-};
-
-deleteSuperJson = function(socket){
-  for(var i = 0; i < jsonSupers.length; i++){
-    if(jsonSupers[i].socket == socket){
-      jsonSupers.splice(i, 1);
-      break;
-    }
-  }
-};
 
 http.listen(app.get('port'), function() {
 	console.log("Parken server running on http://localhost:"+app.get('port'));
