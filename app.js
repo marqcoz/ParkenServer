@@ -199,7 +199,7 @@ obtenerUbicacionSupervisores = function(idZona, callback){
 deleteSuperJson = function(socket){
   for(var i = 0; i < jsonSupers.length; i++){
     if(jsonSupers[i].socket == socket){
-      jsonSuper.splice(i, 1);
+      jsonSupers.splice(i, 1);
       break;
     }
   }
