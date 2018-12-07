@@ -11,6 +11,8 @@ var io = require('socket.io')(http);
 const Store = require('data-store');
 const store = new Store({ path: '../config.json' });
 
+var jsonSupers={};
+
 app.set('port', process.env.PORT || 3001);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -74,9 +76,11 @@ io.on('connection', function(socket){
       lat: loc.lat,
       lng: loc.lng
     };
+    jsonSupers.concat(jsonLocation);
     //Aqui vamos a guardarlo en el localstorage
     store.set(socket.id, jsonLocation);
-    console.log(store.data);
+    //console.log(store.data);
+    console.log(jsonSupers);
 
     obtenerUbicacionSupervisores(18, function(status, data){});
   });
