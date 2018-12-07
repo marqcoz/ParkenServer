@@ -112,7 +112,7 @@ io.on('connection', function(socket){
   };
 
 crearReporte2 = function(callback){
-  obtenerUbicacionSupervisores(18, function(status, data){});
+  Requests.obtenerUbicacionSupervisores(18, function(status, data){});
 };
 
 onAssignReport = function(data, callback){
@@ -127,7 +127,7 @@ onAssignReport = function(data, callback){
   var idautomovilistaReport = data.rows[0].automovilista_idautomovilista;
   var idzonaparkenReport =  data.rows[0].espacioparken_zonaparken_idzonaparken;
 
-obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores){
+Requests.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores){
   if(supervisores == []){ //No hay supers
     callback(-2);
   }else{
@@ -185,31 +185,6 @@ deleteSuperJson = function(socket){
       break;
     }
   }
-};
-
-agregarUbicacionSupervisores = function(json){
-  var j =[];
-  j = j.concat(json);
-
-  /*
-
-  for(var i = 0; i < jsonSupers.length; i++){ 
-    if(jsonSupers[i].socket == j[0].socket){ //Si existe el socket, entonces lo actualizamos
-      jsonSupers[i].lat = j[0].lat;
-      jsonSupers[i].lng = j[0].lng;
-      break;
-    }
-
-    if(i == jsonSupers.length - 1){ //Entonces llegamos al final de todo y no encontro nada, entonces lo concatenamos
-      jsonSupers = jsonSupers.concat(json);
-    }
-  }
-  if(jsonSupers.length == 0){
-    jsonSupers = jsonSupers.concat(json);
-  }
-  */
-
- jsonSupers = jsonSupers.concat(json);
 };
 
 http.listen(app.get('port'), function() {
