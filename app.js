@@ -171,7 +171,7 @@ obtenerUbicacionSupervisores = function(idZona, callback){
   //console.log(store);
   var jsonStore = store.json();
   //console.log(jsonStore);
-  console.log(jsonStore[1]);
+  console.log(jsonStore[7]["id"]);
   //console.log(store.get());
   
   //console.log('Alerta');
