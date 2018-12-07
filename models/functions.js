@@ -2527,8 +2527,6 @@ functions.agregarUbicacionSupervisores = function(json){
   var j =[];
   j = j.concat(json);
 
-  /*
-
   for(var i = 0; i < jsonSupers.length; i++){ 
     if(jsonSupers[i].socket == j[0].socket){ //Si existe el socket, entonces lo actualizamos
       jsonSupers[i].lat = j[0].lat;
@@ -2537,28 +2535,106 @@ functions.agregarUbicacionSupervisores = function(json){
     }
 
     if(i == jsonSupers.length - 1){ //Entonces llegamos al final de todo y no encontro nada, entonces lo concatenamos
+      //Es aqui donde se coloca la primera vez, es decir se acaba de conectar y aqui es donde vamos a solicitar la asignación
+      //Puesto que ya se va a encontrar registrado en la bd
       jsonSupers = jsonSupers.concat(json);
+
+      functions.asignarReportesAutomaticamente(jsonSupers[i].idZona, function(status){
+        //Aqui es donde checamos si se llevó a acabo la asignación correctamente
+        switch(status){
+          case 1:
+            console.log('Reporte asignado exitosamente');
+            break;
+
+          case -1:
+            console.log('No hay reportes pendientes');
+            break;
+
+          case -2:
+            console.log('No hay supervisores disponibles');
+            break;
+
+          case -3:
+            console.log('No hay supervisores disponibles');
+            break;
+
+          case -3.2:
+            console.log('No hay supervisores disponibles');
+            break;
+
+          case -4:
+            console.log('Error al asignar el reporte al supervisor');
+            break;
+
+          case 0:
+            console.log('Error con la base de datos');
+            break;
+
+            default: 
+              console.log('ERROR');
+              break;
+        }
+      });
     }
   }
   if(jsonSupers.length == 0){
     jsonSupers = jsonSupers.concat(json);
-  }
-  */
 
- jsonSupers = jsonSupers.concat(json);
+    functions.asignarReportesAutomaticamente(jsonSupers[i].idZona, function(status){
+      //Aqui es donde checamos si se llevó a acabo la asignación correctamente
+      switch(status){
+        case 1:
+          console.log('Reporte asignado exitosamente');
+          break;
+
+        case -1:
+          console.log('No hay reportes pendientes');
+          break;
+
+        case -2:
+          console.log('No hay supervisores disponibles');
+          break;
+
+        case -3:
+          console.log('No hay supervisores disponibles');
+          break;
+
+        case -3.2:
+          console.log('No hay supervisores disponibles');
+          break;
+
+        case -4:
+          console.log('Error al asignar el reporte al supervisor');
+          break;
+
+        case 0:
+          console.log('Error con la base de datos');
+          break;
+
+          default: 
+            console.log('ERROR');
+            break;
+      }
+    });
+
+  }
+  
+
+  //jsonSupers = jsonSupers.concat(json);
 };
 
 functions.asignarReportesAutomaticamente = function(idZona, callback){
   //Hay reportes pendientes?
   functions.obtenerReporteUrgente(idZona, function(status, data){
-    if(status === 1){//Si hay reportes pendientes, los asignamos, y obtenemos el reporte
 
+    if(status === 1){//Si hay reportes pendientes, los asignamos, y obtenemos el reporte
       functions.onAssignReport(data, function(data){
         callback(data);
       }); 
                     
     }else{
       if(status === -1){
+        //No hay reportes pendientes
         callback(-1);
       }else{
         //Error con la base de datos
@@ -2589,17 +2665,15 @@ functions.onAssignReport = function(data, callback){
   var idautomovilistaReport = data.rows[0].automovilista_idautomovilista;
   var idzonaparkenReport =  data.rows[0].espacioparken_zonaparken_idzonaparken;
 
+//Obtenemos todas las ubicaciones de los supervisores
 functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores){
   if(supervisores == []){ //No hay supers
     callback(-2);
   }else{
     //Obtenemos al mejor supervisor
     functions.obtenerMejorSupervisor(supervisores, idEspacioReport, idReport, function(status, data){
-
       if(status === 1){
-
         var mejorSuper;
-
         if(data.rowCount != 0){
           //Encontramos al mejor supervisor
           mejorSuper = data.rows[0].id;

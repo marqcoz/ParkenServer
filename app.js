@@ -42,30 +42,17 @@ var test = {
     user: 'How are you?'
   };
 
-
-
 io.on('connection', function(socket){
   console.log('a user connected');
   console.log(socket.id);
-  //Aqui se ejecuta la funcion para checar los reportes y asignarlos
-  store.clear();
-  //sabes que yo creo que lo que vamos a hacer es una funcion que asigne los reportes
-  //Si me explico? para no trbajar doble
-  //Que es lo que va hacer?
-  //BAsicmanete
-  //Buscar el reporte mas antiguo (solo uno)
-  //O lo que podemos hacer es dos opciones
-  //Obtener nñumero de reporte
-
-
+  //Cada vez que se conecta un usuario 
+  
     socket.emit('chat message', test);
   socket.on('disconnect', function(){
-    //Cuando se desconecte un usuario, eliminamos su registro en storage
+    //Cuando se desconecte un usuario, eliminamos su registro en el json
     console.log('Usuario desconectado' + ' ' + socket.id);
     //Eliminamos el array del usuario desconectado
     Requests.deleteSuperJson(socket.id);
-    store.del(socket.id);
-    console.log(store.data);
   });
 
   socket.on('disponibleAReportes', function(loc){
