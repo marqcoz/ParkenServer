@@ -50,7 +50,7 @@ io.on('connection', function(socket){
   //sabes que yo creo que lo que vamos a hacer es una funcion que asigne los reportes
   //Si me explico? para no trbajar doble
   //Que es lo que va hacer?
-  BAsicmanete
+  //BAsicmanete
   //Buscar el reporte mas antiguo (solo uno)
   //O lo que podemos hacer es dos opciones
   //Obtener nñumero de reporte
