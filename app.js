@@ -157,6 +157,12 @@ http.listen(app.get('port'), function() {
 });
 
 
+obtenerUbicacionSupervisores = function(idZona, callback){
+  var jsonUbicacionesSuper = '{}';
+  callback(jsonUbicacionesSuper);
+
+};
+
 /*
 
 var app = require('express')();
