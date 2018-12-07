@@ -93,7 +93,7 @@ io.on('connection', function(socket){
       //Obtenemos al mejor supervisor del que le acabamos de mandar
       Requests.obtenerMejorSupervisor(supervisores, 324, 10023, function(status, data){
         console.log("Resultado:");
-        console.log(status, data);
+        console.log(status, data.rows);
       });
       //console.log(supervisores);
     });  
@@ -141,7 +141,9 @@ agregarUbicacionSupervisores = function(json){
   var j =[];
   j = j.concat(json);
 
-  for(var i = 0; i < jsonSupers.length; i++){
+  /*
+
+  for(var i = 0; i < jsonSupers.length; i++){ 
     if(jsonSupers[i].socket == j[0].socket){ //Si existe el socket, entonces lo actualizamos
       jsonSupers[i].lat = j[0].lat;
       jsonSupers[i].lng = j[0].lng;
@@ -155,6 +157,9 @@ agregarUbicacionSupervisores = function(json){
   if(jsonSupers.length == 0){
     jsonSupers = jsonSupers.concat(json);
   }
+  */
+
+ jsonSupers = jsonSupers.concat(json);
 };
 
 
