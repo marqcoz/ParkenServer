@@ -71,10 +71,10 @@ io.on('connection', function(socket){
     console.log(supervisor);
     //Creamos el json con la información del supervisor
     var jsonLocation = {
-      id: jsonLoc.idSupervisor,
-      idZona: jsonLoc.idZonaParken,
-      lat: jsonLoc.lat,
-      lng: jsonLoc.lng
+      id: '',
+      idZona: 'jsonLoc.idZonaParken',
+      lat: 'jsonLoc.lat',
+      lng: ''
     };
     //Aqui vamos a guardarlo en el localstorage
     store.set(socket.id, jsonLocation);
