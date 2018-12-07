@@ -79,7 +79,9 @@ io.on('connection', function(socket){
       lat: loc.lat,
       lng: loc.lng
     };
-    jsonSupers = jsonSupers.concat(jsonLocation);
+    //Concatenamos si no existe, si ya existe reemplazamos
+    agregarUbicacionSupervisores(jsonLocation);
+    
     //Aqui vamos a guardarlo en el localstorage
     store.set(socket.id, jsonLocation);
     //console.log(store.data);
@@ -199,6 +201,23 @@ deleteSuperJson = function(socket){
     if(jsonSupers[i].socket == socket){
       jsonSuper.splice(i, 1);
       break;
+    }
+  }
+};
+
+agregarUbicacionSupervisores = function(json){
+  var j =[];
+  j = j.concat(json);
+
+  for(var i = 0; i < jsonSupers.length; i++){
+    if(jsonSupers[i].socket == j[0].socket){ //Si existe el socket, entonces lo actualizamos
+      jsonSupers[i].lat = j[0].lat;
+      jsonSupers[i].lng = j[0].lng;
+      break;
+    }
+
+    if(i == jsonSupers.length - 1){ //Entonces llegamos al final de todo y no encontro nada, entonces lo concatenamos
+      jsonSupers = jsonSupers.concat(json);
     }
   }
 };
