@@ -168,10 +168,8 @@ obtenerUbicacionSupervisores = function(idZona, callback){
   //Esta funcion va a crear un json con las ubicaciones de los supervisores de las zonaParken ingresada
   //Primero recorremos todos los registros
   console.log('Store');
-  console.log(Object.keys(store).length);
-  console.log(store.data);
-  for(var i = 0; i < store.data.length; i++){
-    //store.data[i]
+  for(var i = 0; i < Object.keys(store).length; i++){
+    console(store.data[i]);
   }
 
   var jsonUbicacionesSuper = '{}';
