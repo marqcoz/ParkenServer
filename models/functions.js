@@ -2482,7 +2482,7 @@ functions.obtenerReporteUrgente = function(idZona, callback){
       console.log(err.stack);
       callback(0, err.stack);
     } else {
-      if(res.rows.rowCount != 0){
+      if(res.rows!=''){
         callback(1, res);
       }else{
         callback(-1, res);
