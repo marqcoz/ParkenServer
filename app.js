@@ -46,7 +46,7 @@ io.on('connection', function(socket){
   console.log('a user connected');
   console.log(socket.id);
   //Aqui se ejecuta la funcion para checar los reportes y asignarlos
-
+  store.clear();
   //sabes que yo creo que lo que vamos a hacer es una funcion que asigne los reportes
   //Si me explico? para no trbajar doble
   //Que es lo que va hacer?
@@ -163,7 +163,7 @@ crearReporte2 = function(callback){
 };
 
 
-store.clear
+
 obtenerUbicacionSupervisores = function(idZona, callback){
   //Esta funcion va a crear un json con las ubicaciones de los supervisores de las zonaParken ingresada
   //Primero recorremos todos los registros
