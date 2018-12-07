@@ -2395,7 +2395,7 @@ functions.obtenerMejorSupervisor = function(supervisores, idEspacioParken, petic
 			'(SELECT ubicacion FROM espacioparken WHERE idespacioparken = ' + idEspacioParken + '), ' + 
       'ST_GeomFromText(\'POINT(' + supervisores[i].lat + ' ' + supervisores[i].lng + ')\'))), ' +	   
       '(SELECT estatus FROM supervisor WHERE idsupervisor = ' + supervisores[i].id + '), ' +
-    '(SELECT (*) FROM reporte WHERE supervisor_idsupervisor = ' + supervisores[i].id + ' AND estatus = \'ASIGNADO\'))';
+    '(SELECT count(*) FROM reporte WHERE supervisor_idsupervisor = ' + supervisores[i].id + ' AND estatus = \'ASIGNADO\'))';
     
     if(i != supervisores.length - 1){
       queryINSERT = queryINSERT + ', ';
