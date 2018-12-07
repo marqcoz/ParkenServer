@@ -77,6 +77,8 @@ io.on('connection', function(socket){
     //Aqui vamos a guardarlo en el localstorage
     store.set(socket.id, jsonLocation);
     console.log(store.data);
+
+    obtenerUbicacionSupervisores(18, function(status, data){});
   });
 
 
@@ -156,8 +158,20 @@ http.listen(app.get('port'), function() {
 	console.log("Parken server running on http://localhost:"+app.get('port'));
 });
 
+crearReporte2 = function(callback){
+  obtenerUbicacionSupervisores(1, function(status, data){});
+};
+
+
 
 obtenerUbicacionSupervisores = function(idZona, callback){
+  //Esta funcion va a crear un json con las ubicaciones de los supervisores de las zonaParken ingresada
+  //Primero recorremos todos los registros
+  console.log(store.data.length);
+  for(var i = 0; i < store.data.length; i++){
+    //store.data[i]
+  }
+
   var jsonUbicacionesSuper = '{}';
   callback(jsonUbicacionesSuper);
 
