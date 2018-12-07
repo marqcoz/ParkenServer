@@ -2385,7 +2385,7 @@ functions.obtenerMejorSupervisor = function(supervisores, idEspacioParken, petic
   //Tenemos supervisores[{id: 3, lat:19.56, ln: 99.875}, {id: 3, lat:19.56, ln: 99.875}]
   //Recorremos el json y por cada arreglo vamos creando el texto con la consulta asi:
 
-  var queryCREATE = 'CREATE TEMPORARY TABLE temp_supers_distance' + peticion + '(id integer, distancia double precision, estatus varchar, reportes int); ';
+  var queryCREATE = 'CREATE TABLE temp_supers_distance' + peticion + '(id integer, distancia double precision, estatus varchar, reportes int); ';
 
   var queryINSERT = 'INSERT INTO temp_supers_distance' + peticion + '(id, distancia, estatus, reportes) VALUES';
 
