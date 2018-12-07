@@ -67,8 +67,8 @@ io.on('connection', function(socket){
   });
 
   socket.on('disponibleAReportes', function(loc){
-    console.log(socket.id);
-    console.log(loc);
+    //console.log(socket.id);
+    //console.log(loc);
     //Creamos el json con la información del supervisor
     var jsonLocation = {
       id: loc.idSupervisor,
@@ -76,13 +76,13 @@ io.on('connection', function(socket){
       lat: loc.lat,
       lng: loc.lng
     };
-    jsonSupers.concat(jsonLocation);
+    jsonSupers = jsonSupers.concat(jsonLocation);
     //Aqui vamos a guardarlo en el localstorage
     store.set(socket.id, jsonLocation);
     //console.log(store.data);
     console.log(jsonSupers);
 
-    obtenerUbicacionSupervisores(18, function(status, data){});
+    //obtenerUbicacionSupervisores(18, function(status, data){});
   });
 
 
