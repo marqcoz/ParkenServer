@@ -4,6 +4,8 @@ var db = require('../db/pgConfig');
 var functions = {};
 var axios = require('axios');
 
+var jsonSupers=[];
+
 var admin = require('firebase-admin');
 var serviceAccount = require('../parken-217616-firebase-adminsdk-a4h2k-c6dc7ae7d0.json');
 //Fragmento para inicializa el SDK de Firebase
@@ -2423,6 +2425,54 @@ functions.obtenerMejorSupervisor = function(supervisores, idEspacioParken, petic
   })
 };
 
+// Asigna un registro de la tabla reorte a un supervisor
+functions.asignarReporte = function(idReporte, idSupervisor, callback){
+  console.log("Asignando reporte a supervisor...");
+
+  var query = query + 'UPDATE reporte SET estatus = \'ASIGNADO\', ' +
+   'supervisor_idsupervisor = ' + idSupervisor +
+   'WHERE idreporte = ' + idReporte + ';';
+  
+  console.log(query);
+  
+  // callback
+  db.pool.query(query, (err, res) => {
+    // Si el SELECT regresa un error entonces
+    if (err) {
+      console.log(err.stack);
+      callback(0, err.stack);
+    } else {
+      //console.log(res.rows);
+      callback(1, res);
+    }
+  })
+};
+
+// Obtiene el reporte más antiguo para que sea atendido
+functions.obtenerReporteUrgente = function(idZona, callback){
+  console.log("Buscando el reporte más antiguo...");
+
+  var query = query + ' SELECT * FROM reporte WHERE estatus = \'PENDIENTE\' AND espacioparken_zonaparken_idzonaparken = ' + idZona + ' ORDER BY tiempo ASC;'
+  
+  console.log(query);
+  
+  // callback
+  db.pool.query(query, (err, res) => {
+    // Si el SELECT regresa un error entonces
+    if (err) {
+      console.log(err.stack);
+      callback(0, err.stack);
+    } else {
+      if(res.rows.rowCount != 0){
+        callback(1, res);
+      }else{
+        callback(-1, res);
+      }
+      //console.log(res.rows);
+      
+    }
+  })
+};
 
 // Función que crea una cuenta de Automovilista
 functions.liberarVehiculo= function(user, id, column, value, callback){
@@ -2450,4 +2500,27 @@ var query = 'UPDATE ' + user +
   })
 })
 };
+
+functions.obtenerUbicacionSupervisores = function(idZona, callback){
+  //Esta funcion va a crear un json con las ubicaciones de los supervisores de las zonaParken ingresada
+  //Primero recorremos todos los registros
+  var jsonUbicacionesSuper = [];
+  var jsonUbicacionesSuperAux;
+
+  for(var i = 0; i < jsonSupers.length; i++){
+    //Nos detenemos en los json con la zona correspondiente
+    if(jsonSupers[i].idZona == idZona){
+      //Aqui vamos guardando en el json la información
+      jsonUbicacionesSuperAux = {
+        id: jsonSupers[i].id,
+        lat: jsonSupers[i].lat,
+        lng: jsonSupers[i].lng
+      }
+      jsonUbicacionesSuper = jsonUbicacionesSuper.concat(jsonUbicacionesSuperAux);
+    }
+  }
+  
+  callback(jsonUbicacionesSuper);
+};
+
 module.exports = functions;

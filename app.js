@@ -81,51 +81,100 @@ io.on('connection', function(socket){
       lng: loc.lng
     };
     //Concatenamos si no existe, si ya existe reemplazamos
-    agregarUbicacionSupervisores(jsonLocation);
+    Requests.agregarUbicacionSupervisores(jsonLocation);
 
     //Aqui vamos a guardarlo en el localstorage
     store.set(socket.id, jsonLocation);
     //console.log(store.data);
-    //console.log(jsonSupers);
-
-    //Esta no la mandaremos a llamas mas tarde
-    obtenerUbicacionSupervisores(18, function(supervisores){
-      //Obtenemos al mejor supervisor del que le acabamos de mandar
-      Requests.obtenerMejorSupervisor(supervisores, 324, 10023, function(status, data){
-        console.log("Resultado:");
-        console.log(status, data.rows);
-      });
-      //console.log(supervisores);
-    });  
+    //console.log(jsonSupers); 
   });
 
+  asignarReportesAutomaticamente = function(idZona, callback){
+    //Hay reportes pendientes?
+    Requests.obtenerReporteUrgente(idZona, function(status, data){
+      if(status === 1){//Si hay reportes pendientes, los asignamos, y obtenemos el reporte
+
+        onAssignReport(data, function(data){
+          callback(data);
+        }); 
+                      
+      }else{
+        if(status === -1){
+          callback(-1);
+        }else{
+          //Error con la base de datos
+          callback(0);
+        }
+      }
+
+    });
+  };
 
 crearReporte2 = function(callback){
   obtenerUbicacionSupervisores(18, function(status, data){});
 };
 
+onAssignReport = function(data, callback){
 
+  //Listos para asignar
+  var idEspacioReport = data.rows[0].espacioparken_idespacioparken;
+  var idReport = data.rows[0].idreporte;
+  var tipoReport = data.rows[0].tipo;
+  var estatusReport =  data.rows[0].estatus;
+  var tiempoReport = data.rows[0].tiempo;
+  var observacionReport = data.rows[0].observacion;
+  var idautomovilistaReport = data.rows[0].automovilista_idautomovilista;
+  var idzonaparkenReport =  data.rows[0].espacioparken_zonaparken_idzonaparken;
 
-obtenerUbicacionSupervisores = function(idZona, callback){
-  //Esta funcion va a crear un json con las ubicaciones de los supervisores de las zonaParken ingresada
-  //Primero recorremos todos los registros
-  var jsonUbicacionesSuper = [];
-  var jsonUbicacionesSuperAux;
+obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores){
+  if(supervisores == []){ //No hay supers
+    callback(-2);
+  }else{
+    //Obtenemos al mejor supervisor
+    Requests.obtenerMejorSupervisor(supervisores, idEspacioReport, idReport, function(status, data){
 
-  for(var i = 0; i < jsonSupers.length; i++){
-    //Nos detenemos en los json con la zona correspondiente
-    if(jsonSupers[i].idZona == idZona){
-      //Aqui vamos guardando en el json la información
-      jsonUbicacionesSuperAux = {
-        id: jsonSupers[i].id,
-        lat: jsonSupers[i].lat,
-        lng: jsonSupers[i].lng
+      if(status === 1){
+
+        var mejorSuper;
+
+        if(data.rowCount != 0){
+          //Encontramos al mejor supervisor
+          mejorSuper = data.rows[0].id;
+          //Asignar reporte
+          Requests.asignarReporte(idReport, mejorSuper, function(status, data){
+            if(status === 1){ //Se asignó exitosamente
+              //Hasta este momento se manda la notificación al supervisor
+              //Enviar la notificacion de nuevo reporte
+              //Armamos el json con el reporte
+              var jsonReporte = '"idreporte": "' + idReport +'", ' +
+                  '"tipo": "' + tipoReport +'", ' +
+                  '"estatus": "' + estatusReport +'", ' +
+                  '"tiempo": "'  + tiempoReport +'", ' +
+                  '"observacion": "' + observacionReport + '", ' +
+                  '"idautomovilista": "' + idautomovilistaReport +'", ' +
+                  '"idsupervisor": "' + mejorSuper +'", ' +
+                  '"idespacioparken": "'  + idEspacioReport +'", ' +
+                  '"idzonaparken": "' + idzonaparkenReport +'"';
+
+              Requests.androidNotificationSingle(mejorSuper, 'supervisor', 'Nueva reporte', 'Necesitamos de tu ayuda. Revisa que sucede en el espacio Parken.', '{ "datos" : "OK", "idNotification" : "100", ' + jsonReporte + ' }');
+              callback(1);
+
+            }else{ //No se asignó
+              callback(-4);
+            }
+          });
+        }else{
+          //No hay supervisores
+          mejorSuper = -1;
+          callback(-3.2);
+        }
+      }else{
+        callback(-3);
       }
-      jsonUbicacionesSuper = jsonUbicacionesSuper.concat(jsonUbicacionesSuperAux);
-    }
-  }
+    });
   
-  callback(jsonUbicacionesSuper);
+  }
+}); 
 };
 
 deleteSuperJson = function(socket){
@@ -162,81 +211,12 @@ agregarUbicacionSupervisores = function(json){
  jsonSupers = jsonSupers.concat(json);
 };
 
-
-
-  socket.on('buscar espacio parken', function(msg){
-    //console.log('message of ' + socket.id + ': ' + msg );
-    console.log("JSON Request: ");
-		console.log(msg);
-    var latitud = msg.latitud;
-    var longitud	 = msg.longitud;
-		var idAuto = msg.idAutomovilista.toString();
-    //console.log('message: ' + msg);
-    //Ejecutar la funcion buscarEspacioParken
-    Requests.buscarEspacioParken(latitud, longitud, function(status, data){
-
-      var jsonResponse = null;
-      // Consuta generada con éxito
-      if(status==1) {
-        //Primero validamos si data nos devuelve un registros
-        if(data.rowCount != 0){
-
-          var ini = "POINT(".length;
-          var f = data.rows[0].coordenada.length - 1;
-          var coordenadasCentro = data.rows[0].coordenada.substring(ini, f)
-          var centroArray = coordenadasCentro.split(" ");
-
-              jeison = '{ "success":1, ' +
-                '"id":' + data.rows[0].idespacioparken + ', ' +
-                '"zona":' + data.rows[0].zonaparken + ', ' +
-                	'"direccion":"' + data.rows[0].direccion + '", ' +
-                '"coordenada": [ {' +
-                '"latitud":' + centroArray[0] + ', ' +
-                '"longitud":' + centroArray[1] + '} ] }';
-
-                if(store.hasOwn(idAuto)){
-                  if(store.get(idAuto) != data.rows[0].idespacioparken.toString()){
-                    Requests.androidNotificationSingle(idAuto, 'automovilista', 'Nuevo espacio Parken', 'El espacio '+ data.rows[0].idespacioparken.toString() + ' ahora es el más cercano a tu destino.', '{ "datos" : "OK", "idNotification" : "200", "espacioParken" : "' + data.rows[0].idespacioparken.toString() + '" }');
-                  }
-                  store.set(idAuto, data.rows[0].idespacioparken.toString());
-
-                }else {
-                  store.set(idAuto, data.rows[0].idespacioparken.toString());
-                }
-
-                jsonResponse = jeison;
-                console.log("Respuesta JSON: " + jsonResponse);
-              //res.send(jsonResponse);
-              io.emit('buscar espacio parken', jsonResponse);
-              
-
-        }else{
-          //NO hay espacios Parken Disponible
-          jsonResponse = '{"success":2}';
-          console.log("Respuesta JSON: " + jsonResponse);
-          //res.send(jsonResponse);
-          io.emit('buscar espacio parken', jsonResponse);
-          
-        }
-
-    // Error con la conexion a la bd
-      } else {
-        jsonResponse = '{ "success": 0 }';
-        console.log(jsonResponse);
-        //res.send(jsonResponse);
-        io.emit('buscar espacio parken', jsonResponse);
-        
-      }
-    });
-    //io.emit('chat message', msg);
-  });
-});
-
 http.listen(app.get('port'), function() {
 	console.log("Parken server running on http://localhost:"+app.get('port'));
 });
 
 /*
+
 
 var app = require('express')();
 var http = require('http').Server(app);
@@ -265,9 +245,3 @@ http.listen(3000, function(){
 });
 
 */
-
-//Ahora, en un instante de tiempo ya tenemos la ubicación de todos los suspervisores, 
-//lo interesente es saber cuando vamos a llamar a esa funcion, 
-//que es lo que vamos a hacer ahora
-//Funcion que crea un tabala temporal con la ifnromación que le vamos a apasar de los supervisores 
-//Y al final consultamos esa tabla ordendaita y regresamos el primer valor, yo pienso que esa funcion va air en request, dodne estan todas las demas

@@ -2589,6 +2589,11 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 					'tipoReporte: "' + data.rows[0].tipo + '", ' +
 					'estatusReporte: "' + data.rows[0].estatus + '"' +
 					'}';
+					/*
+					onAssignReport(data, function(data){
+						callback(data);
+					  }); 
+					  */
 							res.send(jsonResponse);
 
 				}else{
