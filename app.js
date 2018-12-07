@@ -88,6 +88,7 @@ io.on('connection', function(socket){
     //console.log(store.data);
     //console.log(jsonSupers); 
   });
+});
 
   asignarReportesAutomaticamente = function(idZona, callback){
     //Hay reportes pendientes?
