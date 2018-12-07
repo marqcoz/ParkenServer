@@ -2387,7 +2387,7 @@ functions.obtenerMejorSupervisor = function(supervisores, idEspacioParken, petic
   //Tenemos supervisores[{id: 3, lat:19.56, ln: 99.875}, {id: 3, lat:19.56, ln: 99.875}]
   //Recorremos el json y por cada arreglo vamos creando el texto con la consulta asi:
 
-  var queryCREATE = 'CREATE TABLE temp_supers_distance' + peticion + '(id integer, distancia double precision, estatus varchar, reportes int); ';
+  var queryCREATE = 'CREATE TEMPORARY TABLE temp_supers_distance' + peticion + '(id integer, distancia double precision, estatus varchar, reportes int); ';
 
   var queryINSERT = 'INSERT INTO temp_supers_distance' + peticion + '(id, distancia, estatus, reportes) VALUES';
 
@@ -2429,10 +2429,29 @@ functions.obtenerMejorSupervisor = function(supervisores, idEspacioParken, petic
 functions.asignarReporte = function(idReporte, idSupervisor, callback){
   console.log("Asignando reporte a supervisor...");
 
-  var query = query + 'UPDATE reporte SET estatus = \'ASIGNADO\', ' +
+  var query ='UPDATE reporte SET estatus = \'ASIGNADO\', ' +
    'supervisor_idsupervisor = ' + idSupervisor +
    'WHERE idreporte = ' + idReporte + ';';
   
+  console.log(query);
+  
+  // callback
+  db.pool.query(query, (err, res) => {
+    // Si el SELECT regresa un error entonces
+    if (err) {
+      console.log(err.stack);
+      callback(0, err.stack);
+    } else {
+      //console.log(res.rows);
+      callback(1, res);
+    }
+  })
+};
+// Elimina la tabla temporal para obtener la distancia de los suepervisores
+functions.eliminarTableTemp = function(peticion, callback){
+  console.log("Eliminando tabla temporal...");
+
+  var query ='DROP TABLE temp_supers_distance' + peticion + ';';
   console.log(query);
   
   // callback
@@ -2546,6 +2565,10 @@ functions.agregarUbicacionSupervisores = function(json){
             console.log('Reporte asignado exitosamente');
             break;
 
+          case 1.5:
+            console.log('Reportes asignado exitosamente con errores');
+          break;
+
           case -1:
             console.log('No hay reportes pendientes');
             break;
@@ -2586,7 +2609,9 @@ functions.agregarUbicacionSupervisores = function(json){
         case 1:
           console.log('Reporte asignado exitosamente');
           break;
-
+        case 1.5:
+          console.log('Reportes asignado exitosamente con errores');
+          break;
         case -1:
           console.log('No hay reportes pendientes');
           break;
@@ -2694,7 +2719,18 @@ functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores
                   '"idzonaparken": "' + idzonaparkenReport +'"';
 
               functions.androidNotificationSingle(mejorSuper, 'supervisor', 'Nueva reporte', 'Necesitamos de tu ayuda. Revisa que sucede en el espacio Parken.', '{ "datos" : "OK", "idNotification" : "100", ' + jsonReporte + ' }');
-              callback(1);
+
+              functions.eliminarTableTemp(idReport, function(status, data){
+                if(status === 1){
+                  //Asignación completa
+                  callback(1);
+                }else{
+                  //Asignación exitosa pero incompleta, se asignó el reporte,
+                  //pero no se eliminó la tabla temporal
+                  callback(1.5);
+                }
+              });
+              
 
             }else{ //No se asignó
               callback(-4);
