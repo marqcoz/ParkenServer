@@ -81,7 +81,7 @@ io.on('connection', function(socket){
     };
     //Concatenamos si no existe, si ya existe reemplazamos
     agregarUbicacionSupervisores(jsonLocation);
-    
+
     //Aqui vamos a guardarlo en el localstorage
     store.set(socket.id, jsonLocation);
     //console.log(store.data);
@@ -209,6 +209,7 @@ agregarUbicacionSupervisores = function(json){
   var j =[];
   j = j.concat(json);
 
+  
   for(var i = 0; i < jsonSupers.length; i++){
     if(jsonSupers[i].socket == j[0].socket){ //Si existe el socket, entonces lo actualizamos
       jsonSupers[i].lat = j[0].lat;
@@ -219,6 +220,9 @@ agregarUbicacionSupervisores = function(json){
     if(i == jsonSupers.length - 1){ //Entonces llegamos al final de todo y no encontro nada, entonces lo concatenamos
       jsonSupers = jsonSupers.concat(json);
     }
+  }
+  if(jsonSupers.length == 0){
+    jsonSupers = jsonSupers.concat(json);
   }
 };
 
