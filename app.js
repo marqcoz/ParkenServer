@@ -58,7 +58,10 @@ io.on('connection', function(socket){
 
     socket.emit('chat message', test);
   socket.on('disconnect', function(){
+    //Cuando se desconecte un usuario, eliminamos su registro en storage
     console.log('Usuario desconectado' + ' ' + socket.id);
+    store.del(socket.id);
+    console.log(store.data);
   });
 
   socket.on('disponibleAReportes', function(loc){
@@ -74,7 +77,7 @@ io.on('connection', function(socket){
     }
     //Aqui vamos a guardarlo en el localstorage
     store.set(socket.id, jsonLocation);
-  
+    console.log(store.data);
   });
 
 
