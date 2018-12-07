@@ -167,7 +167,8 @@ crearReporte2 = function(callback){
 obtenerUbicacionSupervisores = function(idZona, callback){
   //Esta funcion va a crear un json con las ubicaciones de los supervisores de las zonaParken ingresada
   //Primero recorremos todos los registros
-  console.log(store.data.length);
+  console.log('Store');
+  console.log(store.data);
   for(var i = 0; i < store.data.length; i++){
     //store.data[i]
   }
