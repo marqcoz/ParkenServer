@@ -45,15 +45,26 @@ var test = {
 io.on('connection', function(socket){
   console.log('a user connected');
   console.log(socket.id);
+  //Aqui se ejecuta la funcion para checar los reportes y asignarlos
+
+  //sabes que yo creo que lo que vamos a hacer es una funcion que asigne los reportes
+  //Si me explico? para no trbajar doble
+  //Que es lo que va hacer?
+  BAsicmanete
+  //Buscar el reporte mas antiguo (solo uno)
+  //O lo que podemos hacer es dos opciones
+  //Obtener nñumero de reporte
+
 
     socket.emit('chat message', test);
   socket.on('disconnect', function(){
     console.log('Usuario desconectado' + ' ' + socket.id);
   });
 
-  socket.on('location', function(loc){
+  socket.on('disponibleAReportes', function(loc){
     console.log('ID');
     console.log(socket.id);
+    console.log(loc);
   });
 
 
