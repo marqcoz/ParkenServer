@@ -2399,10 +2399,14 @@ functions.obtenerMejorSupervisor = function(supervisores, idEspacioParken, petic
     
     if(i != supervisores.length - 1){
       queryINSERT = queryINSERT + ', ';
+    }else{
+      queryINSERT = queryINSERT + '; ';
     }
   }
 
-  var query = queryCREATE + queryINSERT;
+  var querySELECT = 'SELECT * FROM temp_supers_distance' + peticion + ';';
+
+  var query = queryCREATE + queryINSERT + querySELECT;
   console.log(query);
   
   // callback
