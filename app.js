@@ -11,7 +11,7 @@ var io = require('socket.io')(http);
 const Store = require('data-store');
 const store = new Store({ path: '../config.json' });
 
-var jsonSupers={};
+var jsonSupers=[];
 
 app.set('port', process.env.PORT || 3001);
 app.use(bodyParser.urlencoded({ extended: false }));
