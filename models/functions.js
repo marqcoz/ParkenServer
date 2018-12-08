@@ -2790,7 +2790,7 @@ functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores
                   //'"longitud" :"' + longitudReport + '"} ],' +
                   '"longitud" :"' + longitudReport + '",' +
                   '"direccion" :"' + direccionReport + '", ' +
-                  '"zona" :' + zonaReport + ', ' +
+                  '"zona" :"' + zonaReport + '", ' +
                   '"nombreautomovilista" :"' + nombreautomovilistaReport + '", ' +
                   '"apellidoautomovilista" :"' + apellidoautomovilistaReport + '", ' +
                   '"emailautomovilista" :"' + emailautomovilistaReport + '", ' +
