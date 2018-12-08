@@ -2795,7 +2795,7 @@ functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores
                   '"apellidoautomovilista" :"' + apellidoautomovilistaReport + '", ' +
                   '"emailautomovilista" :"' + emailautomovilistaReport + '", ' +
                   '"celularautomovilista" :"' + celularautomovilistaReport + '", ' +
-                  '"puntosparken" :' + puntosparkenReport + ', ' +
+                  '"puntosparken" :"' + puntosparkenReport + '", ' +
                   '"token" :"' + tokenReport + '"';
 
               functions.androidNotificationSingle(mejorSuper, 'supervisor', 'Nueva reporte', 'Necesitamos de tu ayuda. Revisa que sucede en el espacio Parken.', '{ "datos" : "OK", "idNotification" : "100", ' + jsonReporte + ' }');
