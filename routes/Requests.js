@@ -501,7 +501,7 @@ app.post("/supervisor/verificarSupervisor", function(req,res, next){
 			if(data.rowCount != 0){
 
 				jeison ='{ "success": 1, ' +
-						'"id":' + data.rows[0].idadministrador + ', ' +
+						'"id":' + data.rows[0].idsupervisor + ', ' +
 						'"nombre":"' + data.rows[0].nombre + '", ' +
 						'"apellido":"' + data.rows[0].apellido + '", ' +
 						'"correo":"' + data.rows[0].email + '", ' +
