@@ -2540,7 +2540,7 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 
 				Requests.crearReporte(estatus, tipo, observaciones, idAutomovilista, espacioparken, zonaparken, function(status, data){
 					if(status == 1){
-						functions.onAssignReport(data, function(data2){
+						Requests.onAssignReport(data, function(data2){
 							callback(data2);
 							console.log("Reporte generado con éxito, se notificará a un supervisor");
 						  }); 
