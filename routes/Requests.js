@@ -2544,7 +2544,7 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 						Requests.obtenerReporteEspecifico(data.rows[0].idreporte, function(status2, data2){
 							if(status2 === 1){
 								Requests.onAssignReport(data2, function(data3){
-									callback(data3);
+									//callback(data3);
 									console.log("Reporte generado con éxito, se notificará a un supervisor");
 								  }); 
 							}else{
