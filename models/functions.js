@@ -1638,6 +1638,41 @@ functions.crearReporte = function(estatus, tipo, observaciones, automovilista, e
 })
 };
 
+// Función que genera un reporte
+functions.obtenerReporteEspecifico = function(idReporte, callback){
+  
+var query = 'SELECT *, ' +
+'to_char(tiempo, \'DD MONTH HH24:MI\') AS fechatiempo, ' +
+'ST_AsText(ep.ubicacion) AS coordenada, ' +
+'r.estatus AS estatusreporte, ' +
+'ep.estatus AS estatusespacioparken, ' +
+'au.nombre AS nombreautomovilista ' +
+'FROM reporte r ' +
+'INNER JOIN espacioparken ep ON r.espacioparken_idespacioparken= ep.idespacioparken ' +
+'INNER JOIN automovilista au ON r.automovilista_idautomovilista= au.idautomovilista ' +
+'WHERE idreporte = ' + idReporte + ';';
+    console.log(query);
+  // callback
+  db.pool.connect((err, client, done) => {     
+    done();
+    if (err) throw err
+  db.pool.query(query, (err, res) => {
+    // Si el INSERT regresa un error entonces
+    if (err) {
+      console.log(err.stack);
+        callback(0, err.stack);
+    } else {
+      console.log(res.rows[0])
+      //console.log(res.rows)
+      callback(1, res);
+    }
+    //db.pool.end()
+  })
+})
+};
+
+
+
 // Función para insertar una ZonaParken
 functions.agregarZonaParken = function(nombreZona, coordenadasZona, coordenadasEspacios,estatusZona, precioZona, callback){
   console.log("Se agregará una zona Parken...");

@@ -2540,10 +2540,18 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 
 				Requests.crearReporte(estatus, tipo, observaciones, idAutomovilista, espacioparken, zonaparken, function(status, data){
 					if(status == 1){
-						Requests.onAssignReport(data, function(data2){
-							callback(data2);
-							console.log("Reporte generado con éxito, se notificará a un supervisor");
-						  }); 
+
+						Requests.obtenerReporteEspecifico(data.rows[0].idreporte, function(status2, data2){
+							if(status2 === 1){
+								Requests.onAssignReport(data2, function(data3){
+									callback(data3);
+									console.log("Reporte generado con éxito, se notificará a un supervisor");
+								  }); 
+							}else{
+								console.log("Reporte generado con éxito, con errores");
+							}
+						});
+						
 						
 					}else{
 						console.log("ERROR al generar el reporte, NO se notificará a un supervisor");
