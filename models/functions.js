@@ -2471,8 +2471,18 @@ functions.eliminarTableTemp = function(peticion, callback){
 functions.obtenerReporteUrgente = function(idZona, callback){
   console.log("Buscando el reporte más antiguo...");
 
-  var query =' SELECT * FROM reporte WHERE estatus = \'PENDIENTE\' AND espacioparken_zonaparken_idzonaparken = ' + idZona + ' ORDER BY tiempo ASC;'
-  
+  //var query =' SELECT * FROM reporte WHERE estatus = \'PENDIENTE\' AND espacioparken_zonaparken_idzonaparken = ' + idZona + ' ORDER BY tiempo ASC;'
+  var query = 'SELECT *, ' +
+'to_char(tiempo, \'DD MONTH HH24:MI\') AS fechatiempo, ' +
+'ST_AsText(ep.ubicacion) AS coordenada, ' +
+'r.estatus AS estatusreporte, ' +
+'ep.estatus AS estatusespacioparken, ' +
+'au.nombre AS nombreautomovilista ' +
+'FROM reporte r ' +
+'INNER JOIN espacioparken ep ON r.espacioparken_idespacioparken= ep.idespacioparken ' +
+'INNER JOIN automovilista au ON r.automovilista_idautomovilista= au.idautomovilista ' +
+//'WHERE r.supervisor_idsupervisor = ' + id + 'ORDER BY tiempo DESC;';
+'WHERE estatusreporte = \'PENDIENTE\' AND r.espacioparken_zonaparken_idzonaparken = ' + idZona + ' ORDER BY tiempo ASC;'
   console.log(query);
   
   // callback
@@ -2692,6 +2702,26 @@ functions.onAssignReport = function(data, callback){
   var idautomovilistaReport = data.rows[0].automovilista_idautomovilista;
   var idzonaparkenReport =  data.rows[0].espacioparken_zonaparken_idzonaparken;
 
+    var ini = "POINT(".length;
+    var f = data.rows[0].coordenada.length - 1;
+    var coordenadasCentro = data.rows[0].coordenada.substring(ini, f)
+    var centroArray = coordenadasCentro.split(" ");
+
+  var latitudReport = centroArray[0];
+  var longitudReport = centroArray[1];
+  var direccionReport = data.rows[0].direccion;
+  var zonaReport = data.rows[0].zonaparken_idzonaparken;
+  var nombreautomovilistaReport = data.rows[0].nombreautomovilista;
+  var apellidoautomovilistaReport = data.rows[0].apellido;
+  var emailautomovilistaReport = data.rows[0].email;
+  var celularautomovilistaReport = data.rows[0].celular;
+  var puntosparkenReport = data.rows[0].puntosparken;
+  var tokenReport = data.rows[0].token;
+
+
+
+  
+
 //Obtenemos todas las ubicaciones de los supervisores
 functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores){
   if(supervisores == []){ //No hay supers
@@ -2711,14 +2741,26 @@ functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores
               //Enviar la notificacion de nuevo reporte
               //Armamos el json con el reporte
               var jsonReporte = '"idreporte": "' + idReport +'", ' +
-                  '"tipo": "' + tipoReport +'", ' +
-                  '"estatus": "' + estatusReport +'", ' +
-                  '"tiempo": "'  + tiempoReport +'", ' +
-                  '"observacion": "' + observacionReport + '", ' +
+                  '"tiporeporte": "' + tipoReport +'", ' +
+                  '"estatusreporte": "' + estatusReport +'", ' +
+                  '"tiemporeporte": "'  + tiempoReport +'", ' +
+                  '"observacionreporte": "' + observacionReport + '", ' +
                   '"idautomovilista": "' + idautomovilistaReport +'", ' +
                   '"idsupervisor": "' + mejorSuper +'", ' +
                   '"idespacioparken": "'  + idEspacioReport +'", ' +
-                  '"idzonaparken": "' + idzonaparkenReport +'"';
+                  '"idzonaparken": "' + idzonaparkenReport +'",'
+                  '"estatusespacioparken" : "' + data.rows[i].estatusespacioparken + '", ' +
+					        '"coordenada" : [ {' +
+					        '"latitud" :' + latitudReport + ', ' +
+                  '"longitud" :' + longitudReport + '} ],' +
+                  '"direccion" :"' + direccionReport + '", ' +
+                  '"zona" :' + zonaReport + ', ' +
+                  '"nombreautomovilista" :"' + nombreautomovilistaReport + '", ' +
+                  '"apellidoautomovilista" :"' + apellidoautomovilistaReport + '", ' +
+                  '"emailautomovilista" :"' + emailautomovilistaReport + '", ' +
+                  '"celularautomovilista" :"' + celularautomovilistaReport + '", ' +
+                  '"puntosparken" :' + puntosparkenReport + ', ' +
+                  '"token" :"' + tokenReport + '"';
 
               functions.androidNotificationSingle(mejorSuper, 'supervisor', 'Nueva reporte', 'Necesitamos de tu ayuda. Revisa que sucede en el espacio Parken.', '{ "datos" : "OK", "idNotification" : "100", ' + jsonReporte + ' }');
 
