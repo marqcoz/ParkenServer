@@ -2482,7 +2482,7 @@ functions.obtenerReporteUrgente = function(idZona, callback){
 'INNER JOIN espacioparken ep ON r.espacioparken_idespacioparken= ep.idespacioparken ' +
 'INNER JOIN automovilista au ON r.automovilista_idautomovilista= au.idautomovilista ' +
 //'WHERE r.supervisor_idsupervisor = ' + id + 'ORDER BY tiempo DESC;';
-'WHERE estatusreporte = \'PENDIENTE\' AND r.espacioparken_zonaparken_idzonaparken = ' + idZona + ' ORDER BY tiempo ASC;'
+'WHERE r.estatus = \'PENDIENTE\' AND r.espacioparken_zonaparken_idzonaparken = ' + idZona + ' ORDER BY tiempo ASC;'
   console.log(query);
   
   // callback
