@@ -3736,9 +3736,10 @@ app.post("/supervisor/obtenerTodosReportes", function(req, res){
 					'observacionreporte :"' + data.rows[i].observacion + '", ' +
 					'idespacioparken :' + data.rows[i].idespacioparken + ', ' +
 					'estatusespacioparken : "' + data.rows[i].estatusespacioparken + '", ' +
-					'coordenada : [ {' +
-					'latitud :' + centroArray[0] + ', ' +
-					'longitud :' + centroArray[1] + '} ],' +
+					//'coordenada : [ {' +
+					'latitud :"' + centroArray[0] + '", ' +
+					//'longitud :"' + centroArray[1] + '} ],' +
+					'longitud :"' + centroArray[1] + '",' +
 					'direccion :"' + data.rows[i].direccion + '", ' +
 					'zona :' + data.rows[i].zonaparken_idzonaparken + ', ' +
 					'idautomovilista :' + data.rows[i].idautomovilista + ', ' +
