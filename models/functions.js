@@ -2546,6 +2546,15 @@ functions.agregarUbicacionSupervisores = function(json){
   var j =[];
   j = j.concat(json);
 
+  //Lo que falta aqui es hacer la vlaidacion de cuando el supervisor se vuelve a reconectar, lo peor sabes que es jaja que cambia el pinche socket, debemos concer de alguna forma 
+  //El estatus en el que se encuentra
+
+  //SE ME OCURREN DOS FORMAS, AL OBTENER LA VISTA DEL SUPERVISOR AHI, OBTENEMOS LOS REPORTES QUE SE TIEN,
+  //AHI PODEMOS ESTABLCER EL ESTATUS COMO OCUPADO Y DESCONECTAMOS EL SOCKET. YA SE. 
+  //PRIMERO VERIFICAMOS LA VISTA. SI LA VISTA ES PARKEN, DEBE CONECTARSE Y ASI PUES YA LE ENTRA
+  //PÈRO SI SE OBTIENE LA VISTA ONREPORT, ENTONCES NO CONECTAMOS NADA Y NOS QUEDAMOS CON LO QUE TENEMPO
+  //LA SOCULEUONES CONECTAR UNICAMENTE EN LA VISTA ONPARKEN
+
   for(var i = 0; i < jsonSupers.length; i++){ 
     if(jsonSupers[i].socket == j[0].socket){ //Si existe el socket, entonces lo actualizamos
       jsonSupers[i].lat = j[0].lat;
