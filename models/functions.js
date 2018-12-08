@@ -2431,7 +2431,7 @@ functions.asignarReporte = function(idReporte, idSupervisor, callback){
 
   var query ='UPDATE reporte SET estatus = \'ASIGNADO\', ' +
    'supervisor_idsupervisor = ' + idSupervisor +
-   'WHERE idreporte = ' + idReporte + ';';
+   'WHERE idreporte = ' + idReporte + ' RETURNING estatus;';
   
   console.log(query);
   
@@ -2749,7 +2749,7 @@ functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores
                   '"idsupervisor": "' + mejorSuper +'", ' +
                   '"idespacioparken": "'  + idEspacioReport +'", ' +
                   '"idzonaparken": "' + idzonaparkenReport +'",'
-                  '"estatusespacioparken" : "' + data.rows[i].estatusespacioparken + '", ' +
+                  '"estatusespacioparken" : "' + data.rows[0].estatus + '", ' +
 					        '"coordenada" : [ {' +
 					        '"latitud" :' + latitudReport + ', ' +
                   '"longitud" :' + longitudReport + '} ],' +
