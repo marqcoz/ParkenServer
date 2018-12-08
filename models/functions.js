@@ -2751,8 +2751,8 @@ functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores
                   '"idzonaparken": "' + idzonaparkenReport +'",' +
                   '"estatusespacioparken" : "' + data.rows[0].estatus + '", ' +
 					        '"coordenada" : [ {' +
-					        '"latitud" :' + latitudReport + ', ' +
-                  '"longitud" :' + longitudReport + '} ],' +
+					        '"latitud" :"' + latitudReport + '", ' +
+                  '"longitud" :"' + longitudReport + '"} ],' +
                   '"direccion" :"' + direccionReport + '", ' +
                   '"zona" :' + zonaReport + ', ' +
                   '"nombreautomovilista" :"' + nombreautomovilistaReport + '", ' +
