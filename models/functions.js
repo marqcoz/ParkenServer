@@ -2431,7 +2431,7 @@ functions.asignarReporte = function(idReporte, idSupervisor, callback){
 
   var query ='UPDATE reporte SET estatus = \'ASIGNADO\', ' +
    'supervisor_idsupervisor = ' + idSupervisor +
-   'WHERE idreporte = ' + idReporte + ' RETURNING estatus;';
+   ' WHERE idreporte = ' + idReporte + ' RETURNING estatus;';
   
   console.log(query);
   
