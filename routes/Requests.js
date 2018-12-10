@@ -2792,8 +2792,6 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 	// Función para obtener las sanciones de un automovilista
 	app.post("/automovilista/eliminarSesionParken", function(req,res){
 
-
-
 		var sesionparken = req.body.idSesionParken;
 
 		Requests.eliminarSesionParken(sesionparken, function(status, data){
