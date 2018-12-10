@@ -1627,7 +1627,7 @@ functions.crearReporte = function(estatus, tipo, observaciones,
       console.log(err.stack);
       callback(0, err.stack);
     } else {
-      console.log(res.rows[0])
+      //console.log(res.rows[0])
       callback(1, res);
     }
   })
@@ -1647,7 +1647,7 @@ var query = 'SELECT *, ' +
 'INNER JOIN espacioparken ep ON r.espacioparken_idespacioparken= ep.idespacioparken ' +
 'INNER JOIN automovilista au ON r.automovilista_idautomovilista= au.idautomovilista ' +
 'WHERE idreporte = ' + idReporte + ';';
-    console.log(query);
+    //console.log(query);
   // callback
   db.pool.connect((err, client, done) => {     
     done();
@@ -2580,7 +2580,7 @@ functions.obtenerUbicacionSupervisores = function(idZona, callback){
     }
   }
   //Mostrar las ubicaciones de los supervisores al momento de asignar el reporte
-  console.log("Información de los supervisores de la zona " + idZona + " conectado");
+  console.log("Información de los supervisores conectados de la zona " + idZona);
   console.log(jsonUbicacionesSuper);
   
   callback(jsonUbicacionesSuper);
