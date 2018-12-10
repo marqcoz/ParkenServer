@@ -2415,9 +2415,6 @@ functions.verificarSupervisor = function(id, callback){
 functions.obtenerMejorSupervisor = function(supervisores, idEspacioParken, peticion, callback){
   console.log("Buscando al mejor supervisor...");
 
-  //Tenemos supervisores[{id: 3, lat:19.56, ln: 99.875}, {id: 3, lat:19.56, ln: 99.875}]
-  //Recorremos el json y por cada arreglo vamos creando el texto con la consulta asi:
-
   var queryCREATE = 'CREATE TEMPORARY TABLE temp_supers_distance' + peticion + '(id integer, distancia double precision, estatus varchar, reportes int); ';
 
   var queryINSERT = 'INSERT INTO temp_supers_distance' + peticion + '(id, distancia, estatus, reportes) VALUES';
@@ -2758,10 +2755,16 @@ functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores
     functions.obtenerMejorSupervisor(supervisores, idEspacioReport, 
       idReport, function(status, data){
       if(status === 1){
-        var mejorSuper;
+
         if(data.rowCount != 0){
           //Supervisor encontrado
           mejorSuper = data.rows[0].id;
+          //Mostrar  a los supervisores conectado
+          console.log("Supervisores conectados: ");
+          for(var r = 0; r < data.rowCount; r++){
+          console.log("Supervisor " + data.rows[r].id + " a " + data.rows[r].distancia + " metros del espacio Parken reportado");
+          }
+          console.log("Supervisor asignado: " + mejorSuper);
           //Asignar reporte
           functions.asignarReporte(idReport, mejorSuper, function(status, data){
             if(status === 1){ //Se asignó exitosamente
