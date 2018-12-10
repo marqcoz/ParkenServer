@@ -2579,6 +2579,9 @@ functions.obtenerUbicacionSupervisores = function(idZona, callback){
       jsonUbicacionesSuper = jsonUbicacionesSuper.concat(jsonUbicacionesSuperAux);
     }
   }
+  //Mostrar las ubicaciones de los supervisores al momento de asignar el reporte
+  console.log("Información de los supervisores de la zona " + idZona + " conectado");
+  console.log(jsonUbicacionesSuper);
   
   callback(jsonUbicacionesSuper);
 };
