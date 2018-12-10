@@ -265,7 +265,7 @@ module.exports  = function(app) {
 								if(usuario === '3') user = 'administrador';
 
 							console.log("El usuario " +  user + " " + data.rows[0].id  + " inició sesión");
-console.log("Json response: " +jsonResponse);
+							//console.log("Json response: " +jsonResponse);
 							res.send(jsonResponse);
 					//No existe el ususario
 
@@ -277,7 +277,7 @@ console.log("Json response: " +jsonResponse);
 		// Error con la conexion a la bd
 			} else {
 				jsonResponse = '{"success":0}';
-				console.log("Json response: " +jsonResponse);
+				//console.log("Json response: " +jsonResponse);
 				res.send(jsonResponse);
 			}
 		});
@@ -468,12 +468,12 @@ app.get("/administrador/verificarAdministrador", function(req,res, next){
 
 			}
 			jsonResponse = jeison;
-			console.log("Json Response: " +jsonResponse);
+			//console.log("Json Response: " +jsonResponse);
 			res.send(jsonResponse);
 
 	// Error con la conexion a la bd
 		} else {
-			console.log("Json Response: " +jsonResponse);
+			//console.log("Json Response: " +jsonResponse);
 			jsonResponse = '{"success":0}';
 			res.send(jsonResponse);
 		}
@@ -514,12 +514,12 @@ app.post("/supervisor/verificarSupervisor", function(req,res, next){
 
 			}
 			jsonResponse = jeison;
-			console.log("Json Response: " +jsonResponse);
+			//console.log("Json Response: " +jsonResponse);
 			res.send(jsonResponse);
 
 	// Error con la conexion a la bd
 		} else {
-			console.log("Json Response: " +jsonResponse);
+			//console.log("Json Response: " +jsonResponse);
 			jsonResponse = '{"success":0}';
 			res.send(jsonResponse);
 		}

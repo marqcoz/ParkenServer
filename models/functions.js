@@ -1589,8 +1589,9 @@ functions.obtenerValoresDelServer = function(callback){
 };
 
 
-// Función que genera un reporte
-functions.crearReporte = function(estatus, tipo, observaciones, automovilista, espacioparken, zonaparken, callback){
+// Función que inserta un reporte
+functions.crearReporte = function(estatus, tipo, observaciones, 
+  automovilista, espacioparken, zonaparken, callback){
   console.log("Se generará un reporte en la BD");
 
   var query = 'INSERT INTO public.reporte(' +
@@ -1618,22 +1619,17 @@ functions.crearReporte = function(estatus, tipo, observaciones, automovilista, e
     'espacioparken_idespacioparken, '  +
     'espacioparken_zonaparken_idzonaparken;';
 
-    //console.log(query);
-  // callback
   db.pool.connect((err, client, done) => {     
     done();
     if (err) throw err
   db.pool.query(query, (err, res) => {
-    // Si el INSERT regresa un error entonces
     if (err) {
       console.log(err.stack);
-        callback(0, err.stack);
+      callback(0, err.stack);
     } else {
       console.log(res.rows[0])
-      //console.log(res.rows)
       callback(1, res);
     }
-    //db.pool.end()
   })
 })
 };
@@ -2518,7 +2514,7 @@ functions.obtenerReporteUrgente = function(idZona, callback){
 'INNER JOIN automovilista au ON r.automovilista_idautomovilista= au.idautomovilista ' +
 //'WHERE r.supervisor_idsupervisor = ' + id + 'ORDER BY tiempo DESC;';
 'WHERE r.estatus = \'PENDIENTE\' AND r.espacioparken_zonaparken_idzonaparken = ' + idZona + ' ORDER BY tiempo ASC;'
-  console.log(query);
+  //console.log(query);
   
   // callback
   db.pool.query(query, (err, res) => {
@@ -2727,7 +2723,6 @@ functions.deleteSuperJson = function(socket){
 
 functions.onAssignReport = function(data, callback){
 
-  //Listos para asignar
   var idEspacioReport = data.rows[0].espacioparken_idespacioparken;
   var idReport = data.rows[0].idreporte;
   var tipoReport = data.rows[0].tipo;
@@ -2736,12 +2731,10 @@ functions.onAssignReport = function(data, callback){
   var observacionReport = data.rows[0].observacion;
   var idautomovilistaReport = data.rows[0].automovilista_idautomovilista;
   var idzonaparkenReport =  data.rows[0].espacioparken_zonaparken_idzonaparken;
-
     var ini = "POINT(".length;
     var f = data.rows[0].coordenada.length - 1;
     var coordenadasCentro = data.rows[0].coordenada.substring(ini, f)
     var centroArray = coordenadasCentro.split(" ");
-
   var latitudReport = centroArray[0];
   var longitudReport = centroArray[1];
   var direccionReport = data.rows[0].direccion;
@@ -2753,52 +2746,49 @@ functions.onAssignReport = function(data, callback){
   var puntosparkenReport = data.rows[0].puntosparken;
   var tokenReport = data.rows[0].token;
 
-
-
-  
-
-//Obtenemos todas las ubicaciones de los supervisores
+//Se obtienen todas las ubicaciones de los supervisores
 functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores){
   if(supervisores == []){ //No hay supers
     callback(-2);
   }else{
-    //Obtenemos al mejor supervisor
-    functions.obtenerMejorSupervisor(supervisores, idEspacioReport, idReport, function(status, data){
+    //Se obtienen al mejor supervisor
+    functions.obtenerMejorSupervisor(supervisores, idEspacioReport, 
+      idReport, function(status, data){
       if(status === 1){
         var mejorSuper;
         if(data.rowCount != 0){
-          //Encontramos al mejor supervisor
+          //Supervisor encontrado
           mejorSuper = data.rows[0].id;
           //Asignar reporte
           functions.asignarReporte(idReport, mejorSuper, function(status, data){
             if(status === 1){ //Se asignó exitosamente
-              //Hasta este momento se manda la notificación al supervisor
-              //Enviar la notificacion de nuevo reporte
-              //Armamos el json con el reporte
+              //Se crea el JSON con la información del reporte
               var jsonReporte = '"idreporte": "' + idReport +'", ' +
-                  '"tiporeporte": "' + tipoReport +'", ' +
-                  '"estatusreporte": "' + estatusReport +'", ' +
-                  '"tiemporeporte": "'  + tiempoReport +'", ' +
-                  '"observacionreporte": "' + observacionReport + '", ' +
-                  '"idautomovilista": "' + idautomovilistaReport +'", ' +
-                  '"idsupervisor": "' + mejorSuper +'", ' +
-                  '"idespacioparken": "'  + idEspacioReport +'", ' +
-                  '"idzonaparken": "' + idzonaparkenReport +'",' +
-                  '"estatusespacioparken" : "' + data.rows[0].estatus + '", ' +
-					        //'"coordenada" : [ {' +
-					        '"latitud" :"' + latitudReport + '", ' +
-                  //'"longitud" :"' + longitudReport + '"} ],' +
-                  '"longitud" :"' + longitudReport + '",' +
-                  '"direccion" :"' + direccionReport + '", ' +
-                  '"zona" :"' + zonaReport + '", ' +
-                  '"nombreautomovilista" :"' + nombreautomovilistaReport + '", ' +
-                  '"apellidoautomovilista" :"' + apellidoautomovilistaReport + '", ' +
-                  '"emailautomovilista" :"' + emailautomovilistaReport + '", ' +
-                  '"celularautomovilista" :"' + celularautomovilistaReport + '", ' +
-                  '"puntosparken" :"' + puntosparkenReport + '", ' +
-                  '"token" :"' + tokenReport + '"';
+                '"tiporeporte": "' + tipoReport +'", ' +
+                '"estatusreporte": "' + estatusReport +'", ' +
+                '"tiemporeporte": "'  + tiempoReport +'", ' +
+                '"observacionreporte": "' + observacionReport + '", ' +
+                '"idautomovilista": "' + idautomovilistaReport +'", ' +
+                '"idsupervisor": "' + mejorSuper +'", ' +
+                '"idespacioparken": "'  + idEspacioReport +'", ' +
+                '"idzonaparken": "' + idzonaparkenReport +'",' +
+                '"estatusespacioparken" : "' + data.rows[0].estatus + '", ' +
+                '"latitud" :"' + latitudReport + '", ' +
+                '"longitud" :"' + longitudReport + '",' +
+                '"direccion" :"' + direccionReport + '", ' +
+                '"zona" :"' + zonaReport + '", ' +
+                '"nombreautomovilista" :"' + nombreautomovilistaReport + '", ' +
+                '"apellidoautomovilista" :"' + apellidoautomovilistaReport + '", ' +
+                '"emailautomovilista" :"' + emailautomovilistaReport + '", ' +
+                '"celularautomovilista" :"' + celularautomovilistaReport + '", ' +
+                '"puntosparken" :"' + puntosparkenReport + '", ' +
+                '"token" :"' + tokenReport + '"';
 
-              functions.androidNotificationSingle(mejorSuper, 'supervisor', 'Nueva reporte', 'Necesitamos de tu ayuda. Revisa que sucede en el espacio Parken.', '{ "datos" : "OK", "idNotification" : "100", ' + jsonReporte + ' }');
+              //Enviar la notificacion de nuevo reporte al supervisor
+              functions.androidNotificationSingle(mejorSuper, 
+                'supervisor', 'Nueva reporte', 
+                'Necesitamos de tu ayuda. Revisa que sucede en el espacio Parken.',
+                '{ "datos" : "OK", "idNotification" : "100", ' + jsonReporte + ' }');
 
               functions.eliminarTableTemp(idReport, function(status, data){
                 if(status === 1){
@@ -2810,8 +2800,6 @@ functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores
                   callback(1.5);
                 }
               });
-              
-
             }else{ //No se asignó
               callback(-4);
             }
@@ -2819,13 +2807,12 @@ functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores
         }else{
           //No hay supervisores
           mejorSuper = -1;
-          callback(-3.2);
+          callback(-3.2)
         }
       }else{
         callback(-3);
       }
     });
-  
   }
 }); 
 };
