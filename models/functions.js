@@ -1934,8 +1934,8 @@ functions.obtenerPuntosParken = function(idAutomovilista, callback){
 };
 
 functions.eliminarSesionParken = function(sesionparken, callback){
-
-  const query = {
+  console.log("Se eliminirá la sesión " + sesionparken);
+    const query = {
     text: 'DELETE FROM sesionparken WHERE idsesionparken = $1;',
     values: [sesionparken],
   }
