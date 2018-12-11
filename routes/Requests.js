@@ -2952,29 +2952,43 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 				//}
 					notificacion = parseInt(notificacion);
 				if (notificacion > 0){
-
-					var date2 = new Date(fechaFinal.getTime() - (notificacion * 60 * 1000));
-					var mySchedule2 = schedule.scheduledJobs[idAutomovilista.toString()];
-					//console.log(my_job);
-					if(mySchedule2 != null){
-						mySchedule2.cancel();
+					if(notificacion > parseInt(tiempo)){
+						var minutos;
+						if(notificacion > 1){
+							minutos = 'minutos';
+						}else{
+							minutos = 'minuto';
+						}
+						Requests.androidNotificationSingle(idAutomovilista, 
+							'automovilista', 'Finalizando sesión Parken', 
+							'Tu sesión finaliza en menos de ' + notificacion + minutos + '.', 
+							'{ "datos" : "OK", "idNotification" : "700", "title" : "Finalizando sesión Parken", "msg": "Tu sesión finaliza en menos de ' + notificacion + ' ' + minutos + '." }');	
+					}else{
+						var date2 = new Date(fechaFinal.getTime() - (notificacion * 60 * 1000));
+						var mySchedule2 = schedule.scheduledJobs[idAutomovilista.toString()];
+						//console.log(my_job);
+						if(mySchedule2 != null){
+							mySchedule2.cancel();
+						}
+	
+						schedule.scheduleJob(idAutomovilista.toString(), date2,
+							function(){
+								//Simplememente enviar una notificación con el mismo id que la que se recibe 
+								var minutos;
+								if(notificacion > 1){
+									minutos = 'minutos';
+								}else{
+									minutos = 'minuto';
+								}
+								Requests.androidNotificationSingle(idAutomovilista, 
+									'automovilista', 'Finalizando sesión Parken', 
+									'Tu sesión finaliza en menos de ' + notificacion + minutos + '.', 
+									'{ "datos" : "OK", "idNotification" : "700", "title" : "Finalizando sesión Parken", "msg": "Tu sesión finaliza en menos de ' + notificacion + ' ' + minutos + '." }');
+							});		
 					}
-
-					schedule.scheduleJob(idAutomovilista.toString(), date2,
-						function(){
-							//Simplememente enviar una notificación con el mismo id que la que se recibe 
-							var minutos;
-							if(notificacion > 1){
-								minutos = 'minutos';
-							}else{
-								minutos = 'minuto';
-							}
-							Requests.androidNotificationSingle(idAutomovilista, 
-								'automovilista', 'Finalizando sesión Parken', 
-								'Tu sesión finaliza en menos de ' + notificacion + minutos + '.', 
-								'{ "datos" : "OK", "idNotification" : "700", "title" : "Finalizando sesión Parken", "msg": "Tu sesión finaliza en menos de ' + notificacion + ' ' + minutos + '." }');
-						});		
 				}
+
+					
 				schedule.scheduleJob(idSesion.toString(), date,
 					function(){
 						Requests.verificarEstatusSesionParken(idSesion, estatus, function(status, data){
