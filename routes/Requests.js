@@ -2269,7 +2269,7 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 							var idSesion = data.rows[0].book_parken_space;
 							var date = new Date();
 
-							console.log('idSesion: ' + idEspacio);
+
 							date.setMinutes(date.getMinutes()+timerMinutosEspacioReservado);
 							date.setSeconds(date.getSeconds()+timerSegundosEspacioReservado + timerAux);
 							//date.setSeconds(date.getSeconds()+timerEspacioReservado);
