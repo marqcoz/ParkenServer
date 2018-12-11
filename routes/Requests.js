@@ -2954,15 +2954,15 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 				if (notificacion > 0){
 					if(notificacion > parseInt(tiempo)){
 						var minutos;
-						if(notificacion > 1){
+						if(tiempo > 1){
 							minutos = 'minutos';
 						}else{
 							minutos = 'minuto';
 						}
 						Requests.androidNotificationSingle(idAutomovilista, 
 							'automovilista', 'Finalizando sesión Parken', 
-							'Tu sesión finaliza en menos de ' + notificacion + minutos + '.', 
-							'{ "datos" : "OK", "idNotification" : "700", "title" : "Finalizando sesión Parken", "msg": "Tu sesión finaliza en menos de ' + notificacion + ' ' + minutos + '." }');	
+							'Tu sesión finaliza en menos de ' + tiempo + minutos + '.', 
+							'{ "datos" : "OK", "idNotification" : "700", "title" : "Finalizando sesión Parken", "msg": "Tu sesión finaliza en menos de ' + tiempo + ' ' + minutos + '." }');	
 					}else{
 						var date2 = new Date(fechaFinal.getTime() - (notificacion * 60 * 1000));
 						var mySchedule2 = schedule.scheduledJobs[idAutomovilista.toString()];
