@@ -2270,8 +2270,8 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 							var date = new Date();
 
 
-							date.setMinutes(date.getMinutes()+timerMinutosEspacioReservado);
-							date.setSeconds(date.getSeconds()+timerSegundosEspacioReservado + timerAux);
+							date.setMinutes(date.getMinutes()+timerMinutosEspacioReservado + timerMinutosDialogParken);
+							date.setSeconds(date.getSeconds()+timerSegundosEspacioReservado + timerSegundosDialogParken + timerAux);
 							//date.setSeconds(date.getSeconds()+timerEspacioReservado);
 
 							schedule.scheduleJob(idSesion.toString(), date,
