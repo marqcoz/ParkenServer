@@ -2269,7 +2269,7 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 							var idSesion = data.rows[0].book_parken_space;
 							var date = new Date();
 
-							//console.log('idSesion: ' + idEspacio);
+							console.log('idSesion: ' + idEspacio);
 							date.setMinutes(date.getMinutes()+timerMinutosEspacioReservado);
 							date.setSeconds(date.getSeconds()+timerSegundosEspacioReservado + timerAux);
 							//date.setSeconds(date.getSeconds()+timerEspacioReservado);
@@ -2279,20 +2279,19 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 									Requests.verificarEstatusSesionParken(idSesion, 'RESERVADO', function(status, data){
 
 										if(status == 1){ //Si es 1 entonces la sesión no ha cambiado, debemos eliminar la sesión
-											console.log('Se eliminara la sesión');
+											console.log('Se eliminará la sesión porque no se recibió respuesta del automovilista');
 
 											Requests.eliminarSesionParken(idSesion, function(status, data){
 
 												// Consuta generada con éxito
 												if(status==1) {
-
+													console.log("Se eliminó la sesión correctamente (ScheduleJob)");
 													//Se enviará una notifiación informando que la sesiones
 													//o que la vista ya cambió porque el tiempo terminó
 													//o simplemente que llame al metodo
 													Requests.androidNotificationSingle(automovilista, 'automovilista', 'Espacio Parken liberado', 'No llegaste a tiempo', '{}');
 													//Requests.androidNotificationSingle(data.rows[0].id, user, 'Aviso', 'Inicio de sesión', 'Iniciaste sesión exitosamente', '')
 													//Requests.androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, mensaje, accion)
-
 													//obtenerVistaDelServer()
 													//jsonResponse = '{ success:1 }';
 													//console.log(jsonResponse);
@@ -2301,12 +2300,10 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 											// Error con la conexion a la bd
 												} else {
 													//jsonResponse = '{success:0}';
-													//console.log(jsonResponse);
+													console.log("No se eliminó la sesión correctamente (ScheduleJob)");
 													//res.send(jsonResponse);
 												}
 											});
-
-
 										}else{
 											console.log('Automovilista pagó por el espacio Parken asignado');
 										}
@@ -2805,14 +2802,15 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 				//console.log(my_job);
 				if(mySchedule != null){
 					mySchedule.cancel();
+					console.log("Se canceló el ScheduleJob " + sesionparken);
 				}
 
 
-				jsonResponse = '{ success:1 }';
+				jsonResponse = '{ "success": 1 }';
 							res.send(jsonResponse);
 		// Error con la conexion a la bd
 			} else {
-				jsonResponse = '{success:0}';
+				jsonResponse = '{ "success": 0 }';
 				res.send(jsonResponse);
 			}
 		});

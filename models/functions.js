@@ -1157,7 +1157,6 @@ functions.apartarEspacioParken = function(espacioP, zonaP, idAutomovilista, call
 
     db.pool.query(query, (err, res) =>{
       if (err) {
-
         if(err.stack[7] == 4){
             callback(2, err.stack);
         }else{
