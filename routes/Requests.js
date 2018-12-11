@@ -2950,7 +2950,7 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 					}
 
 				//}
-
+					notificacion = parseInt(notificacion);
 				if (notificacion > 0){
 
 					var date2 = new Date(fechaFinal.getTime() - (notificacion * 60 * 1000));
