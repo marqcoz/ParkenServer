@@ -2888,8 +2888,6 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 	// Función para activar una sesion parken
 	app.post("/automovilista/activarSesionParken", function(req,res){
 
-
-
 		var opc = req.body.opc;
 		var idSesionParken = req.body.idSesionParken;
 		var idAutomovilista = req.body.idAutomovilista;
@@ -2898,9 +2896,10 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 		var tiempo = req.body.Tiempo;
 		var idVehiculo = req.body.idVehiculo;
 		var puntosParken = req.body.puntosParken;
+		var notificacion = req.body.notificacion;
 
-var ep;
-var zp;
+		var ep;
+		var zp;
 
 		if(opc === '3'){
 			ep = req.body.idEspacioParken;
@@ -2928,8 +2927,6 @@ var zp;
 				var espacioparken = data.rows[0].espaciop;
 				var zonaparken = data.rows[0].zonap;
 
-
-
 				//Creamos una tarea que se ejecute en fechafinal + timerTolerancia
 				var estatus = 'ACTIVA';
 				var newEstatus = 'REPORTADA';
@@ -2946,14 +2943,38 @@ var zp;
 				*/
 
 				//if(opc === '2' || opc === '1'){ //Si es una renovación, eliminamos el SCHEDULE anterior para crear unno nuevo
-					var mySchedule = schedule.scheduledJobs[idSesion.toString()];
+					var mySchedule1 = schedule.scheduledJobs[idSesion.toString()];
 					//console.log(my_job);
-					if(mySchedule != null){
-						mySchedule.cancel();
+					if(mySchedule1 != null){
+						mySchedule1.cancel();
 					}
 
 				//}
 
+				if (notificacion > 0){
+
+					var date2 = new Date(fechaFinal.getTime() - (notificacion * 60 * 1000));
+					var mySchedule2 = schedule.scheduledJobs[idAutomovilista.toString()];
+					//console.log(my_job);
+					if(mySchedule2 != null){
+						mySchedule2.cancel();
+					}
+
+					schedule.scheduleJob(idAutomovilista.toString(), date2,
+						function(){
+							//Simplememente enviar una notificación con el mismo id que la que se recibe 
+							var minutos;
+							if(notificacion > 1){
+								minutos = 'minutos';
+							}else{
+								minutos = 'minuto';
+							}
+							Requests.androidNotificationSingle(idAutomovilista, 
+								'automovilista', 'Finalizando sesión Parken', 
+								'Tu sesión finaliza en menos de ' + notificacion + minutos + '.', 
+								'{ "datos" : "OK", "idNotification" : "700", "title" : "Finalizando sesión Parken", "msg": "Tu sesión finaliza en menos de ' + notificacion + ' ' + minutos + '." }');
+						});		
+				}
 				schedule.scheduleJob(idSesion.toString(), date,
 					function(){
 						Requests.verificarEstatusSesionParken(idSesion, estatus, function(status, data){
