@@ -2416,7 +2416,11 @@ functions.obtenerMejorSupervisor = function(supervisores, idEspacioParken, petic
 
   var queryCREATE = 'CREATE TEMPORARY TABLE temp_supers_distance' + peticion + '(id integer, distancia double precision, estatus varchar, reportes int); ';
 
-  var queryINSERT = 'INSERT INTO temp_supers_distance' + peticion + '(id, distancia, estatus, reportes) VALUES';
+  var queryINSERT = 'INSERT INTO temp_supers_distance' + peticion + '(id, distancia, estatus, reportes) VALUES ';
+
+  if(supervisores.length === 0){
+    //No agregamos el insert
+  }
 
   for(var i = 0; i < supervisores.length; i++){
     queryINSERT = queryINSERT + '(' + supervisores[i].id + ', ' + 
@@ -2748,79 +2752,83 @@ functions.onAssignReport = function(data, callback){
 
 //Se obtienen todas las ubicaciones de los supervisores
 functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores){
-  if(supervisores == []){ //No hay supers
+  if(supervisores === []){ //No hay supers
     callback(-2);
   }else{
-    //Se obtienen al mejor supervisor
-    functions.obtenerMejorSupervisor(supervisores, idEspacioReport, 
-      idReport, function(status, data){
-      if(status === 1){
+    if(supervisores.length === 0){
+      callback(-2);
+    }else{
+      //Se obtienen al mejor supervisor
+      functions.obtenerMejorSupervisor(supervisores, idEspacioReport, 
+        idReport, function(status, data){
+        if(status === 1){
 
-        if(data.rowCount != 0){
-          //Supervisor encontrado
-          mejorSuper = data.rows[0].id;
-          //Mostrar  a los supervisores conectado
-          console.log("Supervisores conectados: ");
-          for(var r = 0; r < data.rowCount; r++){
-          console.log("Supervisor " + data.rows[r].id + " a " + data.rows[r].distancia + " metros del espacio Parken reportado");
-          }
-          console.log("Supervisor asignado: " + mejorSuper);
-          //Asignar reporte
-          functions.asignarReporte(idReport, mejorSuper, function(status, data){
-            if(status === 1){ //Se asignó exitosamente
-              //Se crea el JSON con la información del reporte
-              var jsonReporte = '"idreporte": "' + idReport +'", ' +
-                '"tiporeporte": "' + tipoReport +'", ' +
-                '"estatusreporte": "'+ data.rows[0].estatus +'", ' +
-                '"tiemporeporte": "'  + tiempoReport +'", ' +
-                '"observacionreporte": "' + observacionReport + '", ' +
-                '"idautomovilista": "' + idautomovilistaReport +'", ' +
-                '"idsupervisor": "' + mejorSuper +'", ' +
-                '"idespacioparken": "'  + idEspacioReport +'", ' +
-                '"idzonaparken": "' + idzonaparkenReport +'",' +
-                '"estatusespacioparken" : "'  + estatusEspacioReport + '", ' +
-                '"latitud" :"' + latitudReport + '", ' +
-                '"longitud" :"' + longitudReport + '",' +
-                '"direccion" :"' + direccionReport + '", ' +
-                '"zona" :"' + zonaReport + '", ' +
-                '"nombreautomovilista" :"' + nombreautomovilistaReport + '", ' +
-                '"apellidoautomovilista" :"' + apellidoautomovilistaReport + '", ' +
-                '"emailautomovilista" :"' + emailautomovilistaReport + '", ' +
-                '"celularautomovilista" :"' + celularautomovilistaReport + '", ' +
-                '"puntosparken" :"' + puntosparkenReport + '", ' +
-                '"token" :"' + tokenReport + '"';
-
-                console.log(jsonReporte); 
-
-              //Enviar la notificacion de nuevo reporte al supervisor
-              functions.androidNotificationSingle(mejorSuper, 
-                'supervisor', 'Nueva reporte', 
-                'Necesitamos de tu ayuda. Revisa que sucede en el espacio Parken.',
-                '{ "datos" : "OK", "idNotification" : "100", ' + jsonReporte + ' }');
-
-              functions.eliminarTableTemp(idReport, function(status, data){
-                if(status === 1){
-                  //Asignación completa
-                  callback(1);
-                }else{
-                  //Asignación exitosa pero incompleta, se asignó el reporte,
-                  //pero no se eliminó la tabla temporal
-                  callback(1.5);
-                }
-              });
-            }else{ //No se asignó
-              callback(-4);
+          if(data.rowCount != 0){
+            //Supervisor encontrado
+            mejorSuper = data.rows[0].id;
+            //Mostrar  a los supervisores conectado
+            console.log("Supervisores conectados: ");
+            for(var r = 0; r < data.rowCount; r++){
+            console.log("Supervisor " + data.rows[r].id + " a " + data.rows[r].distancia + " metros del espacio Parken reportado");
             }
-          });
+            console.log("Supervisor asignado: " + mejorSuper);
+            //Asignar reporte
+            functions.asignarReporte(idReport, mejorSuper, function(status, data){
+              if(status === 1){ //Se asignó exitosamente
+                //Se crea el JSON con la información del reporte
+                var jsonReporte = '"idreporte": "' + idReport +'", ' +
+                  '"tiporeporte": "' + tipoReport +'", ' +
+                  '"estatusreporte": "'+ data.rows[0].estatus +'", ' +
+                  '"tiemporeporte": "'  + tiempoReport +'", ' +
+                  '"observacionreporte": "' + observacionReport + '", ' +
+                  '"idautomovilista": "' + idautomovilistaReport +'", ' +
+                  '"idsupervisor": "' + mejorSuper +'", ' +
+                  '"idespacioparken": "'  + idEspacioReport +'", ' +
+                  '"idzonaparken": "' + idzonaparkenReport +'",' +
+                  '"estatusespacioparken" : "'  + estatusEspacioReport + '", ' +
+                  '"latitud" :"' + latitudReport + '", ' +
+                  '"longitud" :"' + longitudReport + '",' +
+                  '"direccion" :"' + direccionReport + '", ' +
+                  '"zona" :"' + zonaReport + '", ' +
+                  '"nombreautomovilista" :"' + nombreautomovilistaReport + '", ' +
+                  '"apellidoautomovilista" :"' + apellidoautomovilistaReport + '", ' +
+                  '"emailautomovilista" :"' + emailautomovilistaReport + '", ' +
+                  '"celularautomovilista" :"' + celularautomovilistaReport + '", ' +
+                  '"puntosparken" :"' + puntosparkenReport + '", ' +
+                  '"token" :"' + tokenReport + '"';
+
+                  console.log(jsonReporte); 
+
+                //Enviar la notificacion de nuevo reporte al supervisor
+                functions.androidNotificationSingle(mejorSuper, 
+                  'supervisor', 'Nueva reporte', 
+                  'Necesitamos de tu ayuda. Revisa que sucede en el espacio Parken.',
+                  '{ "datos" : "OK", "idNotification" : "100", ' + jsonReporte + ' }');
+
+                functions.eliminarTableTemp(idReport, function(status, data){
+                  if(status === 1){
+                    //Asignación completa
+                    callback(1);
+                  }else{
+                    //Asignación exitosa pero incompleta, se asignó el reporte,
+                    //pero no se eliminó la tabla temporal
+                    callback(1.5);
+                  }
+                });
+              }else{ //No se asignó
+                callback(-4);
+              }
+            });
+          }else{
+            //No hay supervisores
+            mejorSuper = -1;
+            callback(-3.2)
+          }
         }else{
-          //No hay supervisores
-          mejorSuper = -1;
-          callback(-3.2)
+          callback(-3);
         }
-      }else{
-        callback(-3);
-      }
-    });
+      });
+    }
   }
 }); 
 };
