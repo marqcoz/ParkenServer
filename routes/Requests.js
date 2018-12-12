@@ -3783,8 +3783,9 @@ app.post("/supervisor/obtenerTodosReportes", function(req, res){
 					'puntosparken :' + data.rows[i].puntosparken + ', ' +
 					'token :"' + data.rows[i].token + '"';
 
-					if(i == data.rowCount - 1){	jeison = jeison + ' }'; } else { jeison = jeison + ' },'; }
+					if(i === data.rowCount - 1){	jeison = jeison + ' }'; } else { jeison = jeison + ' },'; }
 				}
+				console.log(jeison);
 				jeison = jeison + '] }';
 
 			} else{
