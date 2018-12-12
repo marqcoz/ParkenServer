@@ -2752,12 +2752,10 @@ functions.onAssignReport = function(data, callback){
 
 //Se obtienen todas las ubicaciones de los supervisores
 functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores){
-  if(supervisores === []){ //No hay supers
-    //if(Object.keys(supervisores).length === 0) { //No hay supers
+  //if(supervisores === []){ //No hay supers
+  if(Object.keys(supervisores).length === 0) { //No hay supers
     callback(-2);
   }else{
-    console.log("Prueba comprobacion de SuperJson");
-    console.log(Object.keys(supervisores).length);
     if(supervisores.length === 0){
       callback(-2);
     }else{
