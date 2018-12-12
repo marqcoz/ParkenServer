@@ -3751,9 +3751,9 @@ app.post("/supervisor/obtenerTodosReportes", function(req, res){
 
 			if(data.rowCount != 0){
 
-				jeison = '{ success :1, ' +
-				'numeroreportes:' + data.rowCount + ', ' +
-				'reportes:[';
+				jeison = '{ "success" :1, ' +
+				'"numeroreportes":' + data.rowCount + ', ' +
+				'"reportes":[';
 
 				for(var i = 0; i < data.rowCount; i++){
 
@@ -3763,26 +3763,26 @@ app.post("/supervisor/obtenerTodosReportes", function(req, res){
 					var centroArray = coordenadasCentro.split(" ");
 
 					jeison =  jeison +
-					'{ idreporte :' + data.rows[i].idreporte + ', ' +
-					'tiemporeporte : "' + data.rows[i].fechatiempo + '", ' +
-					'estatusreporte :"' + data.rows[i].estatusreporte + '", ' +
-					'tiporeporte : "' + data.rows[i].tipo + '", ' +
-					'observacionreporte :"' + data.rows[i].observacion + '", ' +
-					'idespacioparken :' + data.rows[i].idespacioparken + ', ' +
-					'estatusespacioparken : "' + data.rows[i].estatusespacioparken + '", ' +
+					'{ "idreporte" :' + data.rows[i].idreporte + ', ' +
+					'"tiemporeporte" : "' + data.rows[i].fechatiempo + '", ' +
+					'"estatusreporte" :"' + data.rows[i].estatusreporte + '", ' +
+					'"tiporeporte" : "' + data.rows[i].tipo + '", ' +
+					'"observacionreporte" :"' + data.rows[i].observacion + '", ' +
+					'"idespacioparken" :' + data.rows[i].idespacioparken + ', ' +
+					'"estatusespacioparken" : "' + data.rows[i].estatusespacioparken + '", ' +
 					//'coordenada : [ {' +
-					'latitud :"' + centroArray[0] + '", ' +
+					'"latitud" :"' + centroArray[0] + '", ' +
 					//'longitud :"' + centroArray[1] + '} ],' +
-					'longitud :"' + centroArray[1] + '",' +
-					'direccion :"' + data.rows[i].direccion + '", ' +
-					'zona :' + data.rows[i].zonaparken_idzonaparken + ', ' +
-					'idautomovilista :' + data.rows[i].idautomovilista + ', ' +
-					'nombreautomovilista :"' + data.rows[i].nombreautomovilista + '", ' +
-					'apellidoautomovilista :"' + data.rows[i].apellido + '", ' +
-					'emailautomovilista :"' + data.rows[i].email + '", ' +
-					'celularautomovilista :"' + data.rows[i].celular + '", ' +
-					'puntosparken :' + data.rows[i].puntosparken + ', ' +
-					'token :"' + data.rows[i].token + '"';
+					'"longitud" :"' + centroArray[1] + '",' +
+					'"direccion" :"' + data.rows[i].direccion + '", ' +
+					'"zona" :' + data.rows[i].zonaparken_idzonaparken + ', ' +
+					'"idautomovilista" :' + data.rows[i].idautomovilista + ', ' +
+					'"nombreautomovilista" :"' + data.rows[i].nombreautomovilista + '", ' +
+					'"apellidoautomovilista" :"' + data.rows[i].apellido + '", ' +
+					'"emailautomovilista" :"' + data.rows[i].email + '", ' +
+					'"celularautomovilista" :"' + data.rows[i].celular + '", ' +
+					'"puntosparken" :' + data.rows[i].puntosparken + ', ' +
+					'"token :"' + data.rows[i].token + '"';
 
 					if(i === data.rowCount - 1){	
 						jeison = jeison + ' }'; 
@@ -3797,7 +3797,7 @@ app.post("/supervisor/obtenerTodosReportes", function(req, res){
 			} else{
 
 			jeison = '{ ' +
-					'success : 3' +
+					'"success" : 3' +
 				' }';
 			}
 
@@ -3807,7 +3807,7 @@ app.post("/supervisor/obtenerTodosReportes", function(req, res){
 		}else{
 
 				jsonResponse = '{ ' +
-					'success : 2' +
+					'"success" : 2' +
 				' }';
 
 				res.send(jsonResponse);
