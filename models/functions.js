@@ -2755,6 +2755,8 @@ functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores
   if(supervisores === []){ //No hay supers
     callback(-2);
   }else{
+    console("Prueba comprobacion de SuperJson");
+    console.log( Object.keys(supervisores).length);
     if(supervisores.length === 0){
       callback(-2);
     }else{
