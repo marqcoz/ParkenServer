@@ -3781,8 +3781,8 @@ app.post("/supervisor/obtenerTodosReportes", function(req, res){
 					'"apellidoautomovilista" :"' + data.rows[i].apellido + '", ' +
 					'"emailautomovilista" :"' + data.rows[i].email + '", ' +
 					'"celularautomovilista" :"' + data.rows[i].celular + '", ' +
-					'"puntosparken" :' + data.rows[i].puntosparken; //', ' +
-					//'"token" :"' + data.rows[i].token + '"';
+					'"puntosparken" :' + data.rows[i].puntosparken + ', ' +
+					'"token" :"' + data.rows[i].token + '"';
 
 					if(i === data.rowCount - 1){	
 						jeison = jeison + '}'; 
