@@ -3746,11 +3746,12 @@ app.post("/supervisor/obtenerTodosReportes", function(req, res){
 
 		//console.log(status);
 		var jsonResponse;
+		var jeison;
 		if(status === 1){
 
 			if(data.rowCount != 0){
 
-				var jeison = '{ success :1, ' +
+				jeison = '{ success :1, ' +
 				'numeroreportes:' + data.rowCount + ', ' +
 				'reportes:[';
 
@@ -3783,14 +3784,19 @@ app.post("/supervisor/obtenerTodosReportes", function(req, res){
 					'puntosparken :' + data.rows[i].puntosparken + ', ' +
 					'token :"' + data.rows[i].token + '"';
 
-					if(i === data.rowCount - 1){	jeison = jeison + ' }'; } else { jeison = jeison + ' },'; }
+					if(i === data.rowCount - 1){	
+						jeison = jeison + ' }'; 
+					}else { 
+						jeison = jeison + ' },'; 
+					}
 				}
-				console.log(jeison);
+			
 				jeison = jeison + '] }';
+				console.log(jeison);
 
 			} else{
 
-			var	jeison = '{ ' +
+			jeison = '{ ' +
 					'success : 3' +
 				' }';
 			}
