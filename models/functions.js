@@ -2606,43 +2606,7 @@ functions.agregarUbicacionSupervisores = function(json){
 
       functions.asignarReportesAutomaticamente(jsonSupers[i].idZona, function(status){
         //Aqui es donde checamos si se llevó a acabo la asignación correctamente
-        switch(status){
-          case 1:
-            console.log('Reporte asignado exitosamente');
-            break;
-
-          case 1.5:
-            console.log('Reportes asignado exitosamente con errores');
-          break;
-
-          case -1:
-            console.log('No hay reportes pendientes');
-            break;
-
-          case -2:
-            console.log('No hay supervisores disponibles');
-            break;
-
-          case -3:
-            console.log('No hay supervisores disponibles');
-            break;
-
-          case -3.2:
-            console.log('No hay supervisores disponibles');
-            break;
-
-          case -4:
-            console.log('Error al asignar el reporte al supervisor');
-            break;
-
-          case 0:
-            console.log('Error con la base de datos');
-            break;
-
-            default: 
-              console.log('ERROR');
-              break;
-        }
+        functions.resultsOnAssignReport(status);
       });
     }
   }
@@ -2651,41 +2615,7 @@ functions.agregarUbicacionSupervisores = function(json){
 
     functions.asignarReportesAutomaticamente(jsonSupers[i].idZona, function(status){
       //Aqui es donde checamos si se llevó a acabo la asignación correctamente
-      switch(status){
-        case 1:
-          console.log('Reporte asignado exitosamente');
-          break;
-        case 1.5:
-          console.log('Reportes asignado exitosamente con errores');
-          break;
-        case -1:
-          console.log('No hay reportes pendientes');
-          break;
-
-        case -2:
-          console.log('No hay supervisores disponibles');
-          break;
-
-        case -3:
-          console.log('No hay supervisores disponibles');
-          break;
-
-        case -3.2:
-          console.log('No hay supervisores disponibles');
-          break;
-
-        case -4:
-          console.log('Error al asignar el reporte al supervisor');
-          break;
-
-        case 0:
-          console.log('Error con la base de datos');
-          break;
-
-          default: 
-            console.log('ERROR');
-            break;
-      }
+      functions.resultsOnAssignReport(status);
     });
 
   }
@@ -2832,6 +2762,44 @@ functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores
     }
   }
 }); 
+};
+
+functions.resultsOnAssignReport = function(cally){
+  switch(cally){
+    case 1:
+      console.log('Reporte asignado exitosamente');
+      break;
+    case 1.5:
+      console.log('Reportes asignado exitosamente con errores');
+      break;
+    case -1:
+      console.log('No hay reportes pendientes');
+      break;
+
+    case -2:
+      console.log('No hay supervisores disponibles');
+      break;
+
+    case -3:
+      console.log('No hay supervisores disponibles');
+      break;
+
+    case -3.2:
+      console.log('No hay supervisores disponibles');
+      break;
+
+    case -4:
+      console.log('Error al asignar el reporte al supervisor');
+      break;
+
+    case 0:
+      console.log('Error con la base de datos');
+      break;
+
+      default: 
+        console.log('ERROR');
+        break;
+  }
 };
 
 

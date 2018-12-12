@@ -3017,7 +3017,8 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 													if(status2 === 1){
 														Requests.onAssignReport(data2, function(data3){
 															//callback(data3);
-															console.log("Reporte generado con éxito, se notificará a un supervisor");
+															//console.log("Reporte generado con éxito, se notificará a un supervisor");
+															Requests.resultsOnAssignReport(data3);
 														  }); 
 													}else{
 														console.log("Reporte generado con éxito, con errores");
