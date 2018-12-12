@@ -2723,6 +2723,7 @@ functions.deleteSuperJson = function(socket){
 functions.onAssignReport = function(data, callback){
 
   var idEspacioReport = data.rows[0].espacioparken_idespacioparken;
+  var estatusEspacioReport = data.rows[0].estatusespacioparken;
   var idReport = data.rows[0].idreporte;
   var tipoReport = data.rows[0].tipo;
   var estatusReport =  data.rows[0].estatus;
@@ -2770,14 +2771,14 @@ functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores
               //Se crea el JSON con la información del reporte
               var jsonReporte = '"idreporte": "' + idReport +'", ' +
                 '"tiporeporte": "' + tipoReport +'", ' +
-                '"estatusreporte": "' + estatusReport +'", ' +
+                '"estatusreporte": "'+ data.rows[0].estatus +'", ' +
                 '"tiemporeporte": "'  + tiempoReport +'", ' +
                 '"observacionreporte": "' + observacionReport + '", ' +
                 '"idautomovilista": "' + idautomovilistaReport +'", ' +
                 '"idsupervisor": "' + mejorSuper +'", ' +
                 '"idespacioparken": "'  + idEspacioReport +'", ' +
                 '"idzonaparken": "' + idzonaparkenReport +'",' +
-                '"estatusespacioparken" : "' + data.rows[0].estatus + '", ' +
+                '"estatusespacioparken" : "'  + estatusEspacioReport + '", ' +
                 '"latitud" :"' + latitudReport + '", ' +
                 '"longitud" :"' + longitudReport + '",' +
                 '"direccion" :"' + direccionReport + '", ' +
@@ -2789,7 +2790,7 @@ functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores
                 '"puntosparken" :"' + puntosparkenReport + '", ' +
                 '"token" :"' + tokenReport + '"';
 
-                console.log(jsonReporte);
+                console.log(jsonReporte); 
 
               //Enviar la notificacion de nuevo reporte al supervisor
               functions.androidNotificationSingle(mejorSuper, 
