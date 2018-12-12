@@ -2912,8 +2912,6 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 
 		console.log("EspacioP: " +ep);
 
-
-
 		Requests.activarSesionParken(idSesionParken, idAutomovilista, fechaFinal, monto, tiempo, idVehiculo, puntosParken, ep, zp, opc, function(status, data){
 
 			var jsonResponse = null;
@@ -2995,7 +2993,7 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 					function(){
 						Requests.verificarEstatusSesionParken(idSesion, estatus, function(status, data){
 
-							if(status == 1){ //Si es 1 entonces la sesión no ha cambiado
+							if(status === 1){ //Si es 1 entonces la sesión no ha cambiado
 								console.log('Se modificará la sesión a ' + newEstatus);
 
 								var automovilista = data.rows[0].automovilista_idautomovilista;
@@ -3010,16 +3008,21 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 										//o simplemente que llame al metodo
 										Requests.crearReporte('PENDIENTE', 'ENDOFTIME', '', automovilista, espacioparken, zonaparken, function(status, data){
 											if(status==1) {
-												console.log('Enviando notificación...');
+												console.log('Enviando notificación a automovilista...');
 												Requests.androidNotificationSingle(automovilista, 'automovilista', 'Se generó un reporte', 'Nuevo reporte por reembolso', '{}');
 												//Requests.androidNotificationSingle(data.rows[0].id, user, 'Aviso', 'Inicio de sesión', 'Iniciaste sesión exitosamente', '')
 												//Requests.androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, mensaje, accion)
-
-												//obtenerVistaDelServer()
-												//jsonResponse = '{ success:1 }';
-												//console.log(jsonResponse);
-												//res.send(jsonResponse);
-
+												console.log('Buscando supervisores para asignar nuevo reporte...');
+												Requests.obtenerReporteEspecifico(data.rows[0].idreporte, function(status2, data2){
+													if(status2 === 1){
+														Requests.onAssignReport(data2, function(data3){
+															//callback(data3);
+															console.log("Reporte generado con éxito, se notificará a un supervisor");
+														  }); 
+													}else{
+														console.log("Reporte generado con éxito, con errores");
+													}
+												});
 												//Al final cancelamos el SCHEDULE
 												var mySche = schedule.scheduledJobs[idSesion.toString()];
 												//console.log(my_job);
@@ -3792,7 +3795,7 @@ app.post("/supervisor/obtenerTodosReportes", function(req, res){
 				}
 			
 				jeison = jeison + '] }';
-				console.log(jeison);
+				//console.log(jeison);
 
 			} else{
 
