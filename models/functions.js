@@ -2789,6 +2789,8 @@ functions.obtenerUbicacionSupervisores(idzonaparkenReport, function(supervisores
                 '"puntosparken" :"' + puntosparkenReport + '", ' +
                 '"token" :"' + tokenReport + '"';
 
+                console.log(jsonReporte);
+
               //Enviar la notificacion de nuevo reporte al supervisor
               functions.androidNotificationSingle(mejorSuper, 
                 'supervisor', 'Nueva reporte', 
