@@ -2757,6 +2757,8 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 									}else{
 										console.log('Automovilista finalizó correctamente la sesión Parken, no se modificará nada');
 									}
+
+									
 								});
 							}
 						);
