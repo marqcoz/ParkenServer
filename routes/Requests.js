@@ -2069,14 +2069,31 @@ app.post("/administrador/editarSupervisor", function(req,res){
 	app.post("/supervisor/modificarReporte", function(req,res){
 
 		var idreporte = req.body.idreporte;
+		var reembolso = req.body.reembolso;
 
+		
 		Requests.cerrarReporte(idreporte, function(status, data){
 
 			var jsonResponse = null;
 			// Consuta generada con éxito
 			if(status==1) {
-				jsonResponse = '{success:1}';
-				res.send(jsonResponse);
+				//Verificamos si se regresan los puntos Parken
+				if(reembolso == '0' && data.rows[0].tipo == 'REEMBOLSO'){
+					Requests.quitarPuntosParken(data.rows[0].idautomovilista, parseInt(data.rows[0].observacion), function(status, data2){
+						if(status === 1){
+							jsonResponse = '{"success":1}';
+							res.send(jsonResponse);
+						}else{
+							jsonResponse = '{"success":2}';
+							res.send(jsonResponse);
+						}
+					});
+					
+				}else{
+					jsonResponse = '{"success":1}';
+					res.send(jsonResponse);
+				}
+				
 		// Error con la conexion a la bd
 			} else {
 				jsonResponse = '{success:0}';

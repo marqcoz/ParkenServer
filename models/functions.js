@@ -1281,6 +1281,31 @@ functions.cerrarReporte = function(idreporte, callback){
   })
 };
 
+
+functions.quitarPuntosParken = function(automovilista, puntos, callback){
+
+  var query = 'UPDATE automovilista SET puntosparken = puntosparken - ' + puntos + ' WHERE idautomovilista = ' + automovilista + ';';
+
+  //console.log(query)
+    db.pool.connect((err, client, done) => {     
+      done();
+      if (err) throw err
+
+    db.pool.query(query, (err, res) =>{
+      if (err) {
+          // Error en la conexión con la BD
+          callback(0, err.stack);
+       console.log(err.stack)
+      } else{
+        callback(1,res);
+      }
+
+    //db.pool.end()
+    })
+  })
+};
+
+
 // Función que consulta todas las sesiones Parken del automovilista (excepto las que estan reservadas)
 functions.obtenerSesionesParken = function(automovilista, callback){
   console.log("Consultando las sesiones del automovilista...");
