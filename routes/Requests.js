@@ -2662,7 +2662,7 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 
 
 
-	// Función para desactivar una sesionparken
+	// Función para modificar el estatus de una sesionparken
 	app.post("/automovilista/modificarSesionParken", function(req,res){
 
 		console.log("/modificarSesionParken");
@@ -2712,47 +2712,44 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 
 						schedule.scheduleJob(date,
 							function(){
+								//Verificamos si antes del tiempo de espera no se modificó el estatus de las sesiones
 								Requests.verificarEstatusSesionParken(idSesion, estatus, function(status, data){
 
-									if(status == 1){ //Si es 1 entonces la sesión no ha cambiado, debemos eliminar la sesión
+									if(status == 1){ //Si es 1 entonces la sesión no ha cambiado
 										console.log('Se modificará la sesión a ' + newEstatus);
 
 										var automovilista = data.rows[0].automovilista_idautomovilista;
 										var espacioparken = data.rows[0].espacioparken_idespacioparken;
 										var zonaparken = data.rows[0].espacioparken_zonaparken_idzonaparken;
 
-
 										Requests.modificarSesionParken(idSesion, newEstatus, fecha, function(status, data){
 
 											var jsonResponse = null;
-											// Consuta generada con éxito
+											// Consuta generada con éxito, se modificó el estatus
 											if(status==1) {
 
 												Requests.crearReporte('PENDIENTE', 'ENDOFTIME', '', automovilista, espacioparken, zonaparken, function(status, data){
 													if(status==1) {
-														console.log('Enviando notificación...');
-														Requests.androidNotificationSingle(automovilista, 'automovilista', 'Se generó un reporte', 'Automovilista no finalizó correctamente la sesión', '{}');
-														//Requests.androidNotificationSingle(data.rows[0].id, user, 'Aviso', 'Inicio de sesión', 'Iniciaste sesión exitosamente', '')
-														//Requests.androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, mensaje, accion)
+														//Si se crea el reporte exitosamente entonces, asignamos el reporte como siempre
 
-														//obtenerVistaDelServer()
-														//jsonResponse = '{ success:1 }';
-														//console.log(jsonResponse);
-														//res.send(jsonResponse);
-
-
-
+														console.log('Enviando notificación a automovilista...');
+														console.log('Buscando supervisores para asignar nuevo reporte...');
+														Requests.obtenerReporteEspecifico(data.rows[0].idreporte, function(status2, data2){
+															if(status2 === 1){
+																Requests.onAssignReport(data2, function(data3){
+																	Requests.resultsOnAssignReport(data3);
+														  }); 
+													}else{
+														console.log("Reporte generado con éxito, con errores");
+													}
+												});
 													}else{
 														console.log('Error al crear reporte ENDOFTIME');
-
 													}
-
 											});
 
 											} else {
-												//jsonResponse = '{success:0}';
-												//console.log(jsonResponse);
-												//res.send(jsonResponse);
+												console.log('Error al modificar el estatus de la sesión Parken a REPORTADA');
 											}
 										});
 
