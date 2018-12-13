@@ -2582,21 +2582,25 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 		Requests.crearReporte(estatus, tipo, observaciones, idAutomovilista, espacioparken, zonaparken, function(status, data){
 
 			var jsonResponse = null;
-			// Consuta generada con éxito
+			// Consulta generada con éxito
 			if(status==1) {
 				//Primero validamos si data nos devuelve un registros
 				if(data.rowCount != 0){
 
+					console.log('Buscando supervisores para asignar nuevo reporte...');
+					Requests.obtenerReporteEspecifico(data.rows[0].idreporte, function(status2, data2){
+						if(status2 === 1){
+							Requests.onAssignReport(data2, function(data3){
+								Requests.resultsOnAssignReport(data3);
+					  		}); 
+						}else{
+							console.log("Reporte generado con éxito, con errores");
+						}
+					});
 
-					//Eliminamos el SCHEDULE, si existe
-					/*var mySchedule = schedule.scheduledJobs[]
-
-					if(mySchedule != null){
-						mySchedule.cancel();
-					}*/
-					jsonResponse = '{success:1, idReporte:' + data.rows[0].idreporte + ', ' +
-					'tipoReporte: "' + data.rows[0].tipo + '", ' +
-					'estatusReporte: "' + data.rows[0].estatus + '"' +
+					jsonResponse = '{"success":1, "idReporte":' + data.rows[0].idreporte + ', ' +
+					'"tipoReporte": "' + data.rows[0].tipo + '", ' +
+					'"estatusReporte": "' + data.rows[0].estatus + '"' +
 					'}';
 					/*
 					onAssignReport(data, function(data){
