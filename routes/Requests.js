@@ -2984,9 +2984,37 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 									'automovilista', 'Finalizando sesión Parken', 
 									'Tu sesión finaliza en menos de ' + notificacion + minutos + '.', 
 									'{ "datos" : "OK", "idNotification" : "700", "title" : "Finalizando sesión Parken", "msg": "Tu sesión finaliza en menos de ' + notificacion + ' ' + minutos + '." }');
+
+									//Al final cancelamos el SCHEDULE
+									var mySche2 = schedule.scheduledJobs[idAutomovilista.toString()];
+									//console.log(my_job);
+									mySche2.cancel();
 							});		
 					}
 				}
+
+
+
+				var date3 = new Date(fechaFinal.getTime());
+				var mySchedule3 = schedule.scheduledJobs[idAutomovilista.toString()+idSesion.toString()];
+				//console.log(my_job);
+				if(mySchedule3 != null){
+					mySchedule3.cancel();
+				}
+
+				schedule.scheduleJob(idAutomovilista.toString()+idSesion.toString(), date3,
+					function(){
+						//Simplememente enviar una notificación con el mismo id que la que se recibe 
+						
+						Requests.androidNotificationSingle(idAutomovilista, 
+							'automovilista', 'Sesión Parken finalizada', 
+							'Desaloja tu vehículo o serás acreedor a una sancion.', 
+							'{ "datos" : "OK", "idNotification" : "800" }');
+					});		
+
+
+
+
 
 					
 				schedule.scheduleJob(idSesion.toString(), date,
@@ -2995,7 +3023,6 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 
 							if(status === 1){ //Si es 1 entonces la sesión no ha cambiado
 								console.log('Se modificará la sesión a ' + newEstatus);
-
 								var automovilista = data.rows[0].automovilista_idautomovilista;
 								var espacioparken = data.rows[0].espacioparken_idespacioparken;
 								var zonaparken = data.rows[0].espacioparken_zonaparken_idzonaparken;
@@ -3009,9 +3036,6 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 										Requests.crearReporte('PENDIENTE', 'ENDOFTIME', '', automovilista, espacioparken, zonaparken, function(status, data){
 											if(status==1) {
 												console.log('Enviando notificación a automovilista...');
-												Requests.androidNotificationSingle(automovilista, 'automovilista', 'Se generó un reporte', 'Nuevo reporte por reembolso', '{}');
-												//Requests.androidNotificationSingle(data.rows[0].id, user, 'Aviso', 'Inicio de sesión', 'Iniciaste sesión exitosamente', '')
-												//Requests.androidNotificationSingle(idUser, tipoUser, tipoNotificacion, titulo, mensaje, accion)
 												console.log('Buscando supervisores para asignar nuevo reporte...');
 												Requests.obtenerReporteEspecifico(data.rows[0].idreporte, function(status2, data2){
 													if(status2 === 1){
