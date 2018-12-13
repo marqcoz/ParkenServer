@@ -1714,7 +1714,7 @@ app.get("/administrador/obtenerSupervisoresXZona", function(req,res){
 					// Consuta generada con éxito
 					if(status==1) {
 						jsonResponse = '{success:1, puntosparken: '+ data.rows[0].refresh_puntosparken +'}';
-						Requests.androidNotificationSingle(id, 'automovilista', 'Actualización del perfil', 'Se actualizaron tus puntos Parken', '{}');
+						//Requests.androidNotificationSingle(id, 'automovilista', 'Actualización del perfil', 'Se actualizaron tus puntos Parken', '{}');
 						res.send(jsonResponse);
 				// Error con la conexion a la bd
 					} else {
@@ -2665,8 +2665,8 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 	// Función para modificar el estatus de una sesionparken
 	app.post("/automovilista/modificarSesionParken", function(req,res){
 
-		console.log("/modificarSesionParken");
-		console.log(req.body);
+		//console.log("/modificarSesionParken");
+		//console.log(req.body);
 		var idSesion = req.body.idSesionParken;
 		var estatus = req.body.Estatus;
 		var fecha = req.body.Fecha;
@@ -2758,7 +2758,7 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 										console.log('Automovilista finalizó correctamente la sesión Parken, no se modificará nada');
 									}
 
-									
+
 								});
 							}
 						);

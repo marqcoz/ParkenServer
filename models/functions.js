@@ -2264,7 +2264,7 @@ functions.modificarSesionParken = function(idSesion, estatus, fecha, callback){
       }
     }
 
-    console.log(query)
+    //console.log(query)
     db.pool.connect((err, client, done) => {     
       done();
       if (err) throw err
