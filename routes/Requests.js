@@ -3008,11 +3008,18 @@ app.post("/administrador/actualizarZonaParken", function(req,res){
 				schedule.scheduleJob(idAutomovilista.toString()+idSesion.toString(), date3,
 					function(){
 						//Simplememente enviar una notificación con el mismo id que la que se recibe 
-						
-						Requests.androidNotificationSingle(idAutomovilista, 
-							'automovilista', 'Sesión Parken finalizada', 
-							'Desaloja tu vehículo o serás acreedor a una sancion.', 
-							'{ "datos" : "OK", "idNotification" : "800" }');
+						//No es cierto, tenemos que checar el estatus de la sesión antes de enviar la notificación, veirficamos si esta como activa
+						Requests.verificarEstatusSesionParken(idSesion, 'ACTIVA', function(status, data){
+							if(status === 1){ //Si es 1 entonces la sesión no ha cambiado
+								Requests.androidNotificationSingle(idAutomovilista, 
+									'automovilista', 'Sesión Parken finalizada', 
+									'Desaloja tu vehículo o serás acreedor a una sancion.', 
+									'{ "datos" : "OK", "idNotification" : "800" }');
+							}else{
+								console.log("No se enviará notificación de finalización. La sesión ya cambió de estatus.");
+
+							}
+						});
 					});		
 
 
