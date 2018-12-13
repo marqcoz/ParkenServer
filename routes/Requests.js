@@ -3460,8 +3460,16 @@ app.post("/automovilista/establecerVistaPagando", function(req,res){
 										Requests.crearReporte('PENDIENTE', 'PAGO', 'Automovilista no finalizó el pago en el tiempo establecido', automovilista, ep, zp, function(status, data){
 
 											if(status==1) {
-												var data = '{"idNotification" : "400" }';
-													Requests.androidNotificationSingle(automovilista, 'automovilista', 'Se generó un reporte', 'Nuevo reporte por no pagar', data);
+												Requests.obtenerReporteEspecifico(data.rows[0].idreporte, function(status2, data2){
+													if(status2 === 1){
+														Requests.onAssignReport(data2, function(data3){
+															//callback(data3);
+															console.log("Reporte generado con éxito, se notificará a un supervisor");
+														  }); 
+													}else{
+														console.log("Reporte generado con éxito, con errores");
+													}
+												});
 
 											} else {
 													console.log('ERROR');
