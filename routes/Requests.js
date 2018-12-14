@@ -3443,7 +3443,7 @@ app.post("/automovilista/establecerVistaPagando", function(req,res){
 
 				schedule.scheduleJob(idSesionParken.toString(), date,
 					function(){
-
+						console.log("Inicia ScheduleJob "+ idSesionParken);
 						var newEstatus = 'REPORTADA';
 
 						Requests.verificarEstatusSesionParken(idSesionParken, 'PAGANDO', function(status, data){
