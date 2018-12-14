@@ -764,7 +764,7 @@ functions.buscarEspacioParken = function(latitud, longitud, distance, callback){
  'WHERE idzonaparken != 0 AND idzonaparken != 1 AND estatus = \'DISPONIBLE\' AND sDistance.distancia <= ~2) AND eParken.estatus = \'DISPONIBLE\' ORDER BY idespacioparken limit 1;';				   
 
   var qry2 = qry.replace('~1',uno).replace('~1',uno).replace('~1',uno).replace('~2', distance);
-  //console.log(qry2);
+  console.log(qry2);
 
   // callback
   db.pool.query(qry2, (err, res) => {
