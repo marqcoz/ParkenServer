@@ -2352,6 +2352,8 @@ functions.sesionParkenPagando= function(idSesion, minutos, segundos, callback){
 // Funcíon que regresa la infromación personal de un usuario
 functions.verificarEstatusSesionParken = function(idSesion, estatus, callback){
 
+  //Si es reservado entonces tambien checamos que sea pagando
+
   const query = {
     text: 'SELECT * FROM sesionparken WHERE estatus = $2 AND idsesionparken = $1;',
     values: [idSesion, estatus]
@@ -2466,7 +2468,7 @@ functions.obtenerMejorSupervisor = function(supervisores, idEspacioParken, petic
     ' ORDER BY distancia, estatus, reportes ASC;';
 
   var query = queryCREATE + queryINSERT + querySELECT;
-  console.log(query);
+  //console.log(query);
   
   // callback
   db.pool.query(query, (err, res) => {
@@ -2489,7 +2491,7 @@ functions.asignarReporte = function(idReporte, idSupervisor, callback){
    'supervisor_idsupervisor = ' + idSupervisor +
    ' WHERE idreporte = ' + idReporte + ' RETURNING estatus;';
   
-  console.log(query);
+  //console.log(query);
   
   // callback
   db.pool.query(query, (err, res) => {
@@ -2615,7 +2617,7 @@ functions.agregarUbicacionSupervisores = function(json){
   var j =[];
   j = j.concat(json);
 
-  console.log(json);
+  //console.log(json);
 
   for(var i = 0; i < jsonSupers.length; i++){ 
     if(jsonSupers[i].socket == j[0].socket){ //Si existe el socket, entonces lo actualizamos

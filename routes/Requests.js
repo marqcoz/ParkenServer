@@ -3435,13 +3435,13 @@ app.post("/automovilista/establecerVistaPagando", function(req,res){
 				date.setMinutes(date.getMinutes()+timerMinutosPago);
 				date.setSeconds(date.getSeconds()+timerSegundosPago + timerAux);
 
-				var mySchedule = schedule.scheduledJobs[idSesionParken];
+				var mySchedule = schedule.scheduledJobs[idSesionParken.toString()];
 				//console.log(my_job);
 				if(mySchedule != null){
 					mySchedule.cancel();
 				}
 
-				schedule.scheduleJob(idSesionParken, date,
+				schedule.scheduleJob(idSesionParken.toString(), date,
 					function(){
 
 						var newEstatus = 'REPORTADA';
