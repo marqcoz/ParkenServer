@@ -743,7 +743,7 @@ functions.buscarTodasZonasParkenID = function(callback){
 
 // Consulta las zonas parken a tantos kilometros de un punto
 functions.buscarEspacioParken = function(latitud, longitud, distance, callback){
-  console.log("Buscando el mejor espacio Parken...");
+  console.log("Buscando el mejor espacio Parken a " + distance + " metros de distancia...");
   var uno = longitud + ' ' + latitud;
   //var uno = latitud + ' ' + longitud;
   //console.log(uno);
