@@ -778,7 +778,7 @@ functions.buscarEspacioParken = function(latitud, longitud, distance, callback){
         callback(0, err.stack);
         //Si el INSERT se generó con éxito entonces
     } else {
-      //console.log(res.rows[0])
+      console.log(res.rows[0])
       callback(1, res);
       //console.log(res.rows[0])
     }
