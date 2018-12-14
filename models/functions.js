@@ -763,7 +763,7 @@ functions.buscarEspacioParken = function(latitud, longitud, distance, callback){
  'GROUP BY zParken.idzonaparken, zParken.nombre)) As sDistance '+
  'WHERE idzonaparken != 0 AND idzonaparken != 1 AND estatus = \'DISPONIBLE\' AND sDistance.distancia <= ~2) 
  */
- 'AND zop.idzonaparken != 0 AND zop.idzonaparken != 1 AND zop.estatus = \'DISPONIBLE\' AND eParken.estatus = \'DISPONIBLE\' ORDER BY idespacioparken limit 1;';				   
+ 'AND eParken.estatus = \'DISPONIBLE\' AND eParken.idespacioparken != 0 ORDER BY idespacioparken limit 1;';				   
 
   var qry2 = qry.replace('~1',uno).replace('~1',uno).replace('~1',uno).replace('~2', distance);
   console.log(qry2);
