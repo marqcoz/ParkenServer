@@ -448,7 +448,6 @@ app.get("/administrador/verificarAdministrador", function(req,res, next){
 	console.log("From: " + req.headers.origin);
 	var jeison;
 	var administrador = req.query.administrador;
-	if(administrador){
 	Requests.verificarAdministrador(administrador, function(status, data){
 
 		var jsonResponse = null;
@@ -478,9 +477,7 @@ app.get("/administrador/verificarAdministrador", function(req,res, next){
 			res.send(jsonResponse);
 		}
 	});
-}else{
-	return next();
-}
+
 });
 
 
@@ -491,7 +488,6 @@ app.post("/supervisor/verificarSupervisor", function(req,res, next){
 	var jeison;
 	var supervisor = req.body.idSupervisor;
 	console.log(supervisor);
-	if(supervisor){
 	Requests.verificarSupervisor(supervisor, function(status, data){
 
 		var jsonResponse = null;
@@ -524,9 +520,7 @@ app.post("/supervisor/verificarSupervisor", function(req,res, next){
 			res.send(jsonResponse);
 		}
 	});
-}else{
-	return next();
-}
+
 });
 
 
