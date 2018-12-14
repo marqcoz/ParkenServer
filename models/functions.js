@@ -755,13 +755,15 @@ functions.buscarEspacioParken = function(latitud, longitud, distance, callback){
   'WHERE eParken.distancia = ('+
   'SELECT MIN(ST_Distance_Sphere(ubicacion, ST_GeomFromText(\'POINT(~1)\'))) FROM espacioparken ' +
   'WHERE estatus = \'DISPONIBLE\') ' +
-  'AND zonaparken_idzonaparken IN (SELECT idzonaparken from ((SELECT zParken.idzonaparken, zParken.precio, ' +
+  /*'AND zonaparken_idzonaparken IN (SELECT idzonaparken from ((SELECT zParken.idzonaparken, zParken.precio, ' +
     'max(ST_Distance_Sphere(dump.geom, ST_Centroid(zParken.ubicacion))) AS radio, ' +
     'zParken.nombre, zParken.ubicacion, zParken.estatus, (ST_Length(ST_ShortestLine((zParken.ubicacion), ' +
     'ST_GeomFromText(\'POINT(~1)\') )::GEOGRAPHY)) AS distancia FROM zonaparken AS zParken ' +
    'JOIN ST_DumpPoints(zParken.ubicacion) dump ON TRUE ' +
  'GROUP BY zParken.idzonaparken, zParken.nombre)) As sDistance '+
- 'WHERE idzonaparken != 0 AND idzonaparken != 1 AND estatus = \'DISPONIBLE\' AND sDistance.distancia <= ~2) AND eParken.estatus = \'DISPONIBLE\' ORDER BY idespacioparken limit 1;';				   
+ 'WHERE idzonaparken != 0 AND idzonaparken != 1 AND estatus = \'DISPONIBLE\' AND sDistance.distancia <= ~2) 
+ */
+ 'AND zop.idzonaparken != 0 AND zop.idzonaparken != 1 AND zop.estatus = \'DISPONIBLE\' AND eParken.estatus = \'DISPONIBLE\' ORDER BY idespacioparken limit 1;';				   
 
   var qry2 = qry.replace('~1',uno).replace('~1',uno).replace('~1',uno).replace('~2', distance);
   console.log(qry2);
